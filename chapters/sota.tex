@@ -19,8 +19,37 @@ With this information I will conclude this chapter by showing how this thesis fi
 % Explain their approach and what the difference to your approach is.
 \section{Related Work}
 \label{Section::Related_Work}
-    Text
-    
+
+Several other papers have worked on forecasting on the imbalance market. Different energy markets are structured differently. While the imbalance is settled every quarter hour in germany \cite{narajewskiProbabilisticForecastingGerman2022}, each settlement period is 30 minutes on the energy market in the united kingdom \cite{limaBayesianPredictiveDistributions2023}.
+
+
+The works \cite{limaBayesianPredictiveDistributions2023} \cite{ganeshForecastingImbalancePrice2024} \cite{garciaForecastingSystemImbalance2006} \cite{browellPredictingElectricityImbalance2022} \cite{lucasPriceForecastingBalancing2020} \cite{dengSeasonalityDeepLearning2024} focus on the energy market in the united kingdom and use different approaches. While \cite{limaBayesianPredictiveDistributions2023}, \cite{ganeshForecastingImbalancePrice2024}, \cite{browellPredictingElectricityImbalance2022}, \cite{lucasPriceForecastingBalancing2020} and \cite{dengSeasonalityDeepLearning2024} try to make a prediction about the imbalance price, \cite{garciaForecastingSystemImbalance2006} tries to forecast the total imbalance volume. 
+
+The volume is forecasted using three different methods, ARIMA, exponential smoothing and caterpillar forecasting.
+
+For the papers predicting imbalance prices different models where used.
+The authors of \cite{limaBayesianPredictiveDistributions2023} developped a dynamic linear model (DLM) and compared their results to GARCH and AR-GARCH. Their model outperformed GARCH and AR-GARCH on all their out-of-sample forecasting experiments. During their research they also look at how the imbalance price correlated with different error values.
+In \cite{ganeshForecastingImbalancePrice2024} many different neural network algorithms were compared, namely Recurrent Neural Networks (RNN), Long Short Term Memory (LSTM), Gated Recurrent Units (GRU), Temporal Fusion Transformer (TFT), Fully Connected Neural Networks (FCNN) and the Neural basis expansion analysis for interpretable time series forecasting (N-BEATS). The FCNNs used in this paper were a significant improvement to the DLM developed in \cite{limaBayesianPredictiveDistributions2023}.
+The authors of \cite{browellPredictingElectricityImbalance2022} investigated how much impact the prediction time has on the result. They used Kernel Density Estimators (KDE) and linear regression to get a forecast for the imbalance price. 
+ 
+ For the imbalance price prediction \ref{lucasPriceForecastingBalancing2020} employed Gradient Boosting (GB), Random Forest (RF) and XGBoost. Out of the models they used RF performed the best. During their research they also looked into feature importance for all their models. They found that the net imbalance volume was the most important feature.
+ 
+ In \cite{dengSeasonalityDeepLearning2024} a new Bidirectional LSTM (BiLSTM) and Seasonal Attention BiLSTM (SA-BiLSTM) were compared to the previously used models. The authors looked into forecasting for multiple settlement periods into the future, with SA-BiLSTM performing the best in most of the cases.
+ 
+Apart from the UK energy market some research on the Belgian \cite{bottieauVeryShortTermProbabilisticForecasting2020} \cite{dumasProbabilisticForecastingImbalance2019}, Hungarian \cite{balazsShorttermSystemImbalance2024} and German \cite{narajewskiProbabilisticForecastingGerman2022} electricity market was published.
+A two step probabilistic approach was suggested in \cite{dumasProbabilisticForecastingImbalance2019}. First the system imbalance is forecasted and this information is then used in a second prediction for the imbalance price.
+
+The paper on the german electricity market \cite{narajewskiProbabilisticForecastingGerman2022} used lasso regression, gamlss and a probabilistic neural network (PNN) to try to predict the imbalance price for the german electricity market. The data for their models was split into subsets and different models with different hyperparameter configurations trained for each subset.
+
+The authors of \cite{balazsShorttermSystemImbalance2024} followed a different approach. The goal of their research was to predict the sign of the imbalance volume.  ???????????
+
+
+Many of the mentioned papers, especially the ones on the british electricity market used data from before the COVID-19 pandemic. During the pandemic the energy market changed. Models based and calibrated on pre-pandemic data can not be used to effectively forecast current energy prices \cite{abadieEnergyMarketPrices2021}.
+
+
+In this thesis I will compare different models on the task of predicting the imbalance price. For this I will use models that performed well pre-pandemic (RF) as well as an alteration on LSTM called xLSTM and a new inverted Transformer (iTransformer) architecture.
+
+
 \section{Time Series Predictors}
 \label{Section::Time_Series_Predictors}
 
