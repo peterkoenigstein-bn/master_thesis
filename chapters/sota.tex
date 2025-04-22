@@ -37,21 +37,56 @@ The authors of \cite{browellPredictingElectricityImbalance2022} investigated how
  In \cite{dengSeasonalityDeepLearning2024} a new Bidirectional LSTM (BiLSTM) and Seasonal Attention BiLSTM (SA-BiLSTM) were compared to the previously used models. The authors looked into forecasting for multiple settlement periods into the future, with SA-BiLSTM performing the best in most of the cases.
  
 Apart from the UK energy market some research on the Belgian \cite{bottieauVeryShortTermProbabilisticForecasting2020} \cite{dumasProbabilisticForecastingImbalance2019}, Hungarian \cite{balazsShorttermSystemImbalance2024} and German \cite{narajewskiProbabilisticForecastingGerman2022} electricity market was published.
+In the papers \cite{bottieauVeryShortTermProbabilisticForecasting2020} and \cite{balazsShorttermSystemImbalance2024} the authors used machine learning methods and auto regressive methods to predict the system imbalance in their respective energy market.
 A two step probabilistic approach was suggested in \cite{dumasProbabilisticForecastingImbalance2019}. First the system imbalance is forecasted and this information is then used in a second prediction for the imbalance price.
 
 The paper on the german electricity market \cite{narajewskiProbabilisticForecastingGerman2022} used lasso regression, gamlss and a probabilistic neural network (PNN) to try to predict the imbalance price for the german electricity market. The data for their models was split into subsets and different models with different hyperparameter configurations trained for each subset.
 
-The authors of \cite{balazsShorttermSystemImbalance2024} followed a different approach. The goal of their research was to predict the sign of the imbalance volume.  ???????????
-
-
 Many of the mentioned papers, especially the ones on the british electricity market used data from before the COVID-19 pandemic. During the pandemic the energy market changed. Models based and calibrated on pre-pandemic data can not be used to effectively forecast current energy prices \cite{abadieEnergyMarketPrices2021}.
 
 
-In this thesis I will compare different models on the task of predicting the imbalance price. For this I will use models that performed well pre-pandemic (RF) as well as an alteration on LSTM called xLSTM and a new inverted Transformer (iTransformer) architecture.
+In this thesis different models are compared on the task of predicting the imbalance price. For this task models will be used that performed well pre-pandemic (RF) as well as an alteration on LSTM called xLSTM \cite{beckXLSTMExtendedLong2024} and a new inverted Transformer (iTransformer) \cite{liuITransformerInvertedTransformers2023} architecture.
 
 
 \section{Time Series Predictors}
 \label{Section::Time_Series_Predictors}
 
+In this thesis established machine learning models are compared with novel approaches for Time Series Predictors. These newer models will be introduced in the next two subsections.
+
+%\subsection{ARIMA}
+%\label{Section::ARIMA}
+
+%\subsection{Random Forest}
+%\label{Section::Random_Forest}
+
+
+\subsection{xLSTM}
+\label{Section::xLSTM}
+Extended Long Short-Term Memory (xLSTM) is a novel model which is based on the existing Long Short-Term Memory (LSTM) \cite{gravesLongShortTermMemory2012}. The recent advances in Transformer technology outperformed LSTM models. This alteration on the LSTM model extends  the amount of parameters by introducing new LSTM cells. 
+These two new cells are the sLSTM and mLSTM cell.
+
+In the sLSTM Cell the activation function is changed. While in LSTM the activation function for the input gate is the sigmoid function, sLSTM uses the exponential function. In sLSTM the activation for the forget gate can be either the sigmoid function or the exponential function. sLSTM cells can also have multiple memory cells. This enables memory mixing via recurrent connections. A residual sLSTM cell contains a sLSTM  cell which summarizes the past in the original space. This is then linearly mapped into a higher-dimensional  space where the non linear activation function is applied. Afterwards the result is mapped back to the original space.
+
+The second alteration of the basic LSTM cell uses a matrix memory instead of a single value. This cell is called mLSTM. It also uses exponential gating for the input gate and either sigmoid or exponential gating for the forget gate. This cell can also have multiple memorry cells, but does not support memory mixing. In a residual mLSTM cell a pre-projection linearly maps to a high-dimensional space. The mLSTM cell then summarizes the past in the high dimensional space. The result is then linearly mapped back to the original space.
+
+An xLSTM architecture is constructed by stacking theses building blocks. An advantage of xLSTM networks is, that the computation complexity is linear and the memory complexity is constant with respect to sequence length. \cite{beckXLSTMExtendedLong2024}
+
+
+
+\subsection{iTransformer}
+\label{Section::iTransformer}
+
+Contrary to traditional Transformers, inverted Transformers (iTransformer) use inverted inputs. Transformers use temporal embedded tokens, learning one embedding for each distinct timestep across all variates. In iTransformers the input is transposed, changing the axes. This results in each embedding being learned for a single variate across all timesteps. For traditional Transformers the amount of learned embeddings is equal to the amount of timesteps, whereas for iTransformers the amount of learned embeddings is equal to the variates. This is visualized in figure \ref{fig::iTransformer}.
+
+\begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{sota/iTransformer.png}
+            \caption[Comparison between vanilla Transformer and iTransformer \cite{liuITransformerInvertedTransformers2023}]{Comparison between vanilla Transformer and iTransformer \cite{liuITransformerInvertedTransformers2023}}
+            \label{fig::iTransformer}
+ \end{figure}
+
+
 
 \end{document}
+
+
