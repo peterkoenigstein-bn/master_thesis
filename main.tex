@@ -1,16 +1,19 @@
 % -----------------------------------------------------------------------------------
-% This template is brought to you by the                                            %
-% Laboratory for Electrical Instrumentation and Embedded Systems                    %
-% at the Albert-Ludwigs-Universität in Freiburg.                                    %
+% This template is brought to you by the Laboratory for                             %
+% Electrical Instrumentation and Embedded Systems                                   %
+% at the Albert-Ludwigs-Universität in Freiburg                                     %
 %                                                                                   %
-% Please note: We do not provide technical support for this template.               %
-% However, please feel free to contribute to this template on GitHub:               %
+% Please note: We do not provide technical support for this template                %
+% However, please feel free to contribute to this template on GitHub                %
 % https://github.com/imtekalex/emes_template                                        %
 %                                                                                   %
-% Authors: Alexander Richter, Till Steinmann, Andreas Reichenbach                   %
+% Special thanks go out to                                                          %
+% Till Steinmann and Andreas Reichenbach                                            %
 % -----------------------------------------------------------------------------------
 
-%! TEX root = main.tex
+% ToDo:
+% Centralize Language settings so that individual chapters are also built correctly.
+% Speed up build process
 
 % Document settings
 \input{settings+/docclass}
@@ -20,33 +23,33 @@
 % Information about the work and the author
 % -----------------------------------------------------------------------------------
 % Author
-\author{Your Name}
-\matrikelnr{1234567}
+\author{Peter Königstein}
+\matrikelnr{5110050}
 
 % -----------------------------------------------------------------------------------
 % English chair and thesis info
 % -----------------------------------------------------------------------------------
-\institute{IMTEK -- Department of Microsystems Engineering}
-\chair{Laboratory for Electrical Instrumentation and Embedded Systems}
+\institute{Department of Computer Science}
+\chair{Neurorobotics Lab}
 
 \thesisType{Master's Thesis}
-\thesisTitle{Creation of a \LaTeX~Template for\\Students to use for Their Thesis}
-\submitDate{March 10, 2022} % Use \today for the date of compilation
-\editingTime{July 13, 2021 - March 10, 2022}
+\thesisTitle{Time series forecast on the German energy market: Predicting the imbalance price using deep learning models}
+\submitDate{June 30, 2025}
+\editingTime{February 1, 2025 - June 30, 2025}
 
 % Examiners
-\firstExaminer{Prof. Dr. Stefan Rupitsch}
-\firstExaminerDepartment{IMTEK -- Department of Microsystems Engineering}
-\firstExaminerChair{Laboratory for Electrical Instrumentation and Embedded Systems}
+\firstExaminer{Prof. Dr. Joschka Boedecker}
+\firstExaminerDepartment{Department of Computer Science}
+\firstExaminerChair{Neurorobotics Lab}
 
-\secondExaminer{Prof. Dr. Max Doe}
-\secondExaminerDepartment{IMTEK -- Department of Microsystems Engineering}
-\secondExaminerChair{Laboratory for something that likely has a long title as well}
+\secondExaminer{Anke Weidlich}
+\secondExaminerDepartment{INATECH Department of Sustainable Systems Engineering}
+\secondExaminerChair{Control and Integration of Grids}
 
 % Supervisor
-\supervisor{M.Sc. Max Doe}
-\supervisorDepartment{IMTEK -- Department of Microsystems Engineering}
-\supervisorChair{Laboratory for Electrical Instrumentation and Embedded Systems}
+\supervisor{Baohe Zhang \& Anna Rothenhäusler}
+\supervisorDepartment{Department of Computer Science}
+\supervisorChair{Neurorobotics Lab}
 
 % -----------------------------------------------------------------------------------
 % German chair and thesis info
@@ -57,7 +60,7 @@
 % \thesisType{Master Thesis}
 % \thesisTitle{Erstellung einer \LaTeX~Vorlage für\\
 %             Abschlussabeiten von Studierenden}
-% \submitDate{10. März 2022} % Verwenden Sie \today für das Kompilierdatum
+% \submitDate{10. März 2022}
 % \editingTime{13. Juli 2021 - 10. März 2022}
 
 % % Examiners
@@ -98,8 +101,8 @@
     % -------------------------------------------------------------------------------
     % Abstract in English and German
     \pagenumbering{Roman}  % I, II, III..
-    \input{chapters/abstract}                                             \clearpage
-    \input{chapters/zusammenfassung}                                      \clearpage
+    %\input{chapters/abstract}                                             \clearpage
+    %\input{chapters/zusammenfassung}                                      \clearpage
 
     % Table of contents
     \tableofcontents                                                      \clearpage
@@ -124,14 +127,15 @@
     \pagenumbering{arabic}  % 1, 2, 3..
     \input{chapters/introduction}                                         \clearpage
     \input{chapters/theory}                                               \clearpage
-    \input{chapters/sota}                                                 \clearpage
-    \input{chapters/implementation}                                       \clearpage
-    \input{chapters/experiment}                                           \clearpage
-    \input{chapters/discussion}                                           \clearpage
-    \input{chapters/summary}                                              \clearpage
-    \input{chapters/conclusion}                                           \clearpage
-    \input{chapters/outlook}                                              \clearpage
-    \input{chapters/acknowledgments}                                      \clearpage
+   \input{chapters/sota}                                                 \clearpage
+   \input{chapters/methodology} 		\clearpage
+   % \input{chapters/implementation}                                       \clearpage
+  %  \input{chapters/experiment}                                           \clearpage
+    %\input{chapters/discussion}                                           \clearpage
+    %\input{chapters/summary}                                              \clearpage
+   % \input{chapters/conclusion}                                           \clearpage
+   % \input{chapters/outlook}                                              \clearpage
+  %  \input{chapters/acknowledgments}                                      \clearpage
 
     % Bibliography
     \printbibliography[heading=bibintoc]                            \cleardoublepage
@@ -142,7 +146,7 @@
     \pagenumbering{Alph} % A, B, C..
 
     % Appendix
-    \input{chapters/appendix}                                             \clearpage
+  %  \input{chapters/appendix}                                             \clearpage
 
     % print main glossary
     %       type=main           glossary

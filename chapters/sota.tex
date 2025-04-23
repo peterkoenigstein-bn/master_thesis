@@ -84,8 +84,20 @@ Contrary to traditional Transformers, inverted Transformers (iTransformer) use i
             \caption[Comparison between vanilla Transformer and iTransformer \cite{liuITransformerInvertedTransformers2023}]{Comparison between vanilla Transformer and iTransformer \cite{liuITransformerInvertedTransformers2023}}
             \label{fig::iTransformer}
  \end{figure}
+ 
+The gains of inverting the input is significant. In the experiments the developers of the iTransformer found, that inverting the input had a benefit for various Transformers, namely the vanilla Transformer, Reformer, Informer, Flowformer and Flashformer. 
+This research was done on weather data, traffic data and data about the hourly electricity consumption (ECL).
+For the training of the iTransformer an updated training procedure was applied. 
+For each batch only a subset of the variates are selected and the model is trained on them. 
+The updated training process is a lot fasater, while the performance is still comparable with full-variate training. 
+Another benefit of this training method is that the needed memory can be reduced significantly as shown in figure \ref{fig::iTransformer_Training} \cite{liuITransformerInvertedTransformers2023}
 
-
+\begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{sota/iTransformer_Training.png}
+            \caption[Training Performance (left) and training memory footprint (right) for training on only a subset of variates \cite{liuITransformerInvertedTransformers2023}]{Training Performance (left) and training memory footprint (right) for training on only a subset of variates \cite{liuITransformerInvertedTransformers2023}}
+            \label{fig::iTransformer_Training}
+ \end{figure}
 
 \end{document}
 

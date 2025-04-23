@@ -50,7 +50,7 @@ Next, the different auctions and their schedule will be explained. An overview c
 \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/energy_auctions.png}
-            \caption[Timeschedule for energy market auctions]{Timeschedule for energy market auctions \cite{narajewski2022probabilistic}.}
+            \caption[Timeschedule for energy market auctions]{Timeschedule for energy market auctions \cite{narajewskiProbabilisticForecastingGerman2022}.}
             \label{fig::energy_auctions}
  \end{figure}
  
@@ -58,10 +58,10 @@ Next, the different auctions and their schedule will be explained. An overview c
 The first auction takes place at $12:00$ one day before delivey and is called the day ahead (DA) auction. At $15:00$ the next auction, the intraday auction (IA) takes place. After that, at $16:00$ intraday continuous trading (IC) starts. Whilst the auctions are a single auction event, during the intraday continuous (IC) trading window energy can be traded at any time. The IC has different closing times. Up until $30$ minutes before delivery energy can be traded across all control zones. Trades on IC that happen within a single control zone can be done up until $5$ minutes before delivery.
 
 \section{Imbalance price}
-\label{chapter::Imbalance_Price}
+\label{Section::Imbalance_Price}
 The calculation of the imbalance price is split up into three modules, which are calculated seperately and subsequently aggregated.
 
-\subsetion{Module 1: Basis component}
+\subsection{Module 1: Basis component}
 The first module is called the basis component. 
 This module represents the cost of providing the balancing energy.
 
@@ -75,14 +75,16 @@ If both reserves were activated, the $AEP1$ is equal to the volume-weighted aver
 \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/aep1_pos.png}
-            \caption[Positive AEP 1 component formula]{Positive AEP 1 component formula \cite{reBAP}.}
+            \caption[Positive AEP 1 component formula]{Positive AEP 1 component formula \cite{NetztransparenzReBAP}.}
             \label{fig::aep1_pos}
  \end{figure}
  
+ 
+
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/aep1_neg.png}
-             \caption[Positive AEP 1 component formula]{Positive AEP 1 component formula \cite{reBAP}.}
+             \caption[Positive AEP 1 component formula]{Positive AEP 1 component formula \cite{NetztransparenzReBAP}.}
             \label{fig::aep1_neg}
  \end{figure}
 
@@ -101,21 +103,21 @@ In the case that the GCC balance is equal to 0, this module takes the value of I
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/aep_2.png}
-             \caption[Formula for $AEP_{Module 2}$]{Formula for $AEP_{Module 2}$ \cite{reBAP}.}
+             \caption[Formula for $AEP_{Module 2}$]{Formula for $AEP_{Module 2}$ \cite{NetztransparenzReBAP}.}
             \label{fig::aep2}
  \end{figure}
 
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/delta_p.png}
-             \caption[Formula for$ \Delta P$]{Formula for $\Delta P$ \cite{reBAP}.}
+             \caption[Formula for$ \Delta P$]{Formula for $\Delta P$ \cite{NetztransparenzReBAP}.}
             \label{fig::delta_p}
  \end{figure}
  
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/delta_p_graph.png}
-             \caption[Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$ \cite{reBAP}]{Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$ \cite{reBAP}.}
+             \caption[Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$ \cite{NetztransparenzReBAP}]{Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$ \cite{NetztransparenzReBAP}.}
             \label{fig::delta_p_graph}
  \end{figure}
 
@@ -127,7 +129,7 @@ If the GCC balance exceeds $80\%$ of the frequency restoration reserve (FRR) for
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/aep_3.png}
-             \caption[Graph how the price of module 3 correlates with GCC balance$ \cite{reBAP}]{Graph how the price of module 3 correlates with GCC balance \cite{reBAP}.}
+             \caption[Graph how the price of module 3 correlates with GCC balance$ \cite{NetztransparenzReBAP}]{Graph how the price of module 3 correlates with GCC balance \cite{NetztransparenzReBAP}.}
             \label{fig::aep_3}
  \end{figure}
 
