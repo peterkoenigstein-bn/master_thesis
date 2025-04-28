@@ -1,0 +1,229 @@
+\documentclass[class=scrbook, crop=false]{standalone}
+\usepackage[subpreambles=true]{standalone}
+\ifstandalone
+    \input{../settings+/settings}
+\fi
+
+% ----------------------------------------------------------------------------
+%                              Methodology
+% ----------------------------------------------------------------------------
+% Why do i use this data 
+% What is this data
+% Where is the data from
+% How is the data presented
+% When is the data available ?
+
+\begin{document}
+
+\chapter{Methodology} % Outline text
+\label{Chapter::Methodology}
+This chapter contains information about the data used for the Time Series prediction. 
+The data can be separated into 3 thematic fields: weather data, market data and energy data.
+
+In the following sections each data source will be described more in depth. 
+This data is processed and filtered in chapter \ref{Chapter::Feature_Engineering}.
+
+This chapter contains a more in depth overview about how the data was aquired and what information is available in the data used for the experiments. 
+The data used for the experiments can be separated into 3 thematic fields: energy data, market data and weather data.
+This chapter only provides a brief overview about the data sources. 
+
+    
+\section{Energy Data}
+\label{Section::Energy_Data}
+
+% Why do i use this data 
+% What is this data
+% Where is the data from
+% How is the data presented
+% When is the data available ?
+
+The data used in this thesis is sourced from Netztransparenz and the ENTSO-E Transparency Platform.
+The target variable, along with several additional explanatory variables, is obtained from these platforms.
+
+Netztransparenz provides detailed information on the imbalance price and imbalance volumes, which are central to the prediction objective.
+This data is available both operational and quality-assured.
+The quality-assured data is available about 18 days after the operational data. 
+ENTSO-E supplies load and generation data, including both measured values and forecasts, for the German electricity market.
+Additionally, specific generation data is available for onshore wind, offshore wind, and solar photovoltaic technologies.
+
+The data covers the German bidding zone exclusively, as the prediction task focuses solely on the German electricity market.
+The time resolution of all datasets is quarter-hourly.
+The period under study spans from the 21st of june 2022 to 31st of december 2024).
+
+All datasets are accessed and downloaded via publicly available APIs, enabling automated and reproducible data collection.
+An overview about all variables used by these data sources can be found in \ref{Table::Energy_Data_Netztransparenz} and \ref{Table::Energy_Data_Entsoe}.
+
+A more detailed description of the preprocessing steps, feature engineering, and exploratory data analysis will be provided in later sections.
+
+\begin{table}[]
+\begin{tabular}{l|l|l|l}
+ Data Source & Variable &  Time Resolution & Availability  \\\hline
+ Netztransparenz & reBAP & 15 min & Real-time with 30 minutes delay \\
+ Netztransparenz & NRV-saldo & 15 min & Real-time with 30 minutes delay \\
+ Netztransparenz & Activated PRL & 15 min & Real-time with 30 minutes delay \\
+ Netztransparenz & Activated SRL & 15 min & Real-time with 30 minutes delay \\
+ Netztransparenz & SRL optimization & 15 min & Real-time with 30 minutes delay \\
+ 
+\end{tabular}
+\caption{Variables used from netztransparenz}
+\label{Table::Energy_Data_Netztransparenz}
+\end{table}
+
+\begin{table}[]
+\begin{tabular}{l|l|l|l}
+ Data Source & Variable &  Time  & Availability  \\
+ &&Resolution&\\\hline
+ Entso-E & Load forecast & 15 min  & 12:00 d-1 \\
+ Entso-E & Load actual & 15 min  & Real-time with max 1 h delay \\
+ Entso-E & Wind onshore forecast & 15 min  & 18:00 d-1\\
+ Entso-E & Wind offshore forecast & 15 min & 18:00 d-1 \\
+ Entso-E & Solar forecast & 15 min & 18:00 d-1 \\
+ Entso-E & Wind onshore actual generation & 15 min  & Real-time with max 1 h delay\\
+ Entso-E & Wind offshore actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Solar actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Other renewable actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Hydro water reservoir actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Run of river actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Hydro pumped storage actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Hydro pumped consumption & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Lignite actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Fossil gas actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Fossil hard coal actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Fossil oil actual generation & 15 min & Real-time with max 1 h delay \\
+  
+\end{tabular}
+\caption{Variables used from ENTSO-E}
+\label{Table::Energy_Data_Entsoe}
+\end{table}
+
+\section{Market Data}
+\label{Section::Market_Data}
+
+The market data used in this thesis is provided by Energy-Charts \ref{EnergyCharts}.
+
+
+Out of the data provided on the website, the prices for Day Ahead Auction, average intraday price, as well as id1 and id3 are used. 
+More information about the used variables can be found in table \ref{Table::Market_Data}.
+
+Each intraday index represents the volume-weighted average price of the trades during a certain period. 
+While index 1 (ID1) only considers trades that happened up to 1 hour before gate closure, index 3 (ID3) considers trades up to 3 hours before gate closure time.
+The variable Intraday continuous average is the volume-weighted average price of all trades that happened on the intraday market. 
+This will be called ID FULL going further.
+
+As described in \ref{Section::Imbalance_Price} one of the imbalance price modules is tied to the recent market situation.	
+
+    
+\begin{table}[]
+\begin{tabular}{l|l|l|l}
+ Data Source & Variable &  Time Resolution & Availability  \\\hline
+ Energy-Charts & Hourly Spot price& 1 h& 12:00-15:00 d-1 \\
+ Energy-Charts & Intraday auction 1 price & 1h & ?? ? ?? ?? ?\\
+ Energy-Charts & Intraday Index 1 & 15 min &  00:00 d+1\\
+ Energy-Charts & Intraday Index 3 & 15 min &  00:00 d+1\\
+ Energy-Charts & Intraday Contiuous Average & 15 min &  00:00 d+1\\
+   
+\end{tabular}
+\caption{Variables used from Energy-Charts}
+\label{Table::Market_Data}
+\end{table}
+
+\section{Weather data}
+\label{Section::Weather_Data}
+
+The weather data used for the prediction of the imbalance price is obtained from the German Weather Service (DWD).
+The dataset includes both measured weather observations and forecasted weather variables, with a time resolution of  1 hour.
+
+Measured weather data is made available approximately one hour after observation, while weather forecasts cover a forecast horizon of up to 10 days into the future.
+
+Since the generation of variable renewable energy (VRE) is highly dependent on weather conditions, the incorporation of weather data is essential for accurate modeling.
+The data is aggregated from 16 weather stations distributed across Germany.
+A complete list of the selected weather stations is provided in Appendix \ref{List::Weather_Stations}, and their geographic locations are illustrated in Figure \ref{fig::weather_stations}.
+
+The full range of available weather variables for the measurements is summarized in Table \ref{Table::DWD_Measurement_Parameters}.
+An overview about all available forecast variables can be found in the appendix (table \ref{Table::DWD_MOSMIX_Parameters}).
+For the prediction task, a selected subset of forecast variables is used, as detailed in Table \ref{Table::DWD_MOSMIX_Parameters_Small}.
+
+
+More information about how the data is handled will be discussed in section \ref{Section::Feature_Engineering}
+
+
+\begin{table}[]
+\begin{tabular}{l|l}
+Parameter & Description \\\hline
+DD & Wind direction\\
+FF & Wind speed\\
+FX1 & Maximum wind gust within the last hour\\
+N & Total cloud cover\\
+N05 & Cloud cover below 500 ft.\\
+Neff & Effective cloud cover\\
+Nh & High cloud cover (>7 km)\\
+Nl & Low cloud cover (lower than 2 km)\\
+Nm & Midlevel cloud cover (2-7 km)\\
+RR1c & Total precipitation during the last hour consistent with significant weather\\
+Rad1h & Global Irradiance\\
+SunD1 & Sunshine duration during the last Hour\\
+T5cm & Temperature 5cm above surface\\
+TTT & Temperature 2m above surface\\
+wwM & Probability for fog within the last hour\\
+\end{tabular}
+\caption{Subset of Variables used from DWD MOSMIX data}
+\label{Table::DWD_MOSMIX_Parameters_Small}
+\end{table}
+
+
+\begin{figure}[ht]
+            \centering
+            \includegraphics[width=.5\textwidth]{data/stations_map_customizer.png}
+            \caption[Weather stations used]{Weather stations used}
+            \label{fig::weather_stations}
+ \end{figure}
+ 
+
+\begin{table}[]
+\begin{tabular}{l|l|l}
+Station name & Measurements? & MOSMIX ?\\\hline
+   Freiburg&Yes&Yes\\
+   Hamburg&Yes&Yes\\
+    Leipzig-Halle&Yes&Yes\\
+    Nuernberg&Yes&Yes\\
+    Stuttgart&Yes&Yes\\
+    Mannheim&Yes&Yes\\
+    Berlin-Tempelhof&Yes&Yes\\
+    Duesseldorf&Yes&Yes\\
+    Muenchen&Yes&Yes\\
+   Konstanz&Yes&Yes\\
+   Braunschweig&Yes&Yes\\
+   Goettingen&Yes&Yes\\
+   Rostock&Yes&Yes\\
+   Helgoland&Yes&Yes   
+\end{tabular}
+\caption{Weather stations used for DWD data}
+\label{Table::Weather_Stations}
+\end{table}
+
+
+
+ 
+ 
+% First explain concepts you used in your thesis like filters or methods
+% Then explain your approach or algorithm
+% Use flowcharts to give an overview
+
+\section{Additional Data}
+\label{Section::Additional_Data}
+On top of these 3 major thematic fields additional information about working days was used. 
+
+Expert knowledge?
+
+
+\subsection{Holidays}
+
+load difference graph
+
+python package 
+
+\subsection{School Holidays}
+
+schulferien.com ???
+
+\end{document}
