@@ -3,6 +3,7 @@
 \ifstandalone
     \input{../settings+/settings}
 \fi
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
 
 % ----------------------------------------------------------------------------
 %                               Implementation
@@ -16,8 +17,41 @@
 % First explain concepts you used in your thesis like filters or methods
 % Then explain your approach or algorithm
 % Use flowcharts to give an overview
-\section{Implementation Topic}
-\label{Section::Implementation_Topic}
-    Text
+\section{Feature engineering}
+\label{Section::Feature_engineering}
+
+The data introduced in section \ref{Chapter::Methodology} can be further refined to gain additional information. 
+The following sections contain information about how the data was used to create more features.
+Feature engineering was done for energy data, weather data and holiday data.
+
+    \subsection{Energy data}
+    \label{Section::Energy_Data}
+    The energy data provided by ENTSO-E can be further refined to gain additional information.
+    One additional feature is the residual load. 
+    Residual load is defined as the load that is not covered by VRE. 
+    This is calulated by subtracting the generation provided by solar, wind onshore and win offshore from the load.
+    
+    Another way of generating more informative features is to calculate the forecasting error. 
+    For this the forecast for solar generation, wind generation and load is substracted from the actual measured values.
+    This can also be done for the residual load.
+    For each of these variables the correlation with the imbalance price is calclulated to estimate how much influence the variables have in determining the imbalance price.
+    Table \ref{Table::Rebap_Correlations_ENTSOE} contains the results for these calculations. 
+    
+    Out of these features the forecasted and actual value for residual load, the forecasting error for solar generation have the largest absolute correlation.
+    It should be noted that the actual values are not available at prediction time.    
+
+    \begin{table}
+    \begin{tabular}{l|l|l|l}
+    Variable Name &Forecasted Value& Actual Value& Forecasting Error \\\hline
+    Solar &-0,053& -0,064& \cellcolor{green}  -0,116 \\
+    Wind offshore & -0,077&-0,075& \cellcolor{green} 0,000 \\
+    Wind onshore &-0,101&-0,107& \cellcolor{green} -0,047 \\
+    Load &0,070&0,056& \cellcolor{green} -0,037 \\
+    Residual Load & \cellcolor{green} 0,169& \cellcolor{green}0,171& \cellcolor{green}0,025\\
+    \end{tabular}
+    
+    \caption{Correlations between variables and imbalance price (rounded to next $10^{-3}$). Green cells are new features}
+    \label{Table::Rebap_Correlations_ENTSOE}
+    \end{table}
 
 \end{document}

@@ -43,12 +43,13 @@ The target variable, along with several additional explanatory variables, is obt
 Netztransparenz provides detailed information on the imbalance price and imbalance volumes, which are central to the prediction objective.
 This data is available both operational and quality-assured.
 The quality-assured data is available about 18 days after the operational data. 
+
 ENTSO-E supplies load and generation data, including both measured values and forecasts, for the German electricity market.
 Additionally, specific generation data is available for onshore wind, offshore wind, and solar photovoltaic technologies.
-
 The data covers the German bidding zone exclusively, as the prediction task focuses solely on the German electricity market.
+The forecast is done at 18:00 on the previous day. 
 The time resolution of all datasets is quarter-hourly.
-The period under study spans from the 21st of june 2022 to 31st of december 2024).
+The period under study spans from the 21st of june 2022 to 31st of december 2024.
 
 All datasets are accessed and downloaded via publicly available APIs, enabling automated and reproducible data collection.
 An overview about all variables used by these data sources can be found in \ref{Table::Energy_Data_Netztransparenz} and \ref{Table::Energy_Data_Entsoe}.
@@ -102,11 +103,11 @@ A more detailed description of the preprocessing steps, feature engineering, and
 The market data used in this thesis is provided by Energy-Charts \ref{EnergyCharts}.
 
 
-Out of the data provided on the website, the prices for Day Ahead Auction, average intraday price, as well as id1 and id3 are used. 
+Out of the data provided on the website, the prices for Day Ahead Auction, average intraday price, as well as intraday index 1 (ID1) and intraday index 3 (ID3) are used. 
 More information about the used variables can be found in table \ref{Table::Market_Data}.
 
 Each intraday index represents the volume-weighted average price of the trades during a certain period. 
-While index 1 (ID1) only considers trades that happened up to 1 hour before gate closure, index 3 (ID3) considers trades up to 3 hours before gate closure time.
+While ID1 only considers trades that happened up to 1 hour before gate closure, ID3 considers trades up to 3 hours before gate closure time.
 The variable Intraday continuous average is the volume-weighted average price of all trades that happened on the intraday market. 
 This will be called ID FULL going further.
 
@@ -131,7 +132,7 @@ As described in \ref{Section::Imbalance_Price} one of the imbalance price module
 \label{Section::Weather_Data}
 
 The weather data used for the prediction of the imbalance price is obtained from the German Weather Service (DWD).
-The dataset includes both measured weather observations and forecasted weather variables, with a time resolution of  1 hour.
+The dataset includes both measured weather observations and forecasted weather variables, with a time resolution of 1 hour.
 
 Measured weather data is made available approximately one hour after observation, while weather forecasts cover a forecast horizon of up to 10 days into the future.
 
@@ -213,17 +214,23 @@ Station name & Measurements? & MOSMIX ?\\\hline
 \label{Section::Additional_Data}
 On top of these 3 major thematic fields additional information about working days was used. 
 
-Expert knowledge?
-
+This data source is expected to capture variations in electricity load.
+School holidays and extended weekends due to public holidays are typical times for taking vacations.
+These effects will be analyzed later in the thesis.
 
 \subsection{Holidays}
 
-load difference graph
+In germany there are static holidays which are always on the same day each year.
+Examples for these are christmas or the 1st of may. 
+Other holidays in germany are dependant on the date of easter. 
+An example for such a holiday is the feast of ascension, which always happens 39 days after easter.
 
-python package 
+The bundesAPI provides an api to get information to get this information \cite{HolidayAPIUrl}.
 
 \subsection{School Holidays}
 
-schulferien.com ???
+Information about school holidays is provided by Schulferien.org \cite{SchoolHolidays}. 
+The data is displayed in a table on this website. 
+A webscraper is used to get the data.
 
 \end{document}
