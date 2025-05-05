@@ -43,15 +43,44 @@ Feature engineering was done for energy data, weather data and holiday data.
     \begin{table}
     \begin{tabular}{l|l|l|l}
     Variable Name &Forecasted Value& Actual Value& Forecasting Error \\\hline
-    Solar &-0,053& -0,064& \cellcolor{green}  -0,116 \\
+    Solar &-0,053& -0,064& \cellcolor{green} \textbf{-0,116} \\
     Wind offshore & -0,077&-0,075& \cellcolor{green} 0,000 \\
     Wind onshore &-0,101&-0,107& \cellcolor{green} -0,047 \\
     Load &0,070&0,056& \cellcolor{green} -0,037 \\
-    Residual Load & \cellcolor{green} 0,169& \cellcolor{green}0,171& \cellcolor{green}0,025\\
+    Residual Load & \cellcolor{green} \textbf{0,169}& \cellcolor{green} \textbf{0,171}& \cellcolor{green}0,025\\
     \end{tabular}
     
     \caption{Correlations between variables and imbalance price (rounded to next $10^{-3}$). Green cells are new features}
     \label{Table::Rebap_Correlations_ENTSOE}
     \end{table}
+    
+    The newly introduced features in this section will also be used for inspecting possible features introduced at a later point.
+    
+    \subsection{Weather data}
+    \label{Section::Weather_data}
+    The weather data contains a lot of datapoints, especially the MOSMIX forecast. 
+    For each of the originally 40 features a forecast is done 240 times for each timestep. 
+    This data needs to be condensed, as not all of theses timestamps are useful.
+    There are certain timestamps which will be inspected closer for the feature engineering.
+    
+    The forecasts done by ENTSO-E are published the day before and use the weather forecast from that time.
+    The forecast happens at 18:00. 
+    In the MOSMIX data this timestamp will be more closely looked at for this reason.
+    Another important timestamp is the latest timestamp. 
+    With a forecast being done each hour, the latest available timestamp at prediction time is the one 2 hours before gate closure time, due to the prediction happening at 1 hour before gate closure time.
+    For each of the variables introduced in \ref{Table::DWD_MOSMIX_Parameters_Small} the correlation for both of the previously discussed timestamps is checked.
+    The results for the correlation can be found in table \ref{Table::DWD_MOSMIX_correlations}. 
+    
+    With both of these configurations for each of the variables a new feature can be created. 
+    To get an estimate for the forecasting error in the ENTSO-E data, the change in forecast can be calculated in the DWD data.
+    Under the assumption, that a more recent forecast is more accurate, the difference between the latest forecast and the forecast of the day before at $18:00$ is calculated. 
+    
+    Dividing the most recent forecast by the day ahead forecast would maybe provide a more meaningful relation, but due to the nature of the data this is problematic.
+    The dataset contains variables with large value ranges, including 0. 
+    By dividing, this new feature might take extreme values.
+    On the other hand some variables have scales which make the division less meaningful.
+    For example the temperature is measured in kelvin, leading to small quotients.
+
+    
 
 \end{document}
