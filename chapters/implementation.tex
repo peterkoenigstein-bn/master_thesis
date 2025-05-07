@@ -24,6 +24,24 @@ The data introduced in section \ref{Chapter::Methodology} can be further refined
 The following sections contain information about how the data was used to create more features.
 Feature engineering was done for energy data, weather data and holiday data.
 
+In the following sections the correlation between features and the imbalance price will be calculated.
+The distribution of the imbalance price has been inspected. 
+To determine which correlation method to use the distribution of the imbalance price has been checked.
+Furthermore the skewness and kurtosis of the imbalance price has been calculated.
+
+\begin{figure}[ht]
+            \centering
+            \includegraphics[width=.5\textwidth]{implementation/probability_plot.png}
+            \caption[Probability plot for the imbalance price]{Probability plot for the imbalance price}
+            \label{fig::rebap_distribution}
+ \end{figure}
+
+Using the anderson darling test \ref{andersonAsymptoticTheoryCertain1952} it was confirmed, that the data is normal distributed.
+A probability plot for the imbalance price can be seen in figure \ref{fig::rebap_distribution}. 
+The red line resembles a normal distribution. 
+With a skewness of $27.08$ and a kurtosis of $1194.02$ the pearson correlation can not be used.
+Instead for the following correlation analyses the spearman rank correlation will be used.
+
     \subsection{Energy data}
     \label{Section::Energy_Data}
     The energy data provided by ENTSO-E can be further refined to gain additional information.
@@ -42,12 +60,12 @@ Feature engineering was done for energy data, weather data and holiday data.
 
     \begin{table}
     \begin{tabular}{l|l|l|l}
-    Variable Name &Forecasted Value& Actual Value& Forecasting Error \\\hline
-    Solar &-0,053& -0,064& \cellcolor{green} \textbf{-0,116} \\
-    Wind offshore & -0,077&-0,075& \cellcolor{green} 0,000 \\
-    Wind onshore &-0,101&-0,107& \cellcolor{green} -0,047 \\
-    Load &0,070&0,056& \cellcolor{green} -0,037 \\
-    Residual Load & \cellcolor{green} \textbf{0,169}& \cellcolor{green} \textbf{0,171}& \cellcolor{green}0,025\\
+    Variable Name	&Forecasted Value& Actual Value	& Forecasting Error \\\hline
+    Solar 		& -0.083		& -0.105		& \cellcolor{green} \textbf{-0.155} \\
+    Wind offshore 	& -0.164		& -0.152		& \cellcolor{green} 0.008 \\
+    Wind onshore 	& -0.176		& -0.189		& \cellcolor{green} -0.104 \\
+    Load 		&0.101		& 0.121		& \cellcolor{green}  0.132 \\
+    Residual Load 	& \cellcolor{green} \textbf{0.343}& \cellcolor{green} \textbf{0.391}& \cellcolor{green}0.192\\
     \end{tabular}
     
     \caption{Correlations between variables and imbalance price (rounded to next $10^{-3}$). Green cells are new features}
@@ -81,6 +99,61 @@ Feature engineering was done for energy data, weather data and holiday data.
     On the other hand some variables have scales which make the division less meaningful.
     For example the temperature is measured in kelvin, leading to small quotients.
 
-    
+\section{Data Split}
+\label{Section::Data_Split}
+
+To make sure the models trained during the experiments are comparable the models have to be trained and evaulated on the same dataset.
+The data was split into a set of training, validation and test data with a share of 70\%, 10\% and 20\% respectively.
+
+For random forest and arima this data split could be done using $train\_test\_split$ from the sklearn package. 
+With the more complex Time Series predictors xLSTM and iTransformer needing a different input shape this is a bit more complex.
+
+Instead the training, validation and test split was done along the temporal axis. 
+The oldest 70\% were defined as training data, the newest 20\% as test data, with the remaining 10\% being the validation data.
+
+
+\section{Models}
+\label{Section::Models}
+
+In this section implementation details for each of the used models will be discussed. 
+The hyperparameter configurations might change during the experiments. 
+Any changes done specifically for an experiment will be discussed in the experiment's section.
+
+All the models were implemented in python. 
+
+\subsection{Random Forest}
+\label{Section::Random_Forest}
+
+As a random forest regressor the RandomForestRegressor provided by sklearn was used.
+Random forest can not use time series data out of the box.
+To give some more information about past timesteps shifted features are used.
+
+For the training in the experiments the timesteps of the previous 4 quarter hours were used.
+Also included were the same timestamps for the previous 2 weeks.
+
+To find the best random forest regressor RandomizedSearchCV by sklearn was used.
+In total 20 different parameter combination were tested with a cross validation of 5.
+The performance of the models was measured using the negative mean squared error.
+
+\subsection{Arima}
+\label{Section::Arima}
+
+For the training of the arima model the module pmdarima was used.
+This module provides the function \textit{auto\_arima} to find the best arima model.
+The model was trained using the target variable as well as exogenous variables.
+The training time increases with the amount of exogenous variables.
+For that reason only a subset of features was used for this training.
+
+After the training of a random forest the importance of its features can be extracted using \textit{feature\_importances}. 
+The $10$ most important features were used for the training of the arima model.
+Using \textit{auto\_arima} the best parameter configuration can be found.
+
+\subsection{xLSTM}
+\label{Section::xLSTM}
+
+\subsection{iTransformer}
+\label{Section::iTransformer}
+
+
 
 \end{document}

@@ -57,6 +57,7 @@ An overview about all variables used by these data sources can be found in \ref{
 A more detailed description of the preprocessing steps, feature engineering, and exploratory data analysis will be provided in later sections.
 
 \begin{table}[]
+\centering
 \begin{tabular}{l|l|l|l}
  Data Source & Variable &  Time Resolution & Availability  \\\hline
  Netztransparenz & reBAP & 15 min & Real-time with 30 minutes delay \\
@@ -71,6 +72,7 @@ A more detailed description of the preprocessing steps, feature engineering, and
 \end{table}
 
 \begin{table}[]
+\centering
 \begin{tabular}{l|l|l|l}
  Data Source & Variable &  Time  & Availability  \\
  &&Resolution&\\\hline
@@ -115,6 +117,7 @@ As described in \ref{Section::Imbalance_Price} one of the imbalance price module
 
     
 \begin{table}[]
+\centering
 \begin{tabular}{l|l|l|l}
  Data Source & Variable &  Time Resolution & Availability  \\\hline
  Energy-Charts & Hourly Spot price& 1 h& 12:00-15:00 d-1 \\
@@ -149,6 +152,7 @@ More information about how the data is handled will be discussed in section \ref
 
 
 \begin{table}[]
+\centering
 \begin{tabular}{l|l}
 Parameter & Description \\\hline
 DD & Wind direction\\
@@ -181,6 +185,7 @@ wwM & Probability for fog within the last hour\\
  
 
 \begin{table}[]
+\centering
 \begin{tabular}{l|l|l}
 Station name & Measurements? & MOSMIX ?\\\hline
    Freiburg&Yes&Yes\\
@@ -232,5 +237,21 @@ The bundesAPI provides an api to get information to get this information \cite{H
 Information about school holidays is provided by Schulferien.org \cite{SchoolHolidays}. 
 The data is displayed in a table on this website. 
 A webscraper is used to get the data.
+
+\section{Benchmark}
+\label{Section:Benchmark}
+
+During the experiments part of this thesis the models will be compared against each other.
+Another benchmark the models will be measured against is the intraday index ID1.
+The intraday index ID1 can be interpreted as a proxy for the market participants' forecast of the imbalance price.
+
+In a system that is short of energy, a trade for a price higher than the imbalance price would not make sense for a market participant fiscally.
+If no power is bought and instead balancing energy is used the imbalance price has to be paid. 
+As in this scenario the trade would cost more than receiving balancing energy, profit can be made by receiving balancing energy.
+
+As mentioned in section \ref{Section::Module_2} sometimes the imbalance price is set using the average price of the most recent prices.
+This incentive component was the price setting module only $17.23\%$ of the time in 2024.
+The most recent intraday price still is a very good and simple model \cite{narajewskiProbabilisticForecastingGerman2022}.
+
 
 \end{document}
