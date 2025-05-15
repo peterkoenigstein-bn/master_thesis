@@ -42,6 +42,20 @@ The red line resembles a normal distribution.
 With a skewness of $27.08$ and a kurtosis of $1194.02$ the pearson correlation can not be used.
 Instead for the following correlation analyses the spearman rank correlation will be used.
 
+The imbalance volume and the imbalance price are highly correlated. 
+Figure \ref{Figure::volume_price_scatter} shows scatter plots for the imbalance volume and imbalance price.
+The correlation coefficient between the imbalance price and the imbalance volume is $0.774$.
+In the following subsections the correlation between newly engineered variables and the imbalance price will be inspected.
+Due to the high correlation with the imbalance volume, correlations with the imbalance volumes will also be regarded.
+
+\begin{figure}[ht]
+            \centering
+            \includegraphics[width=.5\textwidth]{implementation/nrv_rebap_scatter.png}
+            \includegraphics[width=.5\textwidth]{implementation/nrv_rebap_scatter_clipped.png}
+            \caption[Scatter plots for imbalance price and imbalance volume. For the plot on the right the imbalane price has been clipped to give information about non-outliers]{Scatter plots for imbalance price and imbalance volume. For the plot on the right the imbalane price has been clipped to give information about non-outliers}
+            \label{fig::rebap_distribution}
+\end{figure}
+
     \subsection{Energy data}
     \label{Section::Energy_Data}
     The energy data provided by ENTSO-E can be further refined to gain additional information.
@@ -59,17 +73,35 @@ Instead for the following correlation analyses the spearman rank correlation wil
     It should be noted that the actual values are not available at prediction time.    
 
     \begin{table}
+    \centering
     \begin{tabular}{l|l|l|l}
     Variable Name	&Forecasted Value& Actual Value	& Forecasting Error \\\hline
-    Solar 		& -0.083		& -0.105		& \cellcolor{green} \textbf{-0.155} \\
+    Solar 		& -0.083		& -0.105		& \cellcolor{green} -0.155 \\
     Wind offshore 	& -0.164		& -0.152		& \cellcolor{green} 0.008 \\
-    Wind onshore 	& -0.176		& -0.189		& \cellcolor{green} -0.104 \\
+    Wind onshore 	& -0.176		& \textbf{-0.189}	& \cellcolor{green} -0.104 \\
     Load 		&0.101		& 0.121		& \cellcolor{green}  0.132 \\
     Residual Load 	& \cellcolor{green} \textbf{0.343}& \cellcolor{green} \textbf{0.391}& \cellcolor{green}0.192\\
     \end{tabular}
+
     
     \caption{Correlations between variables and imbalance price (rounded to next $10^{-3}$). Green cells are new features}
     \label{Table::Rebap_Correlations_ENTSOE}
+    \end{table}
+
+    \begin{table}
+    \centering
+    \begin{tabular}{l|l|l|l}
+    Variable Name	&Forecasted Value& Actual Value	& Forecasting Error \\\hline
+    Solar 		&  -0.011		& -0.024		& \cellcolor{green} \textbf{-0.149} \\
+    Wind offshore 	& -0.013		&  -0.022		& \cellcolor{green}\textbf{0.114}\\
+    Wind onshore 	& 0.010		& 0.008		& \cellcolor{green} -0.093\\
+    Load 		& 0.041		& 0.066		& \cellcolor{green}  -0.040 \\
+    Residual Load 	& \cellcolor{green} 0.046& \cellcolor{green} 0.080& \cellcolor{green} \textbf{0.193}\\
+    \end{tabular}
+
+    
+    \caption{Correlations between variables and imbalance price (rounded to next $10^{-3}$). Green cells are new features}
+    \label{Table::Imbalance_volume_Correlations_ENTSOE}
     \end{table}
     
     The newly introduced features in this section will also be used for inspecting possible features introduced at a later point.
@@ -87,12 +119,73 @@ Instead for the following correlation analyses the spearman rank correlation wil
     Another important timestamp is the latest timestamp. 
     With a forecast being done each hour, the latest available timestamp at prediction time is the one 2 hours before gate closure time, due to the prediction happening at 1 hour before gate closure time.
     For each of the variables introduced in \ref{Table::DWD_MOSMIX_Parameters_Small} the correlation for both of the previously discussed timestamps is checked.
-    The results for the correlation can be found in table \ref{Table::DWD_MOSMIX_correlations}. 
     
     With both of these configurations for each of the variables a new feature can be created. 
     To get an estimate for the forecasting error in the ENTSO-E data, the change in forecast can be calculated in the DWD data.
-    Under the assumption, that a more recent forecast is more accurate, the difference between the latest forecast and the forecast of the day before at $18:00$ is calculated. 
+    Under the assumption, that a more recent forecast is more accurate, the difference between the latest forecast and the forecast of the day before at $18:00$ is calculated.
+    The names for these new features are created by combining a prefix with the abbreviation for the MOSMIX feature.
+    For the forecast from the previous day the prefix \textit{DayAhead} is used, the prefix \textit{LastFC} is used for the most recent forecast and \textit{Diff} denotes that the features is the difference between the day ahead forecast and the most recent forecast.
+    The results for the correlation can be found in table \ref{Table::DWD_MOSMIX_correlations}. 
     
+    \begin{table}
+    \centering
+    \begin{tabular}{l|l}
+    Variable Name	& Correlation coefficient \\\hline
+   	LastFC\_FX1	&-0.254\\
+	DayAhead\_FX1	&-0.25\\
+	LastFC\_FF		&-0.247\\
+	DayAhead\_FF 	&-0.243\\
+	DayAhead\_N05	&0.185\\
+	LastFC\_N05	&0.176\\
+	DayAhead\_wwM	&0.167\\
+	LastFC\_wwM	&0.162\\
+	LastFC\_Rad1h 	&-0.128\\
+	Diff\_Rad1h          	&-0.115\\
+	LastFC\_SunD1     	&-0.102\\
+    \end{tabular}
+    
+    \caption{Correlations between feature engineered MOSMIX variables and imbalance price with an absolute correlation coefficient larger than $0.1$ (rounded to next $10^{-3}$)}
+    \label{Table::imbalance_price_MOSMIX_correlations}
+    \end{table}
+    
+    \begin{table}
+    \centering
+    \begin{tabular}{l|l}
+    Variable Name	& Correlation coefficient \\\hline
+	Diff\_Rad1h                          &-0.08\\
+	LastFC\_N05                          &0.074\\
+	DayAhead\_N05                        &0.073\\
+	Diff\_TTT                           &-0.068\\
+	Diff\_SunD1                         &-0.061\\
+	Diff\_T5cm                          &-0.055\\
+	Diff\_Nl                             &0.052\\
+    \end{tabular}
+    
+    \caption{Correlations between feature engineered MOSMIX variables and imbalance volume (rounded to next $10^{-3}$)}
+    \label{Table::imbalance_volume_MOSMIX_correlations}
+    \end{table}
+    
+    
+    \begin{table}
+    \centering
+    \begin{tabular}{l|l}
+    Variable Name	& Correlation coefficient \\\hline
+	LastFC\_T5cm                        &-0.258\\
+	DayAhead\_T5cm                      &-0.253\\
+	LastFC\_TTT                         &-0.249\\
+	DayAhead\_FF                         &0.246\\
+	DayAhead\_TTT                       &-0.243\\
+	LastFC\_FF                           &0.233\\
+	LastFC\_Nl                           &0.221\\
+	DayAhead\_FX1                        &0.216\\
+	DayAhead\_Nl                         &0.205\\
+	LastFC\_FX1                          &0.204\\
+    \end{tabular}
+    
+    \caption{Correlations between feature engineered MOSMIX variables and residual load forecasting error with an absolute correlation coefficient larger than $0.2$ (rounded to next $10^{-3}$)}
+    \label{Table::residual_load_fce_MOSMIX_correlations}
+    \end{table}
+
     Dividing the most recent forecast by the day ahead forecast would maybe provide a more meaningful relation, but due to the nature of the data this is problematic.
     The dataset contains variables with large value ranges, including 0. 
     By dividing, this new feature might take extreme values.

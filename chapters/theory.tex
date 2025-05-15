@@ -9,12 +9,12 @@
 % ----------------------------------------------------------------------------
 \begin{document}
 
-\ifstandalone
-    \selectlanguage{ngerman}  % Toggle ON/OFF
+%\ifstandalone
+   % \selectlanguage{ngerman}  % Toggle ON/OFF
 
     % Language-specific settings that change automatically
-    \input{settings+/language}
-\fi
+    %\input{settings+/language}
+%\fi
 
 \chapter{Theoretical Background}
 \label{Chapter::Theoretical_Background} % Outline text
@@ -54,8 +54,17 @@ Next, the different auctions and their schedule will be explained. An overview c
             \label{fig::energy_auctions}
  \end{figure}
  
- On the far right of the figure the time of delivery is shown, denoted by $d$, $h$ of the delivery. The auctions for this timestamp start the day before. From $8:00$ to $10:00$ on the previous day reserve capacity auctions take place. These auctions decide how positive and negative balancing energy is introduced into the system when balancing the grid. During this auctions will not play any role, as data for these auctions was not available at the time of the experiments. 
+On the far right of the figure the time of delivery is shown, denoted by $d$, $h$ of the delivery. The auctions for this timestamp start the day before. From $8:00$ to $10:00$ on the previous day reserve capacity auctions take place. These auctions decide how positive and negative balancing energy is introduced into the system when balancing the grid. During this auctions will not play any role, as data for these auctions was not available at the time of the experiments. 
 The first auction takes place at $12:00$ one day before delivey and is called the day ahead (DA) auction. At $15:00$ the next auction, the intraday auction (IA) takes place. After that, at $16:00$ intraday continuous trading (IC) starts. Whilst the auctions are a single auction event, during the intraday continuous (IC) trading window energy can be traded at any time. The IC has different closing times. Up until $30$ minutes before delivery energy can be traded across all control zones. Trades on IC that happen within a single control zone can be done up until $5$ minutes before delivery.
+
+For the rest of the thesis the timestamp $5$ mintues before delivery time will be called the gate closure time.
+
+\subsection{Terminology}
+
+\subsubsection{Residual load}
+
+Residual load is the load  that has to be covered by not VRE sources.
+It can be calculted by substracting the power produced by solar and wind (both off- and onshore) from the total load.
 
 \section{Imbalance price}
 \label{Section::Imbalance_Price}
@@ -103,21 +112,21 @@ In the case that the GCC balance is equal to 0, this module takes the value of I
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/aep_2.png}
-             \caption[Formula for $AEP_{Module 2}$]{Formula for $AEP_{Module 2}$ \cite{NetztransparenzReBAP}.}
+             \caption[Formula for $AEP_{Module 2}$]{Formula for $AEP_{Module 2}$.}
             \label{fig::aep2}
  \end{figure}
 
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/delta_p.png}
-             \caption[Formula for$ \Delta P$]{Formula for $\Delta P$ \cite{NetztransparenzReBAP}.}
+             \caption[Formula for$ \Delta P$]{Formula for $\Delta P$ .}
             \label{fig::delta_p}
  \end{figure}
  
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/delta_p_graph.png}
-             \caption[Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$ \cite{NetztransparenzReBAP}]{Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$ \cite{NetztransparenzReBAP}.}
+             \caption[Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$]{Graph for $\Delta P$ with a fixed ID AEP for $100€/MWh$.}
             \label{fig::delta_p_graph}
  \end{figure}
 
@@ -129,7 +138,7 @@ If the GCC balance exceeds $80\%$ of the frequency restoration reserve (FRR) for
  \begin{figure}[ht]
             \centering
             \includegraphics[width=\textwidth]{theory/aep_3.png}
-             \caption[Graph how the price of module 3 correlates with GCC balance$ \cite{NetztransparenzReBAP}]{Graph how the price of module 3 correlates with GCC balance \cite{NetztransparenzReBAP}.}
+             \caption[Graph how the price of module 3 correlates with GCC balance]{Graph how the price of module 3 correlates with GCC balance .}
             \label{fig::aep_3}
  \end{figure}
 

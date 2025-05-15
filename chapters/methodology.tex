@@ -17,8 +17,11 @@
 
 \chapter{Methodology} % Outline text
 \label{Chapter::Methodology}
+
+\section{Data}
+\label{Chapter::Data}
 This chapter contains information about the data used for the Time Series prediction. 
-The data can be separated into 3 thematic fields: weather data, market data and energy data.
+The data can be separated into 3 major thematic fields: weather data, market data and energy data.
 
 In the following sections each data source will be described more in depth. 
 This data is processed and filtered in chapter \ref{Chapter::Feature_Engineering}.
@@ -27,8 +30,8 @@ This chapter contains a more in depth overview about how the data was aquired an
 The data used for the experiments can be separated into 3 thematic fields: energy data, market data and weather data.
 This chapter only provides a brief overview about the data sources. 
 
-    
-\section{Energy Data}
+
+\subsection{Energy Data}
 \label{Section::Energy_Data}
 
 % Why do i use this data 
@@ -99,7 +102,7 @@ A more detailed description of the preprocessing steps, feature engineering, and
 \label{Table::Energy_Data_Entsoe}
 \end{table}
 
-\section{Market Data}
+\subsection{Market Data}
 \label{Section::Market_Data}
 
 The market data used in this thesis is provided by Energy-Charts \ref{EnergyCharts}.
@@ -131,7 +134,7 @@ As described in \ref{Section::Imbalance_Price} one of the imbalance price module
 \label{Table::Market_Data}
 \end{table}
 
-\section{Weather data}
+\subsection{Weather data}
 \label{Section::Weather_Data}
 
 The weather data used for the prediction of the imbalance price is obtained from the German Weather Service (DWD).
@@ -215,7 +218,7 @@ Station name & Measurements? & MOSMIX ?\\\hline
 % Then explain your approach or algorithm
 % Use flowcharts to give an overview
 
-\section{Additional Data}
+\subsection{Additional Data}
 \label{Section::Additional_Data}
 On top of these 3 major thematic fields additional information about working days was used. 
 
@@ -223,7 +226,7 @@ This data source is expected to capture variations in electricity load.
 School holidays and extended weekends due to public holidays are typical times for taking vacations.
 These effects will be analyzed later in the thesis.
 
-\subsection{Holidays}
+\subsubsection{Holidays}
 
 In germany there are static holidays which are always on the same day each year.
 Examples for these are christmas or the 1st of may. 
@@ -232,11 +235,46 @@ An example for such a holiday is the feast of ascension, which always happens 39
 
 The bundesAPI provides an api to get information to get this information \cite{HolidayAPIUrl}.
 
-\subsection{School Holidays}
+\subsubsection{School Holidays}
 
 Information about school holidays is provided by Schulferien.org \cite{SchoolHolidays}. 
 The data is displayed in a table on this website. 
 A webscraper is used to get the data.
+
+\section{Evaluation metrics}
+\label{Section:Evaluation_Metrics}
+
+For the experiments different metrics will be used to compare the trained models. 
+In this section the used metrics will be explained.
+
+\subsection{Mean squared error}
+
+The mean squared error (MSE) and root mean squared error (RMSE) are used.
+This metric is calculated using the formula $MSE = \frac{1}{n} \sum_{i=1}^{n}(Y_i - \hat{Y}_i)^2$
+Due to the quadratic nature of this function large errors are penalized harder.
+The square root of MSE is RMSE. 
+This metric is calculated using the formula $RMSE = \sqrt{MSE}$.
+As with MSE large errors are penalized harder.
+By taking the square root of the MSE the value for RMSE is in the same unit as the prediction values.
+
+\subsection{Mean average error}
+The mean average error (MAE) is calculated using $MAE = \frac{1}{n} \sum_{i=1}^{n}|Y_i - \hat{Y}_i|$.
+For this error metric all errors are penalized the same.
+This metric is in the same unit as the prediction values, making it easy to interpret.
+
+\subsection{Continuous ranked probability score}
+
+The ranked probability score (CRPS) is approximated using the pinball loss (PB) using the formula $CRPS = \frac{1}{R} \sum_{\tau\in r} PB_{\tau}$. 
+This is calculated for a grid of probabilites $r$ between 0 and 1 of size $R$.
+For the evaulation of the experiments $r=\{0.01, 0.02, ..., 0.99\}$ is used, resulting in $R=99$.
+
+The formula for the pinball loss neede to approximate the CRPS is $PB_{\tau} = (\tau - \mathbf{1}_{\{Y - \hat{Q}_{\tau}\}}) (Y-\hat{Q}_{\tau}) $,
+where $\hat{Q}_{\tau}$ is a forecast of the $\tau -th$ quantile.
+
+\subsection{$\tau$ \% coverage}
+
+The $\tau$ \% coverage is calculated by chosing a selecting a fraction for $\tau$ and inserting it into the formula $\tau\%-cov = \frac{1}{N} \sum_{i=1}^{N} \mathbf{1}_{\{\hat{Q}_{(1-\tau)/2} < Y_i < \hat{Q}_{(1+\tau)/2} \}}$
+whaere $Y_i$ is the true value and $\hat{Q}_{\tau}$ is a forecast of the $\tau -th$ quantile.
 
 \section{Benchmark}
 \label{Section:Benchmark}
