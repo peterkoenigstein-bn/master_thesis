@@ -18,8 +18,75 @@
 % Second, explain the tools used
 % Lastly, how is everything setup for the experiment, what are the variables?
 % Do not discuss results here !!!
-\section{Experimental Setup Part}
-\label{Section::Experimental_Setup_Part}
-    Text
+\section{Experiment: Out of the box performance}
+\label{Section::Experiment_out_of_the_box}
+
+In this experiment different Time Series predictors are compared against each other.
+The models used for this are naive, random forest, arima, iTransformer and xLSTM.
+The naive model is a benchmark that predicts the imbalance price to be the intraday index ID1. 
+
+For random forest and arima some additional lagged features are created to give information about the data being time series data.
+For each feature lagged features are introduced, the features are lagged by 15 minutes, 30 minutes, 45 minutes and an hour.
+Also weekly lagged features are used. The features are lagged by one and by two weeks.
+
+For the iTransformer model and xLSTM model the hyperparameter configuration can be found in table \ref{Table::raw_hyperparameters}
+
+\begin{table}[]
+\centering
+\begin{tabular}{l|l|l}
+ Hyperparameter name & iTransformer & xLSTM   \\\hline
+ Learning rate & 10^{-3} & 10^{-3}  \\
+ Sequence length & 96 & 96  \\
+ Batch size & 16 & 32  \\
+ Embedding dimension & 512 & 128  \\
+ 
+\end{tabular}
+\caption{Hyperparameter configuration for iTransformer and xLSTM}
+\label{Table::raw_hyperparameters}
+\end{table}
+
+\section{Experiment: xLSTM different xLSTM block structures}
+
+In this experiment different xLSTM configurations were compared. 
+Three different xLSTM models were trained and their results compared.
+Each model contains an xLSTM block with 48 modules.
+The different models are named xlstm\_n\_m, where n:m denotes the fraction of mLSTM to sLSTM blocks.
+The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1. 
+
+\section{Experiment: iTransformer variable sequence length}
+   
+   In this experiment iTransformer models were trained to inspect how sequence length changes model performance.
+   For this the sequence lengths 96, 192 and 384 were used. Other than that the hyperparameters were the same as shown in table \ref{Table::raw_hyperparameters}   
+   
+\section{Experiment: iTransformer multiple target variables}
+
+  In this experiment the iTransformer model was trained on multiple target variables.
+  During the training the loss is calculated on all of the target variables. 
+  During the testing only the prediction for imbalance price is used to calculate the error metrics.
+  A list with the target variables for each configuration can be found in table \ref{Table::Mutliple_targets}, the other hyperparameters are not changed from \ref{Table::raw_hyperparameters}.
+  
+  The configuration \textit{intraday indices} is using the intraday indices as a bonus target variables. 
+  The configuration \textit{entsoe} uses the actual generation of not renewable energy sources as bonus target variables. 
+  These include \textit{fossil gas, fossil hard coal} and \textit{lignite}.
+  
+  \begin{table}[]
+\centering
+\begin{tabular}{l|l|l}
+ Configuration name & iTransformer & xLSTM   \\\hline
+ Intraday indices& 10^{-3} & 10^{-3}  \\
+ Entsoe data & 96 & 96  \\
+ Netzregelverbund & 16 & 32  \\
+ Embedding dimension & 512 & 128  \\
+ 
+\end{tabular}
+\caption{Hyperparameter configuration for iTransformer and xLSTM}
+\label{Table::raw_hyperparameters}
+\end{table}
+
+\section{Experiment: iTransformer longer forecast horizon}
+
+\section{Experiment: iTransfomer combination}
+
+
 
 \end{document}
