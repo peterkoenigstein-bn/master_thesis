@@ -11,7 +11,8 @@
 
 \chapter{Experimental Setup} % Overview text
 \label{Chapter::Experimental_Setup}
-   This chapter contains an explanation of how the experimental setup was done, what parameters had to be controlled, and the equipment used.
+   This chapter contains information about the configurations and models used for each experiment. 
+   For each experiment different approaches were tried to improve the model performance.
 
 % Explain the setup of your experiment in such a way that others could repeat it
 % First, explain the environment of the experiment
@@ -27,66 +28,93 @@ The naive model is a benchmark that predicts the imbalance price to be the intra
 
 For random forest and arima some additional lagged features are created to give information about the data being time series data.
 For each feature lagged features are introduced, the features are lagged by 15 minutes, 30 minutes, 45 minutes and an hour.
-Also weekly lagged features are used. The features are lagged by one and by two weeks.
+Also weekly lagged features are used. 
+The features are lagged by one and by two weeks.
 
-For the iTransformer model and xLSTM model the hyperparameter configuration can be found in table \ref{Table::raw_hyperparameters}
+For the iTransformer model and xLSTM model the hyperparameter configuration can be found in table \ref{Table::Raw_hyperparameters}.
+The hyperparameter configurations are the same across all experiments unless specified differently.
+The xLSTM block configuration used for this experiment was $xlstm\_7\_1$. 
+The numbers in $xlstm\_i\_k$ represent the amount of mLSTM vs sLSTM cells used in the xLSTM block.
+This configuration uses 7 times as many mLSTM blocks than sLSTM blocks. 
+In total 48 blocks are used. 
 
 \begin{table}[]
 \centering
 \begin{tabular}{l|l|l}
  Hyperparameter name & iTransformer & xLSTM   \\\hline
- Learning rate & 10^{-3} & 10^{-3}  \\
+ Learning rate & $10^{-3}$ & $10^{-3} $ \\
  Sequence length & 96 & 96  \\
  Batch size & 16 & 32  \\
  Embedding dimension & 512 & 128  \\
  
 \end{tabular}
 \caption{Hyperparameter configuration for iTransformer and xLSTM}
-\label{Table::raw_hyperparameters}
+\label{Table::Raw_hyperparameters}
 \end{table}
 
 \section{Experiment: xLSTM different xLSTM block structures}
-
 In this experiment different xLSTM configurations were compared. 
+The goal was to check whether it would suffice to only use mLSTM or sLSTM cells compared to the model used in the previous experiment.
 Three different xLSTM models were trained and their results compared.
 Each model contains an xLSTM block with 48 modules.
 The different models are named xlstm\_n\_m, where n:m denotes the fraction of mLSTM to sLSTM blocks.
 The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1. 
 
+  \begin{table}[]
+\centering
+\begin{tabular}{l|l}
+ Configuration name & Amount of mLSTM blocks & Amount of sLSTM blocks  \\\hline
+ xlstm\_1\_0 & 48 & 0 \\
+ xlstm\_0\_1 & 0 & 48 \\
+ xlstm\_7\_1  & 42 & 6 
+\end{tabular}
+\caption{xLSTM Configurations}
+\label{Table::xLSTM_configuratiosn}
+\end{table}
+
 \section{Experiment: iTransformer variable sequence length}
    
    In this experiment iTransformer models were trained to inspect how sequence length changes model performance.
-   For this the sequence lengths 96, 192 and 384 were used. Other than that the hyperparameters were the same as shown in table \ref{Table::raw_hyperparameters}   
+   The idea behind this experiment was to check whether more information about the past improves the prediction.
+   For this the sequence lengths 96, 192 and 384 were used. Other than that the hyperparameters were the same as shown in table \ref{Table::Raw_hyperparameters}   
    
 \section{Experiment: iTransformer multiple target variables}
 
   In this experiment the iTransformer model was trained on multiple target variables.
+  The goal of this experiment was to check whether learning to predict other variables would improve the performance.
+  This kind of training should encourage the model to learn a better general understanding of the data instead of just predicting the imbalance price.
   During the training the loss is calculated on all of the target variables. 
   During the testing only the prediction for imbalance price is used to calculate the error metrics.
-  A list with the target variables for each configuration can be found in table \ref{Table::Mutliple_targets}, the other hyperparameters are not changed from \ref{Table::raw_hyperparameters}.
-  
-  The configuration \textit{intraday indices} is using the intraday indices as a bonus target variables. 
-  The configuration \textit{entsoe} uses the actual generation of not renewable energy sources as bonus target variables. 
-  These include \textit{fossil gas, fossil hard coal} and \textit{lignite}.
+  A list with the target variables for each configuration can be found in table \ref{Table::Multiple_targets}, the other hyperparameters are not changed from \ref{Table::Raw_hyperparameters}.
   
   \begin{table}[]
 \centering
-\begin{tabular}{l|l|l}
- Configuration name & iTransformer & xLSTM   \\\hline
- Intraday indices& 10^{-3} & 10^{-3}  \\
- Entsoe data & 96 & 96  \\
- Netzregelverbund & 16 & 32  \\
- Embedding dimension & 512 & 128  \\
- 
+\begin{tabular}{l|l}
+ Configuration name & Target variables  \\\hline
+ Intraday indices&   Intraday index IDFULL\\
+ 		& Intraday index ID1 \\
+ 		& Intraday index ID3 \\ \hline
+ Entsoe data & Actual fossil gas generation  \\
+ 		& Actual fossil hard coal generation \\
+ 		& Actual lignite generation \\ \hline
+ Netzregelverbund & Imbalance volume  \\
+ 		& Activated primary balancing capacity \\
+ 		& Activated secondary balancing capacity \\ \hline
+ Combined & Imbalance volume   \\
+ 		& Intraday index IDFULL \\
+ 		& Actual fossil hard coal generation \\ 
 \end{tabular}
-\caption{Hyperparameter configuration for iTransformer and xLSTM}
-\label{Table::raw_hyperparameters}
+\caption{Configurations for multiple target variables}
+\label{Table::Multiple_Targets}
 \end{table}
 
 \section{Experiment: iTransformer longer forecast horizon}
 
-\section{Experiment: iTransfomer combination}
+In this experiment it was checked, whether a longer forecast horizon would increase the performance of the time series predictor.
+During training and validation losses on the complete forecast horizon were used.
+During testing only  the forecast which was forecast in the other experiments was used to calculate the evaluation metrics.
 
-
-
+The goal behind this experiment was to check whether the model would benefit from trying to learn a longer trend than just a single point in time.
+For this different horizons were compared. The horizon starts at the prediction timestamp, so an hour from the prediction time.
+The horizons used during this experiments are 4, which corresponds to an hour, 48, which corresponds to half of a day and 96, which corresponds to a full day.
 \end{document}

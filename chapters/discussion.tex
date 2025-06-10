@@ -3,6 +3,7 @@
 \ifstandalone
     \input{../settings+/settings}
 \fi
+\usepackage{subcaption}
 
 % ----------------------------------------------------------------------------
 %                               Discussion
@@ -17,6 +18,154 @@
 % Explain why the results are the way they are and not different
 % Go into possible measurement errors and why they occurred
 % Look for anomalies and explain why they occur
+\section{Results}
+\label{Section::Results}
+
+\subsection{Out of the box performance}
+  
+  \begin{table}[]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+Model name &  RMSE & MAE & CRPS & 50\%-cov & 90\%-cov & 98\%-cov \\\hline
+Naive intraday ID1 & 308.69 & 93.17 & 42.90 & 0.08 & 0.56 & 0.84 \\
+Random forest & 241.37 & 90.22 & 52.38 & 0.32 & 0.80 & 0.94 \\
+Arima & 358.75 & 100.5 & 42.04  & 0.21 & 0.61 & 0.81 \\
+iTransformer & 367.50 & 111.66 & 42.40 & 0.09 & 0.66 & 0.84 \\
+xLSTM &  156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
+\end{tabular}
+\caption{Out of the box performance for all models}
+\label{Table::Out_of_the_box_performance}
+\end{table}
+
+\begin{figure}
+  \centering
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/random_forest_prediction.png}
+  \caption{Predictions of random forest}
+  \label{fig:sfig1}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/arima_prediction.png}
+  \caption{Predictions of ARIMA}
+  \label{fig:sfig1}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/itransformer_prediction.png}
+  \caption{Predictions of iTransformer}
+  \label{fig:sfig1}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/xlstm_prediction.png}
+  \caption{Predictions of xLSTM}
+  \label{fig:sfig1}
+\end{subfigure}
+\caption{Predictions of the different models on example day}
+\label{fig:fig}
+\end{figure}
+
+\subsection{Different xLSTM block structures}
+
+  \begin{table}[]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+Configuration name &  RMSE & MAE & CRPS & 50\%-cov & 90\%-cov & 98\%-cov \\\hline
+xLSTM\_1\_0 & 154.87 & 109.50& 50.45& 0.30 & 0.76 & 0.87 \\
+xLSTM\_0 \_1& 152.82 & 107.81 & 51.00 & 0.25 & 0.76 & 0.89 \\
+xLSTM\_7\_1 & 156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
+\end{tabular}
+\caption{Performance for different xLSTM block configurations}
+\label{Table::Performance_xLSTM}
+\end{table}
+
+\subsection{iTransformer variable sequence length}
+
+ \begin{table}[]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+ Configuration name &  RMSE & MAE & CRPS & 50\%-cov & 90\%-cov & 98\%-cov \\\hline
+ iTransformer 96 seq & 367.50 & 111.66 & 42.40&0.09 & 0.66 & 0.84 \\
+ iTransformer 192 seq & 368.45 &114.67& 43.07& 0.08 & 0.60	 & 0.83 \\
+ iTransformer 384 seq & 362.46 & 107.08& 44.17	& 0.06	 &0.42	 & 0.84\\
+\end{tabular}
+\caption{iTransformer performance for different sequence lengths}
+\label{Table::Performance_sequence_length}
+\end{table}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\linewidth]{../images/results/itransformer_sequence_length_results.png}
+  \caption{Predictions of iTransformers with different sequence lengths}
+\label{Result::iTransformer_sequence_length}
+\end{figure}
+
+\subsection{iTransformer multiple target variables}
+
+ \begin{table}[]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+ Configuration name			&  RMSE 	& MAE 	& CRPS 	& 50\%-cov & 90\%-cov & 98\%-cov \\\hline
+ iTransformer intraday indices 		& 367.32	&111.52	&42.40	&0.09			& 0.66	 & 0.84 \\
+ iTransformer entsoe data		&  367.89	& 111.98 	&42.39	&0.09			& 0.66	 &0.83 \\
+ iTransformer netzregelverbund 	& 367.55 	& 111.70	& 42.40	&0.09		 &0.66	 & 0.83\\
+ iTransformer combined 		& 367.21 	& 111.42	& 42.40	& 0.10	 &0.66	 & 0.84\\
+\end{tabular}
+\caption{iTransformer performance for multiple target variables}
+\label{Table::Performance_targets}
+\end{table}
+
+
+\begin{figure}
+  \centering
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_aep.png}
+  \caption{Predictions of models with imbalance price}
+  \label{fig:sfig1}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_alone.png}
+  \caption{Predictions of models without imbalance price}
+  \label{fig:sfig1}
+\end{subfigure}
+\caption{Predictions of iTransformers trained on multiple target variables}
+\label{fig:fig}
+\end{figure}
+
+
+\subsection{iTransformer different prediction horizons}
+
+
+ \begin{table}[]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+ Configuration name			&  RMSE 	& MAE 	& CRPS 	& 50\%-cov & 90\%-cov & 98\%-cov \\\hline
+ iTransformer 4 horizon			& 364.65	&108.98	&42.55	&0.12		& 0.64	 & 0.85 \\
+ iTransformer 12 horizon			& 364.69	&108.93	&42.55	&0.12		& 0.63	 & 0.85 \\
+ iTransformer 24 horizon			& 364.23	&108.26	&42.67	&0.13		& 0.60	 &0.85 \\
+ iTransformer 48 horizon			& 367.78	&111.51	&42.39	&0.09		& 0.66	 & 0.84 \\
+ iTransformer 96 horizon			& 368.28	&111.68	&42.45	&0.09		& 0.66	 & 0.84 \\
+\end{tabular}
+\caption{iTransformer performance for multiple target variables}
+\label{Table::Performance_targets}
+\end{table}
+
+\begin{figure}
+  \centering
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths.png}
+  \caption{Predictions of models with imbalance price}
+  \label{fig:sfig1}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths_alone.png}
+  \caption{Predictions of models without imbalance price}
+  \label{fig:sfig1}
+\end{subfigure}
+\caption{Predictions of iTransformers trained on different forecasting horizons}
+\label{fig:fig}
+\end{figure}
+
+
 \section{Analysis or Evaluation of Something}
 \label{Section::Analysis or Evaluation of Something}    
     Text
