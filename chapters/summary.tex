@@ -13,6 +13,27 @@
 \label{Chapter::Summary}
     In this chapter, there is a short summary? results of the thesis are presented and evaluated as well as, the approach of this thesis.
 
+In the experiments random forest performed remarkably well. 
+When looking at MAE it outperformed all the other models. 
+This might be due to the additional information passed to random forest. 
+Only random forest and ARIMA received information about past days and past weeks for the same timestamp. 
+With Load and Generation behaving periodically with a period of one day and one week, this information might have a large impact.
+
+The ARIMA model has access to the same information but the model does not seem to be able to capture the complexity of the time series.
+Another reason why random forest outperformed the other models is because the hyperparameters were tuned a little. 
+For this method the best model was determined by using random search, testing 20 different configurations in the process.
+The hyperparameter tuning used tried to reduce mean squared error.
+
+This makes it more impressing that xLSTM has a lower RMSE than random forest, even without hyper parameter tuning.
+
+Most of the models were not able to beat the naive intraday index ID1 when looking at MAE. 
+This might be due to the fact that information about current prices are lacking. 
+The ID1 is composed of market decisions done by BRPs, which have access to market prices.
+Additionally no information about balancing reserves was included in the training process for the machine learning models.
+
+The performance of the more complex time series predictors can also be explained by the lack of hyperparameter tuning. 
+
+
 % Show your results and analyze them
 % Explain why the results are the way they are and not different
 % Go into possible measurement errors and why they occurred

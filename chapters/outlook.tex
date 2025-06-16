@@ -12,6 +12,24 @@
 % What could be improved?
 \section{Outlook}
 \label{Section::Outlook}
-    Text
 
+Access to more current price data would likely improve prediction quality.
+The intraday indices are already one of the most influential features for random forest even tough the data is delayed by one day.
+Having information about current prices or bids would provide additional information. 
+With prices and bids the development of the price for a certain quarter hour could be tracked.
+Capturing possible trends in price development might boost prediction quality, especially in quarter hours where the imbalance price is extreme.
+
+Another promising data source that will probably improve the prediction is information about balancing reserves.
+Due to the fact that the balancing energy market also is an auction, the balancing energy price is not always the same.
+For each quarter hour the cost for obtaining balancing energy can differ.
+One way of tackling this problem is to only predict the imbalance volume, not the imbalance price.
+Another option is a two step approach, first prediciting the imbalance volume and then prediciting or calculating the imbalance price based on the reserve capacity auction results.
+A third option would be to include the information about reserve auction bids into the models. 
+
+Another approach for increasing prediction quality would be to include periodic data into the dataset.
+The load and generation profiles show periodic tendencies along different axes. 
+One example is the solar generation which is 0 in the night and high in the early afternoon. 
+There is also a weekly periodic pattern. 
+The weekends show different load profiles than weekdays.
+This information can be included into the model by artificially concatenating these sequences into one sequence or by including new features which contain the shifted information.
 \end{document}

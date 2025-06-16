@@ -3,7 +3,6 @@
 \ifstandalone
     \input{../settings+/settings}
 \fi
-\usepackage{subcaption}
 
 % ----------------------------------------------------------------------------
 %                               Discussion
@@ -12,6 +11,7 @@
 
 \chapter{Results and Discussion} % Overview text
 \label{Chapter::Results and Discussion}
+In this chapter, the results of the thesis are discussed. The following sections contain th results of the experiments specified in \ref{Chapter::Experiments}.                   
     In this chapter, the results of the thesis are presented and evaluated as well as, the approach of this thesis.
 
 % Show your results and analyze them
@@ -22,46 +22,81 @@
 \label{Section::Results}
 
 \subsection{Out of the box performance}
+  The results of this experiment are shown in table \ref{Table::Out_of_the_box_performance}.
+  Out of the box random forest was the best at predicting the imbalance price when looking at mean average error.
+  The more complex xLSTM model had better results with respect toe the RMSE. 
+  When looking at the continuous ranked probability socres, ARIMA performed the best, followed closely by the iTransformer model.
+  For almost all coverage percentages the native intraday ID1 index gets outperformed by all of the models.
+  Here random forest performs best.
   
   \begin{table}[]
 \centering
 \begin{tabular}{l|l|l|l|l|l|l}
-Model name &  RMSE & MAE & CRPS & 50\%-cov & 90\%-cov & 98\%-cov \\\hline
-Naive intraday ID1 & 308.69 & 93.17 & 42.90 & 0.08 & 0.56 & 0.84 \\
-Random forest & 241.37 & 90.22 & 52.38 & 0.32 & 0.80 & 0.94 \\
-Arima & 358.75 & 100.5 & 42.04  & 0.21 & 0.61 & 0.81 \\
-iTransformer & 367.50 & 111.66 & 42.40 & 0.09 & 0.66 & 0.84 \\
-xLSTM &  156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
+Model name 		&  RMSE 	& MAE 	& CRPS 	& 50\%-cov 	& 90\%-cov 	& 98\%-cov \\\hline
+Naive intraday ID1 	& 308.69 	& 93.17 	& 42.90 	& 0.08 		& 0.56 		& 0.84 \\
+Random forest 		& 241.37	&   \underline{90.22} 	& 52.38 	& 0.32 		& 0.80 		& 0.94 \\
+Arima 			& 358.75 	& 100.5 	& 42.04  	& 0.21 		& 0.61 		& 0.81 \\	
+iTransformer 		& 367.50 	& 111.66 	& 42.40 	& 0.09 		& 0.66 		& 0.84 \\
+xLSTM 			&  \underline{156.40} 	& 107.65 	& 51.41 	& 0.25 		& 0.68 		& 0.84 \\
 \end{tabular}
 \caption{Out of the box performance for all models}
 \label{Table::Out_of_the_box_performance}
 \end{table}
+
+
+\begin{figure}
+  \centering
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/quantile_pinball_scores.png}
+  \caption{Quantile pinball scores for all models}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/quantile_pinball_scores_to_id1.png}
+  \caption{Quantile pinball scores normalized based on naive}
+\end{subfigure}
+\caption{Quantile pinball scores for each model}
+\label{Figure::pinball_scores}
+\end{figure}
+
+
+Figure \ref{Figure::pinball_scores} shows the pinball scores for each quantile for each model.
+On the left the raw pinball scores are shown.
+The right graph shows the pinball score in relation to the pinball score of the naive model.
+These values are calculated by dividing the pinball score for each quantile $q$ for each model by the the pinball score for the quantile $q$ for the naive model.
+
+These charts show, that random forest performs the best on the lowest quantile and is among the best in the higher quantiles. 
+Across most of the percentiles, from about $0.1$ to $0.8$ both random forest and xlstm have the worst pinball score.
+The xLSTM shines in the higher quantiles. 
+The pinball scores for xLSTM are the best in the higher percentiles. 
+This is in line with this model having the best RMSE, due to the nature of the otliers being very extreme.
+
+
+Figure \ref{Figure::Model_predictions} shows the predictions for the machine learning models on an example day and the actual imbalance price.
 
 \begin{figure}
   \centering
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/random_forest_prediction.png}
   \caption{Predictions of random forest}
-  \label{fig:sfig1}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/arima_prediction.png}
   \caption{Predictions of ARIMA}
-  \label{fig:sfig1}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/itransformer_prediction.png}
   \caption{Predictions of iTransformer}
-  \label{fig:sfig1}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/xlstm_prediction.png}
   \caption{Predictions of xLSTM}
-  \label{fig:sfig1}
 \end{subfigure}
 \caption{Predictions of the different models on example day}
-\label{fig:fig}
+\label{Figure::Model_predictions}
 \end{figure}
+
+While random forest better predicticts the imbalance price with regards to mean average error, the xLSTM model seems to better capture outlieres, resulting in a lower mean squared error.
+
 
 \subsection{Different xLSTM block structures}
 
@@ -70,15 +105,20 @@ xLSTM &  156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
 \begin{tabular}{l|l|l|l|l|l|l}
 Configuration name &  RMSE & MAE & CRPS & 50\%-cov & 90\%-cov & 98\%-cov \\\hline
 xLSTM\_1\_0 & 154.87 & 109.50& 50.45& 0.30 & 0.76 & 0.87 \\
-xLSTM\_0 \_1& 152.82 & 107.81 & 51.00 & 0.25 & 0.76 & 0.89 \\
+xLSTM\_0\_1& 152.82 & 107.81 & 51.00 & 0.25 & 0.76 & 0.89 \\
 xLSTM\_7\_1 & 156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
 \end{tabular}
 \caption{Performance for different xLSTM block configurations}
 \label{Table::Performance_xLSTM}
 \end{table}
 
+Using different xLSTM configuration did not significantly increase the performance of the xLSTM model.
+
 \subsection{iTransformer variable sequence length}
 
+The results for this experiments can be found in table \ref{Table::Performane_sequence_length}.
+The mean average error and root mean squared error does not increase or decrease with increased or decreased sequence length.
+While both of these error metrics stay about the same, the quantile predictions for a sequence length of 384 is worse than the other two sequence lenghts.
  \begin{table}[]
 \centering
 \begin{tabular}{l|l|l|l|l|l|l}
@@ -91,6 +131,8 @@ xLSTM\_7\_1 & 156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
 \label{Table::Performance_sequence_length}
 \end{table}
 
+Figure \ref{Result::iTransformer_sequence_length} shows predictions of the models trained with different sequence lengths on an example day.
+The predictions of the models trained on longe sequence lengths look more like a straight line, while the model trained with the shortest sequence length has more fluctuations.
 
 \begin{figure}
   \centering
@@ -100,6 +142,13 @@ xLSTM\_7\_1 & 156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
 \end{figure}
 
 \subsection{iTransformer multiple target variables}
+
+The models trained on multiple target variables performed almost identically.
+The results for this experiment can be found in \ref{Table::Performance_targets}.
+Figure \ref{Figure::Targets_prediction} shows the prediction of the models on an example day.
+The chart on the left compares the predictions to the actual imbalance price while the chart on the right only compares the predictions with each other to magnify differences.
+
+The predictions are almost identical, the inclusion of multiple target variables had no improving effect on the prediction of the imbalance price.
 
  \begin{table}[]
 \centering
@@ -120,15 +169,13 @@ xLSTM\_7\_1 & 156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_aep.png}
   \caption{Predictions of models with imbalance price}
-  \label{fig:sfig1}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_alone.png}
   \caption{Predictions of models without imbalance price}
-  \label{fig:sfig1}
 \end{subfigure}
 \caption{Predictions of iTransformers trained on multiple target variables}
-\label{fig:fig}
+\label{Figure::Targets_prediction}
 \end{figure}
 
 
@@ -154,12 +201,10 @@ xLSTM\_7\_1 & 156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths.png}
   \caption{Predictions of models with imbalance price}
-  \label{fig:sfig1}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths_alone.png}
   \caption{Predictions of models without imbalance price}
-  \label{fig:sfig1}
 \end{subfigure}
 \caption{Predictions of iTransformers trained on different forecasting horizons}
 \label{fig:fig}
@@ -168,6 +213,45 @@ xLSTM\_7\_1 & 156.40 & 107.65 & 51.41 & 0.25 & 0.68 & 0.84 \\
 
 \section{Analysis or Evaluation of Something}
 \label{Section::Analysis or Evaluation of Something}    
-    Text
+
+Table \ref{Table::Feature_importance} contains information about the most important features for the random forest prediction.
+The top 6 most important features consist of information about prices. Interesting is, that the intraday index shifted by one day still has a very high feature importance.
+The next two most important features \textit{lignite actual generation shifted by 30 minuts} and \textit{fossil hard coal actual generation shifted 30 minutes} contain information about generated energy provided by fossil energy sources.
+The third features containing information about fossil energy sources ranks 14\textsuperscript{th} most important. 
+The importance of features doesn't change much after the  10\textsuperscript{th} most important feature.
+Out of the wheather data the temperature was the most important, followed by the difference in forecast for the solar radiation within one hour.
+Notable information from this importance is that the forecasted residual load is more important to the model than the shifted actual residual load or the shifted forecasting error.
+For solar and wind offshore generation the opposite is true. 
+The shifted forecasting error is more important than both the forecast and the shifted actual measurement.
+
+\begin{table}[]
+\centering
+\begin{tabular}{l|l|l}
+ \# & Parameter & Importance \\\hline
+ 1 & Hourly spot price& 0.0157\\
+ 2 & IDA1&0.0142 \\
+ 3 &Aep schaetzer shifted 30 minutes&0.0081 \\
+ 4 & intraday ID1 shifted 1 day &0.0081\\
+ 5 &intraday ID3 shifted 1 day &0.0066\\
+ 6 &intraday IDFULL shifted 1 day &0.0055\\
+ 7 &lignite actual generation shifted 30 minutes&0.0035 \\
+ 8&fossil hard coal actual generation shifted 30 minutes &0.0034\\
+ 9&forecasted residual load &0.0029\\
+ 10&stundenwert der feuchttemperatur shifted 1 hour &0.0026\\
+ 11&activated srl shifted 30 minutes&0.0026 \\
+ 12&nrv saldo shifted 30 minutes &  0.0025\\
+ 13&Diff\_Rad1h&0.0025 \\
+14& fossil gas actual generation shifted 30 minutes&0.0023 \\
+15&hydro pumped storage actual generation shifted 30 minutes&0.0023\\
+16&hourly sum for long wave atmospheric radiation shifted 1 hour&0.0022 \\
+17&solar forecasting error shifted 30 minutes &0.0021\\
+18&wind offshore forecasting error shifted 30 minutes&0.0021 \\
+19&activated srl shifted 30 minutes&0.0020 \\
+20&wind onshore actual generation shifted 30 minutes &0.0020\\
+\end{tabular}
+\caption{20 most important features of random forest sorted from most important to least important. Shifted features are excluded for this ranking.}
+\label{Table::Feature_importance}
+\end{table}
+
 
 \end{document}
