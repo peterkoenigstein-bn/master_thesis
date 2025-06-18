@@ -36,29 +36,36 @@ With the informaiton produced by these models I am trying to get a better unders
 
 Predicting the reBAP is a very challenging task, as many factors come into play.
 Due to the reBAPs nature it is highly influenced by multiple factors, such as the system balance, current market situation and available balancing reserves. 
-How these interact will be explained in \ref{Section::Imbalance_Price}. 
+How these interact will be explained in section \ref{Section::Imbalance_Price}. 
 The models used throughout this thesis will make their prediction about the reBAP one hour before energy delivery. 
-With this configuration there is still time for BRPs to trade energy to improve system stability. 
+%With this configuration there is still time for BRPs to trade energy to improve system stability. 
 
 
 \section{Motivation}
 \label{Section::Motivation}
 
 With more and more variable renewable energy(VRE) sources being introduced into the net, such as solar and wind parks, the inertia of the system decreases \cite{weitemeyerIntegrationRenewableEnergy2015}. 
-Generation of these can only be assumed using whether forecasts. If the actual wheather, for example wind speed or solar radiation, deviates from the forecasts so does the energy production. In systems with a larger VRE share this can result in a larger system imbalance. 
+Generation of these can only be assumed using whether forecasts. If the actual wheathe deviates from the forecasts so does the energy production. In systems with a larger VRE share this can result in a larger system imbalance. 
 
 To help stabilize the system a good forecast about the reBAP could be useful. A good estimate of the reBAP would give BRPs an idea whether action is required to help stabilize the energy net.
 
 \section{Objectives}
 \label{Section::Objectives}
-In this thesis I will try to answer the question, whether time series predictors are able to make good predictions about future imbalance prices. To answer this question I will compare different state-of-the-art time series predictors on the task of predicting the imbalance price. I will compare the performance of newly proposed models with a benchmark consisting of models that have previously been proposed for this task.
+This thesis will try to answer the question, whether time series predictors are able to make good predictions about future imbalance prices. To answer this question different state-of-the-art time series predictors will be compared on the task of predicting the imbalance price. 
+Models that have previously been to tackle this task will be compared with new promising time series prediction models.
 
 One hypothesis is, that new state-of-the-art time series predictors can outperform models previously employed on this problem, like the models presented in the next chapter. 
 
 The results of the models are compared with the trades settled in the last hour before delivery, denoted as $ID_1$. Due to the imbalance price, BRPs are incentivised to trade electric power to balance their portfolio \cite{kochPASSIVEBALANCINGINTRADAY2020a}. The prices of trades close to the delivery time can be used as a proxy for the BRPs estimate of the imbalance price. Comparing the prediction accuracy against this index shows whether the models outperform the predictors currently used by BRPs.
 
- In this research I will also look into whether these models work on live data. The system imbalance is settled every 15 minutes, dividing a day into 96 timesteps \cite{NetztransparenzReBAP}. Part of the data used for the prediction consists of live data, published for each time step. 
-The latest possible time of prediction is five minutes before the delivery period \cite{EPEXTradingBrochure} (Lead Time). Some of the live data for timestep $t-1$ is delayed, making it unavailable for a prediction for $t+1$ at the prediction timestep $t$. This thesis will try to find the best point in time to make a prediction about the imbalance of a timestep in the future.
+
+ %In this research I will also look into whether these models work on live data. 
+ The system imbalance is settled every 15 minutes, dividing a day into 96 timesteps \cite{NetztransparenzReBAP}.
+ Each model will make a prediction for each timestep of a day, using the data available at prediction time.
+ % Part of the data used for the prediction consists of live data, published for each time step. 
+%The latest possible time of prediction is five minutes before the delivery period \cite{EPEXTradingBrochure}.
+ %Some of the live data for timestep $t-1$ is delayed, making it unavailable for a prediction for $t+1$ at the prediction timestep $t$. 
+ %This thesis will try to find the best point in time to make a prediction about the imbalance of a timestep in the future.
 
 %A second hypothesis is that a prediction, which utilizes the latest data is more accurate, than a prediction made at an earlier point in time.
 

@@ -24,10 +24,12 @@ The data introduced in section \ref{Chapter::Methodology} can be further refined
 The following sections contain information about how the data was used to create more features.
 Feature engineering was done for energy data, weather data and holiday data.
 
-In the following sections the correlation between features and the imbalance price will be calculated.
-The distribution of the imbalance price has been inspected. 
-To determine which correlation method to use the distribution of the imbalance price has been checked.
-Furthermore the skewness and kurtosis of the imbalance price has been calculated.
+In the following sections the correlation between features and the imbalance price will be explored.
+Using the anderson darling test \ref{andersonAsymptoticTheoryCertain1952} it was confirmed, that the data is normal distributed.
+A probability plot for the imbalance price can be seen in figure \ref{fig::rebap_distribution}. 
+The red line resembles a normal distribution. 
+The imbalance price has a skewness of $27.08$ and a kurtosis of $1194.02$, so the pearson correlation can not be used for analysing correlations.
+Instead for the following correlation analyses the spearman rank correlation will be used.
 
 \begin{figure}[ht]
             \centering
@@ -36,11 +38,6 @@ Furthermore the skewness and kurtosis of the imbalance price has been calculated
             \label{fig::rebap_distribution}
  \end{figure}
 
-Using the anderson darling test \ref{andersonAsymptoticTheoryCertain1952} it was confirmed, that the data is normal distributed.
-A probability plot for the imbalance price can be seen in figure \ref{fig::rebap_distribution}. 
-The red line resembles a normal distribution. 
-With a skewness of $27.08$ and a kurtosis of $1194.02$ the pearson correlation can not be used.
-Instead for the following correlation analyses the spearman rank correlation will be used.
 
 The imbalance volume and the imbalance price are highly correlated. 
 Figure \ref{Figure::volume_price_scatter} shows scatter plots for the imbalance volume and imbalance price.
@@ -69,8 +66,8 @@ Due to the high correlation with the imbalance volume, correlations with the imb
     For each of these variables the correlation with the imbalance price is calclulated to estimate how much influence the variables have in determining the imbalance price.
     Table \ref{Table::Rebap_Correlations_ENTSOE} contains the results for these calculations. 
     
-    Out of these features the forecasted and actual value for residual load, the forecasting error for solar generation have the largest absolute correlation.
-    It should be noted that the actual values are not available at prediction time.    
+    Out of these features the forecasted and actual value for residual load and the residual load forecasting error correlate the most with the imbalance price.
+    It should be noted that the actual values apart from the forecasts are not available at prediction time.    
 
     \begin{table}
     \centering
@@ -84,9 +81,14 @@ Due to the high correlation with the imbalance volume, correlations with the imb
     \end{tabular}
 
     
-    \caption{Correlations between variables and imbalance price (rounded to next $10^{-3}$). Green cells are new features}
+    \caption{Correlations between variables and \textbf{imbalance price} (rounded to next $10^{-3}$). Green cells are new features}
     \label{Table::Rebap_Correlations_ENTSOE}
     \end{table}
+
+The correlation between the ENTSO-E data and the imbalance volume was calculated as well.
+The results for these calculations are displayd in table \ref{Table::Imbalance_volume_Correlations_ENTSOE}. The forecasted and actual value for the residual have a much lower correlation with the imbalance volume than with the imbalance price. The correlation between the residual load forecasting error and imbalance volume is about the same as with the imbalance price. Apart from the load the forecasting error correlates the most with the imbalance volume. 
+
+
 
     \begin{table}
     \centering
@@ -100,7 +102,7 @@ Due to the high correlation with the imbalance volume, correlations with the imb
     \end{tabular}
 
     
-    \caption{Correlations between variables and imbalance price (rounded to next $10^{-3}$). Green cells are new features}
+    \caption{Correlations between variables and \textbf{imbalance volume} (rounded to next $10^{-3}$). Green cells are new features}
     \label{Table::Imbalance_volume_Correlations_ENTSOE}
     \end{table}
     
@@ -113,19 +115,19 @@ Due to the high correlation with the imbalance volume, correlations with the imb
     This data needs to be condensed, as not all of theses timestamps are useful.
     There are certain timestamps which will be inspected closer for the feature engineering.
     
-    The forecasts done by ENTSO-E are published the day before and use the weather forecast from that time.
-    The forecast happens at 18:00. 
-    In the MOSMIX data this timestamp will be more closely looked at for this reason.
-    Another important timestamp is the latest timestamp. 
+    The forecasts done by ENTSO-E are published the day before at 18:00. 
+    In the MOSMIX data this timestamp will be more closely looked at, because this is the latest forecast available for the forecast made by ENTSO-E.
+    Another important timestamp is the latest timestamp. This forecast has access to the most information, thus is most likely the most accurate forecast.
     With a forecast being done each hour, the latest available timestamp at prediction time is the one 2 hours before gate closure time, due to the prediction happening at 1 hour before gate closure time.
-    For each of the variables introduced in \ref{Table::DWD_MOSMIX_Parameters_Small} the correlation for both of the previously discussed timestamps is checked.
+    For each of the MOSMIX variables the correlation for both of the previously discussed timestamps is checked.
     
     With both of these configurations for each of the variables a new feature can be created. 
     To get an estimate for the forecasting error in the ENTSO-E data, the change in forecast can be calculated in the DWD data.
     Under the assumption, that a more recent forecast is more accurate, the difference between the latest forecast and the forecast of the day before at $18:00$ is calculated.
     The names for these new features are created by combining a prefix with the abbreviation for the MOSMIX feature.
     For the forecast from the previous day the prefix \textit{DayAhead} is used, the prefix \textit{LastFC} is used for the most recent forecast and \textit{Diff} denotes that the features is the difference between the day ahead forecast and the most recent forecast.
-    The results for the correlation can be found in table \ref{Table::DWD_MOSMIX_correlations}. 
+    The results for the correlation analysis between the features and the imbalance can be found in table \ref{Table::imbalance_price_MOSMIX_correlations}. The results for the correlation analysis with the imbalance volume are displayed in table \ref{Table::imbalance_volume_MOSMIX_correlations}.
+    The features containing information about wind, namely \textit{FX1} and \textit{FF}, show the highest correlation with the imbalance price. The parameter containing information about cloud coverage (\textit{N05}) is among the highest correlated with both the imbalance price and the imbalance volume. The same is true for the features containing information about solar radiation, \textit{Rad1h} and \textit{SunD1}. In general the correlation between the MOSMIX features and the imbalance volume are a lot lower than the correlations with the imbalance price.
     
     \begin{table}
     \centering
@@ -186,11 +188,6 @@ Due to the high correlation with the imbalance volume, correlations with the imb
     \label{Table::residual_load_fce_MOSMIX_correlations}
     \end{table}
 
-    Dividing the most recent forecast by the day ahead forecast would maybe provide a more meaningful relation, but due to the nature of the data this is problematic.
-    The dataset contains variables with large value ranges, including 0. 
-    By dividing, this new feature might take extreme values.
-    On the other hand some variables have scales which make the division less meaningful.
-    For example the temperature is measured in kelvin, leading to small quotients.
 
 \section{Data Split}
 \label{Section::Data_Split}
@@ -222,7 +219,6 @@ Random forest can not use time series data out of the box.
 To give some more information about past timesteps shifted features are used.
 
 For the training in the experiments the timesteps of the previous 4 quarter hours were used.
-Also included were the same timestamps for the previous 2 weeks.
 
 To find the best random forest regressor RandomizedSearchCV by sklearn was used.
 In total 20 different parameter combination were tested with a cross validation of 5.
@@ -243,9 +239,11 @@ Using \textit{auto\_arima} the best parameter configuration can be found.
 
 \subsection{xLSTM}
 \label{Section::xLSTM}
+The configuration for the xLSTM models changes throughout the experiments and will be described in section \ref{Section::Experimental_Setup}
 
 \subsection{iTransformer}
 \label{Section::iTransformer}
+The configuration for the iTransformer models changes throughout the experiments and will be described in section \ref{Section::Experimental_Setup}
 
 
 

@@ -12,7 +12,6 @@
 \chapter{Experimental Setup} % Overview text
 \label{Chapter::Experimental_Setup}
    This chapter contains information about the configurations and models used for each experiment. 
-   For each experiment different approaches were tried to improve the model performance.
 
 % Explain the setup of your experiment in such a way that others could repeat it
 % First, explain the environment of the experiment
@@ -28,8 +27,6 @@ The naive model is a benchmark that predicts the imbalance price to be the intra
 
 For random forest and arima some additional lagged features are created to give information about the data being time series data.
 For each feature lagged features are introduced, the features are lagged by 15 minutes, 30 minutes, 45 minutes and an hour.
-Also weekly lagged features are used. 
-The features are lagged by one and by two weeks.
 
 For the iTransformer model and xLSTM model the hyperparameter configuration can be found in table \ref{Table::Raw_hyperparameters}.
 The hyperparameter configurations are the same across all experiments unless specified differently.
@@ -43,7 +40,7 @@ In total 48 blocks are used.
 \begin{tabular}{l|l|l}
  Hyperparameter name & iTransformer & xLSTM   \\\hline
  Learning rate & $10^{-3}$ & $10^{-3} $ \\
- Sequence length & 96 & 96  \\
+ Sequence length & 4 & 96  \\
  Batch size & 16 & 32  \\
  Embedding dimension & 512 & 128  \\
  
@@ -58,7 +55,7 @@ The goal was to check whether it would suffice to only use mLSTM or sLSTM cells 
 Three different xLSTM models were trained and their results compared.
 Each model contains an xLSTM block with 48 modules.
 The different models are named xlstm\_n\_m, where n:m denotes the fraction of mLSTM to sLSTM blocks.
-The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1. 
+The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1, the amount of different blocks used is displayed in table \ref{Table::xLSTM_configuratiosn}. 
 
   \begin{table}[]
 \centering
@@ -76,6 +73,7 @@ The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1.
    
    In this experiment iTransformer models were trained to inspect how sequence length changes model performance.
    The idea behind this experiment was to check whether more information about the past improves the prediction.
+   While expriment \ref{Section::Experiment_out_of_the_box} makes the results of the model comparable, the more complex time series predictors shoul be able to leverage a longer sequence length.
    For this the sequence lengths 96, 192 and 384 were used. Other than that the hyperparameters were the same as shown in table \ref{Table::Raw_hyperparameters}   
    
 \section{Experiment: iTransformer multiple target variables}
@@ -111,7 +109,8 @@ The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1.
 \section{Experiment: iTransformer longer forecast horizon}
 
 In this experiment it was checked, whether a longer forecast horizon would increase the performance of the time series predictor.
-During training and validation losses on the complete forecast horizon were used.
+During training and validation losses on the complete forecast horizon were used. 
+The goal of this experiment was to check whether the model would be able to better predict the imbalance price if training on predicting a coherent time series in the future.
 During testing only  the forecast which was forecast in the other experiments was used to calculate the evaluation metrics.
 
 The goal behind this experiment was to check whether the model would benefit from trying to learn a longer trend than just a single point in time.

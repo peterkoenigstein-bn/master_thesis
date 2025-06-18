@@ -13,7 +13,8 @@
 \label{Chapter::State_of_the_Art} % Outline text
 
 In this chapter models and papers for the prediction of the german imbalance price as well as general time series predictors will be discussed. 
-With this information I will conclude this chapter by showing how this thesis fits into the current ecosystem.
+This chapter will conclude by showing how this thesis fits into the current ecosystem.
+%With this information I will conclude this chapter by showing how this thesis fits into the current ecosystem.
 
 % Topics that are similar to yours but are already published.
 % Explain their approach and what the difference to your approach is.
@@ -28,9 +29,10 @@ The works \cite{limaBayesianPredictiveDistributions2023} \cite{ganeshForecasting
 The volume is forecasted using three different methods, ARIMA, exponential smoothing and caterpillar forecasting.
 
 For the papers predicting imbalance prices different models where used.
-The authors of \cite{limaBayesianPredictiveDistributions2023} developped a dynamic linear model (DLM) and compared their results to GARCH and AR-GARCH. Their model outperformed GARCH and AR-GARCH on all their out-of-sample forecasting experiments. During their research they also look at how the imbalance price correlated with different error values.
+The authors of \cite{limaBayesianPredictiveDistributions2023} developped a dynamic linear model (DLM) and compared their results to GARCH and AR-GARCH. Their model outperformed GARCH and AR-GARCH on all their out-of-sample forecasting experiments. During their research they also inspected how the imbalance price correlates with the features used in their predictions.
+The net imbalance volume was the features with the largest correlation, followed by metrics which try to capture the scarcity of energy.
 In \cite{ganeshForecastingImbalancePrice2024} many different neural network algorithms were compared, namely Recurrent Neural Networks (RNN), Long Short Term Memory (LSTM), Gated Recurrent Units (GRU), Temporal Fusion Transformer (TFT), Fully Connected Neural Networks (FCNN) and the Neural basis expansion analysis for interpretable time series forecasting (N-BEATS). The FCNNs used in this paper were a significant improvement to the DLM developed in \cite{limaBayesianPredictiveDistributions2023}.
-The authors of \cite{browellPredictingElectricityImbalance2022} investigated how much impact the prediction time has on the result. They used Kernel Density Estimators (KDE) and linear regression to get a forecast for the imbalance price. 
+The authors of \cite{browellPredictingElectricityImbalance2022} investigated how much impact the prediction time has on the result. They used Kernel Density Estimators (KDE) and linear regression to get a forecast for the imbalance price. Another result was, that the prediction quality greatly improves if the prediction is done at a time closer to delivery time.
  
  For the imbalance price prediction \ref{lucasPriceForecastingBalancing2020} employed Gradient Boosting (GB), Random Forest (RF) and XGBoost. Out of the models they used RF performed the best. During their research they also looked into feature importance for all their models. They found that the net imbalance volume was the most important feature.
  
@@ -45,7 +47,9 @@ The paper on the german electricity market \cite{narajewskiProbabilisticForecast
 Many of the mentioned papers, especially the ones on the british electricity market used data from before the COVID-19 pandemic. During the pandemic the energy market changed. Models based and calibrated on pre-pandemic data can not be used to effectively forecast current energy prices \cite{abadieEnergyMarketPrices2021}.
 
 
-In this thesis different models are compared on the task of predicting the imbalance price. For this task models will be used that performed well pre-pandemic (RF) as well as an alteration on LSTM called xLSTM \cite{beckXLSTMExtendedLong2024} and a new inverted Transformer (iTransformer) \cite{liuITransformerInvertedTransformers2023} architecture.
+In this thesis different models are compared on the task of predicting the imbalance price. 
+For this task random forest, arimax, xLSTM (an extension of LSTM) \cite{beckXLSTMExtendedLong2024} and a new inverted Transformer (iTransformer) \cite{liuITransformerInvertedTransformers2023} architecture will be inspected.
+Random forest performed well on the task of predicting the imbalance price before the COVID-19 pandemic \ref{lucasPriceForecastingBalancing2020}.
 
 
 \section{Time Series Predictors}
@@ -62,8 +66,9 @@ In this thesis established machine learning models are compared with novel appro
 
 \subsection{xLSTM}
 \label{Section::xLSTM}
-Extended Long Short-Term Memory (xLSTM) is a novel model which is based on the existing Long Short-Term Memory (LSTM) \cite{gravesLongShortTermMemory2012}. The recent advances in Transformer technology outperformed LSTM models. This alteration on the LSTM model extends  the amount of parameters by introducing new LSTM cells. 
-These two new cells are the sLSTM and mLSTM cell.
+Extended Long Short-Term Memory (xLSTM) is a novel model which is based on the existing Long Short-Term Memory (LSTM) \cite{gravesLongShortTermMemory2012}. The recent advances in Transformer technology outperformed LSTM models. 
+The goal behind the development of xLSTM was to check whether LSTM models could reach comparable results if the models use the same amount of parameters.
+xLSTM introduces two new LSTM cells, sLSTM and mLSTM.
 
 In the sLSTM Cell the activation function is changed. While in LSTM the activation function for the input gate is the sigmoid function, sLSTM uses the exponential function. In sLSTM the activation for the forget gate can be either the sigmoid function or the exponential function. sLSTM cells can also have multiple memory cells. This enables memory mixing via recurrent connections. A residual sLSTM cell contains a sLSTM  cell which summarizes the past in the original space. This is then linearly mapped into a higher-dimensional  space where the non linear activation function is applied. Afterwards the result is mapped back to the original space.
 

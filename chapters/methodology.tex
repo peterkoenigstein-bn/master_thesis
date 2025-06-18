@@ -23,12 +23,14 @@
 This chapter contains information about the data used for the Time Series prediction. 
 The data can be separated into 3 major thematic fields: weather data, market data and energy data.
 
-In the following sections each data source will be described more in depth. 
-This data is processed and filtered in chapter \ref{Chapter::Feature_Engineering}.
+In the following sections each data source will be described. 
+For each data field it will be explained why this data is used for the prediciton, as well as  how and from where the data was acquired.
+%In the following sections each data source will contain an in depth description of the data, what information is available an how the data was aquired. 
+%This data is processed and filtered in chapter \ref{Chapter::Feature_Engineering}.
 
-This chapter contains a more in depth overview about how the data was aquired and what information is available in the data used for the experiments. 
-The data used for the experiments can be separated into 3 thematic fields: energy data, market data and weather data.
-This chapter only provides a brief overview about the data sources. 
+%This chapter contains a more in depth overview about how the data was aquired and what information is available in the data used for the experiments. 
+%The data used for the experiments can be separated into 3 thematic fields: energy data, market data and weather data.
+%This chapter only provides a brief overview about the data sources. 
 
 
 \subsection{Energy Data}
@@ -39,40 +41,51 @@ This chapter only provides a brief overview about the data sources.
 % Where is the data from
 % How is the data presented
 % When is the data available ?
+The first thematic field is energy data, provided by Netztransparenz and the ENTSO-E Transparency Platform.
+\subsection{Netztransparenz}
+Netztransparenz provides detailed information about the balancing energy market. 
+The data from Netztransparenz contains the imbalance price and the imbalance volume.
+These features are essential for the prediction. 
+The imbalance price is the target variable and the imbalance volume is one of the most influential factors for the imbalance price.
+Netztransparenz also contains information about activated reserves, the primary and secondary reserves.
+This data contains the activated reserves for each quarter hour. 
+Hopefully this data improves the prediction by giving more information about the actiavated reserves.
 
-The data used in this thesis is sourced from Netztransparenz and the ENTSO-E Transparency Platform.
-The target variable, along with several additional explanatory variables, is obtained from these platforms.
+All of these features are provided for each quarter hour and both operational and quality-assured. The quality-assured data is available about 18 days after the operational data, with the operational data being available 15-30 minutes after the delivery time. 
+The prediction can only be done with the operational data, but the model will be trained on the quality assured data. 
+Data gaps in the quality assured data are filled with the operational data. A full list of the data used from Netztransparenz can be found in figure \ref{Table::Energy_Data_Netztransparenz}.
 
-Netztransparenz provides detailed information on the imbalance price and imbalance volumes, which are central to the prediction objective.
-This data is available both operational and quality-assured.
-The quality-assured data is available about 18 days after the operational data. 
-
-ENTSO-E supplies load and generation data, including both measured values and forecasts, for the German electricity market.
-Additionally, specific generation data is available for onshore wind, offshore wind, and solar photovoltaic technologies.
-The data covers the German bidding zone exclusively, as the prediction task focuses solely on the German electricity market.
-The forecast is done at 18:00 on the previous day. 
-The time resolution of all datasets is quarter-hourly.
-The period under study spans from the 21st of june 2022 to 31st of december 2024.
-
-All datasets are accessed and downloaded via publicly available APIs, enabling automated and reproducible data collection.
-An overview about all variables used by these data sources can be found in \ref{Table::Energy_Data_Netztransparenz} and \ref{Table::Energy_Data_Entsoe}.
-
-A more detailed description of the preprocessing steps, feature engineering, and exploratory data analysis will be provided in later sections.
+The data is available publically and was downloaded using their provided API.
 
 \begin{table}[]
 \centering
 \begin{tabular}{l|l|l|l}
  Data Source & Variable &  Time Resolution & Availability  \\\hline
- Netztransparenz & reBAP & 15 min & Real-time with 30 minutes delay \\
- Netztransparenz & NRV-saldo & 15 min & Real-time with 30 minutes delay \\
- Netztransparenz & Activated PRL & 15 min & Real-time with 30 minutes delay \\
- Netztransparenz & Activated SRL & 15 min & Real-time with 30 minutes delay \\
- Netztransparenz & SRL optimization & 15 min & Real-time with 30 minutes delay \\
- 
+ Netztransparenz & reBAP & 15 min & Live, 30 minutes delay \\
+ Netztransparenz & NRV-saldo & 15 min & Live, 30 minutes delay \\
+ Netztransparenz & Activated PRL & 15 min &Live, 30 minutes delay \\
+ Netztransparenz & Activated SRL & 15 min & Live, 30 minutes delay \\
+ Netztransparenz & SRL optimization & 15 min & Live, 30 minutes delay \\
+
 \end{tabular}
 \caption{Variables used from netztransparenz}
 \label{Table::Energy_Data_Netztransparenz}
 \end{table}
+
+\subsection{ENTSO-E}
+The European Network of Transmission System Operators for Electricity (ENTSO-E) provides data about energy volumes.
+For this thesis data about load and generation for the German electricity market is used. 
+An overview about the features used can be found in \ref{Table::Energy_Data_Entsoe}.
+
+The data contains information about actual and forecasted load. Also included in the data is generation and forecast for VRE sources and actual generation for fossil energy sources. 
+The load forecast is released at 12:00 on the previous day, the forecasts for VRE are released at 18:00 on the previous day. All actual measurements are available with a delay of at most 1 hour.
+
+The time resolution for all ENTSO-E data is quarter-hourly.
+
+All datasets are accessed and downloaded via publicly available APIs, enabling automated and reproducible data collection.
+
+A more detailed description of the preprocessing steps, feature engineering, and exploratory data analysis will be provided in later sections.
+
 
 \begin{table}[]
 \centering
@@ -80,22 +93,22 @@ A more detailed description of the preprocessing steps, feature engineering, and
  Data Source & Variable &  Time  & Availability  \\
  &&Resolution&\\\hline
  Entso-E & Load forecast & 15 min  & 12:00 d-1 \\
- Entso-E & Load actual & 15 min  & Real-time with max 1 h delay \\
+ Entso-E & Load actual & 15 min  &Live, 1 h delay \\
  Entso-E & Wind onshore forecast & 15 min  & 18:00 d-1\\
  Entso-E & Wind offshore forecast & 15 min & 18:00 d-1 \\
  Entso-E & Solar forecast & 15 min & 18:00 d-1 \\
- Entso-E & Wind onshore actual generation & 15 min  & Real-time with max 1 h delay\\
- Entso-E & Wind offshore actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Solar actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Other renewable actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Hydro water reservoir actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Run of river actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Hydro pumped storage actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Hydro pumped consumption & 15 min & Real-time with max 1 h delay \\
- Entso-E & Lignite actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Fossil gas actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Fossil hard coal actual generation & 15 min & Real-time with max 1 h delay \\
- Entso-E & Fossil oil actual generation & 15 min & Real-time with max 1 h delay \\
+ Entso-E & Wind onshore actual generation & 15 min  &Live, 1 h delay\\
+ Entso-E & Wind offshore actual generation & 15 min &Live, 1 h delay \\
+ Entso-E & Solar actual generation & 15 min & Live, 1 h delay \\
+ Entso-E & Other renewable actual generation & 15 min &Live, 1 h delay \\
+ Entso-E & Hydro water reservoir actual generation & 15 min & Live, 1 h delay \\
+ Entso-E & Run of river actual generation & 15 min &Live, 1 h delay \\
+ Entso-E & Hydro pumped storage actual generation & 15 min & Live, 1 h delay \\
+ Entso-E & Hydro pumped consumption & 15 min & Live, 1 h delay \\
+ Entso-E & Lignite actual generation & 15 min & Live, 1 h delay \\
+ Entso-E & Fossil gas actual generation & 15 min & Live, 1 h delay \\
+ Entso-E & Fossil hard coal actual generation & 15 min & Live, 1 h delay \\
+ Entso-E & Fossil oil actual generation & 15 min & Live, 1 h delay \\
   
 \end{tabular}
 \caption{Variables used from ENTSO-E}
@@ -105,26 +118,23 @@ A more detailed description of the preprocessing steps, feature engineering, and
 \subsection{Market Data}
 \label{Section::Market_Data}
 
-The market data used in this thesis is provided by Energy-Charts \ref{EnergyCharts}.
-
-
-Out of the data provided on the website, the prices for Day Ahead Auction, average intraday price, as well as intraday index 1 (ID1) and intraday index 3 (ID3) are used. 
-More information about the used variables can be found in table \ref{Table::Market_Data}.
+The market data used in this thesis is provided by Energy-Charts \cite{EnergyCharts}.
+The data used from this source is displayed in \ref{Table::Market_Data}. Information about the hourly spot price, the intraday auction 1 price (IDA1), average intraday price (ID FULL), as well as the intraday indices 1 (ID 1) and 3 (ID 3) are used.
 
 Each intraday index represents the volume-weighted average price of the trades during a certain period. 
-While ID1 only considers trades that happened up to 1 hour before gate closure, ID3 considers trades up to 3 hours before gate closure time.
+While ID 1 only considers trades that happened up to 1 hour before gate closure, ID 3 considers trades up to 3 hours before gate closure time.
 The variable Intraday continuous average is the volume-weighted average price of all trades that happened on the intraday market. 
-This will be called ID FULL going further.
 
-As described in \ref{Section::Imbalance_Price} one of the imbalance price modules is tied to the recent market situation.	
+This data is used to provide the model with some information about prices. With this data the model should be able to grasp the niveau of the imbalance price. On top of that one of the imbalance price modules is tied to the trades that happen close to gate closure \ref{Section::Imbalance_Price}.
 
+The hourly spot price has a time resolution of one hour and is released on 12:00 on the previous day. The IDA1 also has a resolution of one hour and is released at 15:00 on the previous day. The information about ID 1, ID 3 and ID FULL has a time resolution of 15 minutes, but is only available at 0:00 on the day after the delivery.
     
 \begin{table}[]
 \centering
 \begin{tabular}{l|l|l|l}
  Data Source & Variable &  Time Resolution & Availability  \\\hline
- Energy-Charts & Hourly Spot price& 1 h& 12:00-15:00 d-1 \\
- Energy-Charts & Intraday auction 1 price & 1h & ?? ? ?? ?? ?\\
+ Energy-Charts & Hourly Spot price& 1 h& 12:00 d-1 \\
+ Energy-Charts & Intraday auction 1 price & 1 h &  15:00 d-1\\
  Energy-Charts & Intraday Index 1 & 15 min &  00:00 d+1\\
  Energy-Charts & Intraday Index 3 & 15 min &  00:00 d+1\\
  Energy-Charts & Intraday Contiuous Average & 15 min &  00:00 d+1\\
@@ -139,17 +149,14 @@ As described in \ref{Section::Imbalance_Price} one of the imbalance price module
 
 The weather data used for the prediction of the imbalance price is obtained from the German Weather Service (DWD).
 The dataset includes both measured weather observations and forecasted weather variables, with a time resolution of 1 hour.
-
 Measured weather data is made available approximately one hour after observation, while weather forecasts cover a forecast horizon of up to 10 days into the future.
 
 Since the generation of variable renewable energy (VRE) is highly dependent on weather conditions, the incorporation of weather data is essential for accurate modeling.
+
+The MOSMIX dataset contains a total of 40 variables, only a subset of these were used for this thesis. The list of variables used can be found in table \ref{Table::DWD_MOSMIX_Parameters_Small}. 
+The full range of available weather variables for the measurements is summarized in Table \ref{Table::DWD_Measurement_Parameters}.
 The data is aggregated from 16 weather stations distributed across Germany.
 A complete list of the selected weather stations is provided in Appendix \ref{List::Weather_Stations}, and their geographic locations are illustrated in Figure \ref{fig::weather_stations}.
-
-The full range of available weather variables for the measurements is summarized in Table \ref{Table::DWD_Measurement_Parameters}.
-An overview about all available forecast variables can be found in the appendix (table \ref{Table::DWD_MOSMIX_Parameters}).
-For the prediction task, a selected subset of forecast variables is used, as detailed in Table \ref{Table::DWD_MOSMIX_Parameters_Small}.
-
 
 More information about how the data is handled will be discussed in section \ref{Section::Feature_Engineering}
 
@@ -218,28 +225,28 @@ Station name & Measurements? & MOSMIX ?\\\hline
 % Then explain your approach or algorithm
 % Use flowcharts to give an overview
 
-\subsection{Additional Data}
-\label{Section::Additional_Data}
-On top of these 3 major thematic fields additional information about working days was used. 
+%\subsection{Additional Data}
+%\label{Section::Additional_Data}
+%On top of these 3 major thematic fields additional information about working days was used. 
 
-This data source is expected to capture variations in electricity load.
-School holidays and extended weekends due to public holidays are typical times for taking vacations.
-These effects will be analyzed later in the thesis.
+%This data source is expected to capture variations in electricity load.
+%School holidays and extended weekends due to public holidays are typical times for taking vacations.
+%These effects will be analyzed later in the thesis.
 
-\subsubsection{Holidays}
+%\subsubsection{Holidays}
 
-In germany there are static holidays which are always on the same day each year.
-Examples for these are christmas or the 1st of may. 
-Other holidays in germany are dependant on the date of easter. 
-An example for such a holiday is the feast of ascension, which always happens 39 days after easter.
+%In germany there are static holidays which are always on the same day each year.
+%Examples for these are christmas or the 1st of may. 
+%Other holidays in germany are dependant on the date of easter. 
+%An example for such a holiday is the feast of ascension, which always happens 39 days after easter.
 
-The bundesAPI provides an api to get information to get this information \cite{HolidayAPIUrl}.
+%The bundesAPI provides an api to get information to get this information \cite{HolidayAPIUrl}.
 
-\subsubsection{School Holidays}
+%\subsubsection{School Holidays}
 
-Information about school holidays is provided by Schulferien.org \cite{SchoolHolidays}. 
-The data is displayed in a table on this website. 
-A webscraper is used to get the data.
+%Information about school holidays is provided by Schulferien.org \cite{SchoolHolidays}. 
+%The data is displayed in a table on this website. 
+%A webscraper is used to get the data.
 
 \section{Evaluation metrics}
 \label{Section:Evaluation_Metrics}
@@ -255,7 +262,8 @@ Due to the quadratic nature of this function large errors are penalized harder.
 The square root of MSE is RMSE. 
 This metric is calculated using the formula $RMSE = \sqrt{MSE}$.
 As with MSE large errors are penalized harder.
-By taking the square root of the MSE the value for RMSE is in the same unit as the prediction values.
+By taking the square root of the MSE the value for RMSE is in the same unit as the prediction values. 
+This makes the RMSE easier to compare and interpret.
 
 \subsection{Mean average error}
 The mean average error (MAE) is calculated using $MAE = \frac{1}{n} \sum_{i=1}^{n}|Y_i - \hat{Y}_i|$.
@@ -268,13 +276,13 @@ The ranked probability score (CRPS) is approximated using the pinball loss (PB) 
 This is calculated for a grid of probabilites $r$ between 0 and 1 of size $R$.
 For the evaulation of the experiments $r=\{0.01, 0.02, ..., 0.99\}$ is used, resulting in $R=99$.
 
-The formula for the pinball loss neede to approximate the CRPS is $PB_{\tau} = (\tau - \mathbf{1}_{\{Y - \hat{Q}_{\tau}\}}) (Y-\hat{Q}_{\tau}) $,
+The formula for the pinball loss used to approximate the CRPS is $PB_{\tau} = (\tau - \mathbf{1}_{\{Y - \hat{Q}_{\tau}\}}) (Y-\hat{Q}_{\tau}) $,
 where $\hat{Q}_{\tau}$ is a forecast of the $\tau -th$ quantile.
 
 \subsection{$\tau$ \% coverage}
 
 The $\tau$ \% coverage is calculated by chosing a selecting a fraction for $\tau$ and inserting it into the formula $\tau\%-cov = \frac{1}{N} \sum_{i=1}^{N} \mathbf{1}_{\{\hat{Q}_{(1-\tau)/2} < Y_i < \hat{Q}_{(1+\tau)/2} \}}$
-whaere $Y_i$ is the true value and $\hat{Q}_{\tau}$ is a forecast of the $\tau -th$ quantile.
+where $Y_i$ is the true value for datapoint $i$ and  $\hat{Q}_{\tau}$ is the $\tau -th$ quantile of all forecasts.
 
 \section{Benchmark}
 \label{Section:Benchmark}
@@ -283,9 +291,9 @@ During the experiments part of this thesis the models will be compared against e
 Another benchmark the models will be measured against is the intraday index ID1.
 The intraday index ID1 can be interpreted as a proxy for the market participants' forecast of the imbalance price.
 
-In a system that is short of energy, a trade for a price higher than the imbalance price would not make sense for a market participant fiscally.
-If no power is bought and instead balancing energy is used the imbalance price has to be paid. 
-As in this scenario the trade would cost more than receiving balancing energy, profit can be made by receiving balancing energy.
+%In a system that is short of energy, a trade for a price higher than the imbalance price would not make sense for a market participant fiscally.
+%If no power is bought and instead balancing energy is used the imbalance price has to be paid. 
+%As in this scenario the trade would cost more than receiving balancing energy, profit can be made by receiving balancing energy.
 
 As mentioned in section \ref{Section::Module_2} sometimes the imbalance price is set using the average price of the most recent prices.
 This incentive component was the price setting module only $17.23\%$ of the time in 2024.
