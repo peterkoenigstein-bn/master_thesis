@@ -11,36 +11,65 @@
 
 \chapter{Experimental Setup} % Overview text
 \label{Chapter::Experimental_Setup}
-   This chapter contains information about the configurations and models used for each experiment. 
+
+This chapter presents the experimental framework used to evaluate the performance of various time series forecasting models on the German imbalance price (reBAP). The experiments are designed to explore three key questions:
+
+\begin{enumerate}
+\item How do different model architectures perform under identical input conditions?
+\item Can architectural variations or training strategies improve model accuracy?
+\item Which design choices impact forecasting performance the most (e.g., input length, targets, forecast horizon)?
+\end{enumerate}
+
+The baseline experiment (Section \ref{Section::Experiment_out_of_the_box}) compares all models using a standard one-hour-ahead forecast setting. The subsequent experiments examine variants of the xLSTM and iTransformer models with different sequence lengths, architectural blocks, training targets, and forecast horizons. All experiments use the same training-validation-test split described in Chapter \ref{Section::Data_Split}.
+
 
 % Explain the setup of your experiment in such a way that others could repeat it
 % First, explain the environment of the experiment
 % Second, explain the tools used
 % Lastly, how is everything setup for the experiment, what are the variables?
 % Do not discuss results here !!!
-\section{Experiment: Out of the box performance}
+\section{Baseline: Out-of-the-box model comparison}
 \label{Section::Experiment_out_of_the_box}
 
-In this experiment different Time Series predictors are compared against each other.
-The models used for this are naive, random forest, arima, iTransformer and xLSTM.
-The naive model is a benchmark that predicts the imbalance price to be the intraday index ID1. 
+In this experiment, the out-of-the-box performance of all selected forecasting models is evaluated under a standardized setup. The goal is to establish a baseline for comparison across different modeling paradigms using a common one-hour-ahead forecast target: the imbalance price (reBAP).
 
-For random forest and arima some additional lagged features are created to give information about the data being time series data.
-For each feature lagged features are introduced, the features are lagged by 15 minutes, 30 minutes, 45 minutes and an hour.
+The following five models are included in the comparison:
+\begin{itemize}
+\item Naïve benchmark: A simple heuristic that predicts the imbalance price as equal to the intraday index ID1
+\item Random Forest: Implemented using RandomForestRegressor from scikit-learn. Lag features for each input variable are included at 15, 30, 45, and 60 minutes
+\item ARIMA: A statistical model trained using the pmdarima library with automatic parameter selection (auto\_arima)
+\item xLSTM: A deep recurrent model that combines memory and speed-optimized LSTM variants
+\item iTransformer: A transformer-based model with inverted attention and probabilistic output
+\end{itemize}
 
-For the iTransformer model and xLSTM model the hyperparameter configuration can be found in table \ref{Table::Raw_hyperparameters}.
-The hyperparameter configurations are the same across all experiments unless specified differently.
-The xLSTM block configuration used for this experiment was $xlstm\_7\_1$. 
-The numbers in $xlstm\_i\_k$ represent the amount of mLSTM vs sLSTM cells used in the xLSTM block.
-This configuration uses 7 times as many mLSTM blocks than sLSTM blocks. 
-In total 48 blocks are used. 
+All models are trained and evaluated on the same preprocessed dataset, as described in Chapters \ref{Chapter::Data} and \ref{Chapter::Methodology}. The forecasting target is the reBAP value for each quarter-hour, predicted one hour before delivery.
+
+Input features include the shifted energy and market data, the shifted weather measurements, as well as the engineered variables from energy, market, and weather domains (see Section \ref{Section::Feature_Engineering}). The sequence length for deep learning models is fixed at 4 timesteps, with prediction offset of 4 steps (i.e., 1 hour).
+
+The hyperparameter settings for xLSTM and iTransformer are listed in Table \ref{Table::Raw_hyperparameters}. These settings are used consistently across all experiments apart from the sequence length. For the other experiments a sequence length of 96 will be used to make use of the architectural advantages of xLSTM and iTransformers. The xLSTM model used here corresponds to configuration xlstm\_7\_1, consisting of 42 mLSTM and 6 sLSTM blocks (see Table \ref{Table::xLSTM_configuratiosn}). 
+
+Evaluation is performed using the deterministic and probabilistic metrics introduced in Section \ref{Section:Evaluation_Metrics}. The results of this experiment provide the basis for interpreting improvements in subsequent architectural and training modifications.
+
+%In this experiment different Time Series predictors are compared against each other.
+%The models used for this are naive, random forest, arima, iTransformer and xLSTM.
+%The naive model is a benchmark that predicts the imbalance price to be the intraday index ID1. 
+
+%For random forest and arima some additional lagged features are created to give information about the data being time series data.
+%For each feature lagged features are introduced, the features are lagged by 15 minutes, 30 minutes, 45 minutes and an hour.
+
+%For the iTransformer model and xLSTM model the hyperparameter configuration can be found in table \ref{Table::Raw_hyperparameters}.
+%The hyperparameter configurations are the same across all experiments unless specified differently.
+%The xLSTM block configuration used for this experiment was $xlstm\_7\_1$. 
+%The numbers in $xlstm\_i\_k$ represent the amount of mLSTM vs sLSTM cells used in the xLSTM block.
+%This configuration uses 7 times as many mLSTM blocks than sLSTM blocks. 
+%In total 48 blocks are used. 
 
 \begin{table}[]
 \centering
 \begin{tabular}{l|l|l}
  Hyperparameter name & iTransformer & xLSTM   \\\hline
  Learning rate & $10^{-3}$ & $10^{-3} $ \\
- Sequence length & 4 & 96  \\
+ Sequence length & 4 & 4  \\
  Batch size & 16 & 32  \\
  Embedding dimension & 512 & 128  \\
  
@@ -49,13 +78,22 @@ In total 48 blocks are used.
 \label{Table::Raw_hyperparameters}
 \end{table}
 
-\section{Experiment: xLSTM different xLSTM block structures}
-In this experiment different xLSTM configurations were compared. 
-The goal was to check whether it would suffice to only use mLSTM or sLSTM cells compared to the model used in the previous experiment.
-Three different xLSTM models were trained and their results compared.
-Each model contains an xLSTM block with 48 modules.
-The different models are named xlstm\_n\_m, where n:m denotes the fraction of mLSTM to sLSTM blocks.
-The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1, the amount of different blocks used is displayed in table \ref{Table::xLSTM_configuratiosn}. 
+\section{xLSTM block structure comparison}
+
+This experiment evaluates the impact of different internal configurations within the xLSTM model architecture. Specifically, the ratio of memory-optimized LSTM (mLSTM) to speed-optimized LSTM (sLSTM) blocks is varied while keeping all other hyperparameters constant.
+
+The xLSTM model is structured into a series of 48 stacked LSTM blocks. Three configurations are compared:
+\begin{itemize}
+\item xlstm\_1\_0: 48 mLSTM blocks, 0 sLSTM blocks
+\item xlstm\_0\_1: 0 mLSTM blocks, 48 sLSTM blocks
+\item xlstm\_7\_1: 42 mLSTM blocks, 6 sLSTM blocks (default configuration used in Section \ref{Section::Experiment_out_of_the_box})
+\end{itemize}
+The hypothesis behind this experiment is that a combination of both block types may offer a better trade-off between representation capacity and computational efficiency.
+
+All models are trained on the same dataset and evaluated on the same test period as in Section \ref{Section::Experiment_out_of_the_box}. Hyperparameter values are identical to those listed in Table \ref{Table::Raw_hyperparameters}, except for the block configuration (see Table \ref{Table::xLSTM_configuratiosn}).
+
+Evaluation is performed using the same metrics: MAE, RMSE, CRPS, and τ\%-coverage. The results are discussed in Chapter \ref{Chapter::Results and Discussion}.
+
 
   \begin{table}[]
 \centering
@@ -68,22 +106,56 @@ The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1, the amo
 \caption{xLSTM Configurations}
 \label{Table::xLSTM_configuratiosn}
 \end{table}
-
-\section{Experiment: iTransformer variable sequence length}
    
-   In this experiment iTransformer models were trained to inspect how sequence length changes model performance.
-   The idea behind this experiment was to check whether more information about the past improves the prediction.
-   While expriment \ref{Section::Experiment_out_of_the_box} makes the results of the model comparable, the more complex time series predictors shoul be able to leverage a longer sequence length.
-   For this the sequence lengths 96, 192 and 384 were used. Other than that the hyperparameters were the same as shown in table \ref{Table::Raw_hyperparameters}   
-   
-\section{Experiment: iTransformer multiple target variables}
+\section{iTransformer: effect of sequence length}
+This experiment investigates the effect of input sequence length on the performance of the iTransformer model. The underlying hypothesis is that longer historical sequences provide the model with more temporal context, potentially improving its ability to capture complex patterns and anticipate market shifts.
 
-  In this experiment the iTransformer model was trained on multiple target variables.
-  The goal of this experiment was to check whether learning to predict other variables would improve the performance.
-  This kind of training should encourage the model to learn a better general understanding of the data instead of just predicting the imbalance price.
-  During the training the loss is calculated on all of the target variables. 
-  During the testing only the prediction for imbalance price is used to calculate the error metrics.
-  A list with the target variables for each configuration can be found in table \ref{Table::Multiple_targets}, the other hyperparameters are not changed from \ref{Table::Raw_hyperparameters}.
+Three sequence lengths are tested:
+\begin{itemize}
+\item 4 timesteps (benchmark from Section \ref{Section::Experiment_out_of_the_box})
+\item 96 timesteps (24 hours)
+\item 192 timesteps (2 days)
+\item  384 timesteps (4 days)
+\end{itemize}
+
+For each configuration, all other hyperparameters are kept constant, including the learning rate, batch size, and embedding dimension (see Table \ref{Table::Raw_hyperparameters}). The prediction target remains the reBAP value one hour ahead, using a fixed forecast offset of 4 timesteps.
+
+This experiment is motivated by the assumption that imbalance price dynamics—especially under volatile renewable conditions—may be influenced by longer-range temporal dependencies.
+
+Models are trained and evaluated on the same data splits and using the same metrics as in previous experiments. The results allow for assessing whether extended temporal memory improves forecast accuracy, or whether diminishing returns occur with very long input windows.
+
+   
+  % In this experiment iTransformer models were trained to inspect how sequence length changes model performance.
+   %The idea behind this experiment was to check whether more information about the past improves the prediction.
+  % While expriment \ref{Section::Experiment_out_of_the_box} makes the results of the model comparable, the more complex time series predictors shoul be able to leverage a longer sequence length. 
+ %  The following experiments will all use a sequence length of 96.
+ %  For this the sequence lengths 96, 192 and 384 were used. Other than that the hyperparameters were the same as shown in table \ref{Table::Raw_hyperparameters}. 
+
+\section{6.4 iTransformer: multi-target learning}
+This experiment explores whether training the iTransformer on multiple target variables—rather than only the imbalance price—can improve its forecasting accuracy for reBAP. The idea is to encourage the model to learn a more general representation of the underlying system behavior.
+
+During training, the model simultaneously predicts several energy and market-related variables, including:
+\begin{itemize}
+\item Imbalance price (reBAP)
+\item Imbalance volume (Netzregelverbund)
+\item Activated primary and secondary balancing energy
+\item Intraday indices 
+\item Actual fossil generation (coal, lignite, gas)
+\end{itemize}
+
+The loss function is calculated across all target variables, treating them equally. However, during evaluation, only the reBAP forecast is used to compute the performance metrics. The goal is to assess whether auxiliary targets help the model to generalize better to the main task.
+
+This approach is based on the concept of multi-task learning, where auxiliary tasks provide inductive bias and regularization that can improve the generalization performance of the primary task.
+
+All hyperparameters remain identical to the baseline configuration from Section \ref{Table::Raw_hyperparameters}. The list of target variables used for each configuration is shown in Table \ref{Table::Multiple_Targets}.
+
+
+ % In this experiment the iTransformer model was trained on multiple target variables.
+%The goal of this experiment was to check whether learning to predict other variables would improve the performance.
+%  This kind of training should encourage the model to learn a better general understanding of the data instead of just predicting the imbalance price.
+%  During the training the loss is calculated on all of the target variables. 
+%  During the testing only the prediction for imbalance price is used to calculate the error metrics.
+%  A list with the target variables for each configuration can be found in table \ref{Table::Multiple_targets}, the other hyperparameters are not changed from \ref{Table::Raw_hyperparameters}.
   
   \begin{table}[]
 \centering
@@ -106,14 +178,34 @@ The configurations tested were xlstm\_1\_0, xlstm\_7\_1 and xlstm\_0\_1, the amo
 \label{Table::Multiple_Targets}
 \end{table}
 
-\section{Experiment: iTransformer longer forecast horizon}
+\section{iTransformer: extended forecast horizon}
+This experiment investigates whether training the iTransformer to forecast longer time horizons improves its ability to predict the imbalance price one hour ahead. The motivation is that learning to generate a coherent future trajectory may help the model capture system trends more effectively than training on isolated forecast targets.
 
-In this experiment it was checked, whether a longer forecast horizon would increase the performance of the time series predictor.
-During training and validation losses on the complete forecast horizon were used. 
-The goal of this experiment was to check whether the model would be able to better predict the imbalance price if training on predicting a coherent time series in the future.
-During testing only  the forecast which was forecast in the other experiments was used to calculate the evaluation metrics.
+Three forecast horizons are tested:
+\begin{itemize}
+\item 4 steps (1 hour)
+\item 48 steps (12 hours)
+\item 96 steps (24 hours)
+\end{itemize}
 
-The goal behind this experiment was to check whether the model would benefit from trying to learn a longer trend than just a single point in time.
-For this different horizons were compared. The horizon starts at the prediction timestamp, so an hour from the prediction time.
-The horizons used during this experiments are 4, which corresponds to an hour, 48, which corresponds to half of a day and 96, which corresponds to a full day.
+During training, the model produces full output sequences of the respective length, and the loss is computed over the entire forecast horizon. During evaluation, however, only the value at step 4 (i.e., 1 hour ahead) is used to compute the final error metrics, ensuring comparability with other experiments.
+
+All other input settings (features, sequence length, batch size, learning rate, etc.) are identical to the baseline described in Section \ref{Table::Raw_hyperparameters}.
+
+This experiment tests the hypothesis that multi-step sequence supervision may provide temporal regularization, potentially improving one-step-ahead accuracy by enforcing consistency over longer horizons.
+%In this experiment it was checked, whether a longer forecast horizon would increase the performance of the time series predictor.
+%During training and validation losses on the complete forecast horizon were used. 
+%The goal of this experiment was to check whether the model would be able to better predict the imbalance price if training on predicting a coherent time series in the future.
+%During testing only  the forecast which was forecast in the other experiments was used to calculate the evaluation metrics.
+
+%The goal behind this experiment was to check whether the model would benefit from trying to learn a longer trend than just a single point in time.
+%For this different horizons were compared. The horizon starts at the prediction timestamp, so an hour from the prediction time.
+%The horizons used during this experiments are 4, which corresponds to an hour, 48, which corresponds to half of a day and 96, which corresponds to a full day.
+\section{Summary}
+This chapter presented the experimental design used to evaluate forecasting models for the imbalance price. A baseline comparison of five models—ARIMA, Random Forest, xLSTM, iTransformer, and a naïve benchmark—was followed by targeted experiments focusing on architectural and training variations.
+
+Specifically, the xLSTM model was tested with different block configurations, and the iTransformer was evaluated under varying sequence lengths, extended forecast horizons, and a multi-target learning setting. All experiments were conducted using consistent input features, evaluation metrics, and data splits to ensure comparability.
+
+The experiments provide a robust foundation for analyzing model performance under different conditions, as detailed in the following chapter.
+
 \end{document}

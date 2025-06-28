@@ -12,62 +12,83 @@
 \chapter{Introduction}
 \label{Chapter::Introduction}
 
-In electrical power systems, the consumption and production of electricity must be balanced at all times for reasons of frequency stability\cite{weitemeyerIntegrationRenewableEnergy2015}. If the production outweighs the consumption there is a surplus of energy in the system and the frequency rises. Is the system short of energy due to more energy being drained from the grid than injected into it, the frequency drops.
+In electrical power systems, the consumption and generation of electricity must be balanced at all times for reasons of frequency stability\cite{weitemeyerIntegrationRenewableEnergy2015}. If the production outweighs the consumption there is a surplus of energy in the system and the frequency rises. Is the system short of energy due to more energy being drained from the grid than injected into it, the frequency drops.
 
-If the frequency deviates from the 50 hz used in the german electricity net, Transmission System Operators (TSOs) activate different balancing reserves to restore the net frequency.
+If the frequency deviates from the 50 Hz used in the German electricity net, Transmission System Operators (TSOs) activate various balancing reserves to restore the net frequency.
 Regulating the frequency is critical in power systems to ensure the stability and reliability of the electrical grid.
-Maintaning the frequency within certain limits is essential for the safe and efficient operation of electrical equipment \cite{balazsShorttermSystemImbalance2024}.
+Maintaining the frequency within a narrow tolerance band is essential for the safe and efficient operation of electrical equipment \cite{balazsShorttermSystemImbalance2024}.
+These mechanisms are part of a multi-tiered balancing system that ensures grid stability even under volatile supply and demand conditions.
 
-The balancing reserves consist of the frequency containment reserve (FCR), which is automatically used to keep the system in balance. This reserve is the fastest to act, providing energy in less than 30 seconds. This is followed by the automatic frequency restoration reserve is activated, which gradually replaces the FCR after 30 seconds, and finally the manual frequency restoration reserve, which can be activated to provide energy after 12.5 minutes. With these reserves TSOs ensure that the system remains in balance\cite{FrequencyReserves}.
+
+The balancing reserves comprise three levels: the Frequency Containment Reserve (FCR), the Automatic Frequency Restoration Reserve (aFRR), and the Manual Frequency Restoration Reserve (mFRR).
+FCR is automatically activated within 30 seconds to stabilize the grid in response to frequency deviations. It is then gradually replaced by aFRR, which begins operating after 30 seconds. If further balancing is required, mFRR is manually activated after approximately 12.5 minutes.
+Together, these reserves enable TSOs to maintain frequency stability and ensure the secure operation of the grid \cite{FrequencyReserves}.
+%The balancing reserves consist of the frequency containment reserve (FCR), which is automatically used to keep the system in balance. This reserve is the fastest to act, providing energy in less than 30 seconds. This is followed by the automatic frequency restoration reserve is activated, which gradually replaces the FCR after 30 seconds, and finally the manual frequency restoration reserve, which can be activated to provide energy after 12.5 minutes. With these reserves TSOs ensure that the system remains in balance\cite{FrequencyReserves}.
 
 %With more and more variable renewabl energy(VRE) sources being introduced, such as solar and wind parks, the inertia of the system decreases \cite{weitemeyerIntegrationRenewableEnergy2015}. 
 
-In the German energy market all market players are called balancing responsible parties (BRP) \cite{narajewskiProbabilisticForecastingGerman2022}. 
-They must trade excess generation or consumption with other BRPs in advance and submit the resulting schedules to the TSOs. 
-These schedules may deviate from the physical volumes, resulting in an imbalance. All parties with imbalanced portfolios receive imbalance energy from the TSOs. 
-The sum of all deviations in a balancing area is called the system balance (SB)\cite{eickeElectricityBalancingMarket2021}.
+In the German energy market all market participants are called balancing responsible parties (BRPs) \cite{narajewskiProbabilisticForecastingGerman2022}. 
+BRPs are obligated to trade any expected surplus or deficit of electricity with other parties in advance and submit the resulting schedules to the TSOs. 
+However, actual physical flows may deviate from these scheduled volumes, resulting in imbalances. 
+In such cases, the affected BRPs receive imbalance energy from the TSOs.
+%All parties with imbalanced portfolios receive imbalance energy from the TSOs. 
+The sum of all individual imbalances within a control area is referred to as the system balance (SB)\cite{eickeElectricityBalancingMarket2021}.
+These imbalances are financially settled at the imbalance price (reBAP), which is the central focus of this thesis.
 
-The TSOs calculate the price for the provided imbalance energy, this is called the imbalance price(AEP). For all control areas the uniform cross-control area imbalance price(reBAP) is used. 
-Each BRP that contributed to the system imbalance, for example being short in energy while the system also is short in energy, has to pay the imbalance price for the volume needed to balance their portfolio. On the other hand BRPs that helped fight the system imbalance, for example having surplus energy while the system is short in energy, are compensated for stabilizing the net. They are paid the imbalance price for their imbalance volume\cite{eickeElectricityBalancingMarket2021}.
-
+The TSOs determine the price for the imbalance energy provided to the BRPs, this is referred to as the imbalance price(AEP). Across all control areas in Germany, a uniform cross-control area price is applied, known as the reBAP.
+%Each BRP that contributed to the system imbalance, for example being short in energy while the system also is short in energy, has to pay the imbalance price for the volume needed to balance their portfolio. On the other hand BRPs that helped fight the system imbalance, for example having surplus energy while the system is short in energy, are compensated for stabilizing the net. They are paid the imbalance price for their imbalance volume\cite{eickeElectricityBalancingMarket2021}.
+BRPs that contribute to the system imbalance—e.g., by being short while the system itself is also short—must pay the imbalance price for the required balancing volume. Conversely, BRPs whose imbalance mitigates the overall system imbalance—e.g., by having surplus energy during a system shortage—are compensated at the imbalance price for the energy they contribute to grid stability \cite{eickeElectricityBalancingMarket2021}.
 % With more and more variable renewabl energy(VRE) sources being introduced, such as solar and wind parks, the inertia of the system decreases \cite{weitemeyerIntegrationRenewableEnergy2015}. 
 
 
 \section{Research Questions}
 \label{Section::Research_Questions}
-The goal of this thesis is to find out how well time series predictors work for the prediction of the imbalance price in the german energy market. 
-Different models of variying complexity will be trained on the task for predicting the imbalance price on the german electricity market. 
-With the results and information obtained during the training another goal is to find the most influential factors for the imbalance price.
+%The goal of this thesis is to find out how well time series predictors work for the prediction of the imbalance price in the german energy market. 
+%Different models of variying complexity will be trained on the task for predicting the imbalance price on the german electricity market. 
+%With the results and information obtained during the training another goal is to find the most influential factors for the imbalance price.
 
-Predicting the reBAP is a very challenging task, as many factors come into play.
-Due to the reBAPs nature it is highly influenced by multiple factors, such as the system balance, current market situation and available balancing reserves. 
-How these interact will be explained in section \ref{Section::Imbalance_Price}. 
-The models used throughout this thesis will make their prediction about the reBAP one hour before energy delivery. 
+%Predicting the reBAP is a very challenging task, as many factors come into play.
+%Due to the reBAPs nature it is highly influenced by multiple factors, such as the system balance, current market situation and available balancing reserves. 
+%How these interact will be explained in section \ref{Section::Imbalance_Price}. 
+%The models used throughout this thesis will make their prediction about the reBAP one hour before energy delivery. 
 %With this configuration there is still time for BRPs to trade energy to improve system stability. 
 
+The primary objective of this thesis is to evaluate how effectively different time series models can forecast the imbalance price (reBAP) in the German electricity market. Models of varying complexity—including both traditional and deep learning approaches—will be trained and compared.
 
+In addition to model performance, this thesis also aims to identify key features that influence the prediction of the imbalance price.
+
+Forecasting the reBAP is particularly challenging due to its dependency on multiple interacting factors such as the system balance, current market dynamics, and available balancing reserves. These dependencies will be discussed in detail in Section \ref{Section::Imbalance_Price}. All models will generate forecasts one hour before energy delivery time.
+
+This leads to the central research question: To what extent can recent time series models such as xLSTM and iTransformer improve the short-term forecasting accuracy of the imbalance price compared to classical models?
 \section{Motivation}
 \label{Section::Motivation}
 
-With more and more variable renewable energy(VRE) sources being introduced into the net, such as solar and wind parks, the inertia of the system decreases \cite{weitemeyerIntegrationRenewableEnergy2015}. 
-Generation of these can only be assumed using whether forecasts. If the actual wheathe deviates from the forecasts so does the energy production. In systems with a larger VRE share this can result in a larger system imbalance. 
+%With more and more variable renewable energy(VRE) sources being introduced into the net, such as solar and wind parks, the inertia of the system decreases \cite{weitemeyerIntegrationRenewableEnergy2015}. 
+%Generation of these can only be assumed using whether forecasts. If the actual wheathe deviates from the forecasts so does the energy production. In systems with a larger VRE share this can result in a larger system imbalance. 
 
-To help stabilize the system a good forecast about the reBAP could be useful. A good estimate of the reBAP would give BRPs an idea whether action is required to help stabilize the energy net.
+%To help stabilize the system a good forecast about the reBAP could be useful. A good estimate of the reBAP would give BRPs an idea whether action is required to help stabilize the energy net.
+The increasing share of variable renewable energy (VRE) sources, such as wind and solar power, has led to a significant reduction in system inertia \cite{weitemeyerIntegrationRenewableEnergy2015}. Since the output of these sources strongly depends on weather conditions, their actual generation often deviates from forecasts. In energy systems with high VRE penetration, this leads to more frequent and larger imbalances between scheduled and physically delivered volumes.
+
+As a result, balancing becomes more critical—and more difficult—for Transmission System Operators (TSOs) and market participants. Imbalance prices (reBAP) are a key economic signal in this context. They financially incentivize market actors, especially Balancing Responsible Parties (BRPs), to stabilize the grid by aligning their schedules with expected system conditions.
+
+A reliable short-term forecast of the reBAP could support BRPs in making better intraday decisions. If an accurate prediction indicates that the system will be short, a BRP might choose to proactively trade additional volumes instead of incurring high imbalance costs. Thus, improving reBAP forecasting has the potential to support system stability, reduce costs, and increase market efficiency.
+
+In the broader context of the energy transition, reliable short-term forecasting of system-critical variables such as the reBAP supports the integration of renewables and reduces the need for costly reserve activation.
 
 \section{Objectives}
 \label{Section::Objectives}
-This thesis will try to answer the question, whether time series predictors are able to make good predictions about future imbalance prices. To answer this question different state-of-the-art time series predictors will be compared on the task of predicting the imbalance price. 
-Models that have previously been to tackle this task will be compared with new promising time series prediction models.
+%This thesis will try to answer the question, whether time series predictors are able to make good predictions about future imbalance prices. To answer this question different state-of-the-art time series predictors will be compared on the task of predicting the imbalance price. 
+%Models that have previously been to tackle this task will be compared with new promising time series prediction models.
 
-One hypothesis is, that new state-of-the-art time series predictors can outperform models previously employed on this problem, like the models presented in the next chapter. 
+%One hypothesis is, that new state-of-the-art time series predictors can outperform models previously employed on this problem, like the models presented in the next chapter. 
 
-The results of the models are compared with the trades settled in the last hour before delivery, denoted as $ID_1$. Due to the imbalance price, BRPs are incentivised to trade electric power to balance their portfolio \cite{kochPASSIVEBALANCINGINTRADAY2020a}. 
-The prices of trades close to the delivery time can be used as a proxy for the BRPs estimate of the imbalance price. Comparing the prediction accuracy against this index shows whether the models outperform the predictors currently used by BRPs.
+%The results of the models are compared with the trades settled in the last hour before delivery, denoted as $ID_1$. Due to the imbalance price, BRPs are incentivised to trade electric power to balance their portfolio \cite{kochPASSIVEBALANCINGINTRADAY2020a}. 
+%The prices of trades close to the delivery time can be used as a proxy for the BRPs estimate of the imbalance price. Comparing the prediction accuracy against this index shows whether the models outperform the predictors currently used by BRPs.
 
 
  %In this research I will also look into whether these models work on live data. 
- The system imbalance is settled every 15 minutes, dividing a day into 96 timesteps \cite{NetztransparenzReBAP}.
- Each model will make a prediction for each timestep of a day, using the data available at prediction time.
+ %The system imbalance is settled every 15 minutes, dividing a day into 96 timesteps \cite{NetztransparenzReBAP}.
+ %Each model will make a prediction for each timestep of a day, using the data available at prediction time.
  % Part of the data used for the prediction consists of live data, published for each time step. 
 %The latest possible time of prediction is five minutes before the delivery period \cite{EPEXTradingBrochure}.
  %Some of the live data for timestep $t-1$ is delayed, making it unavailable for a prediction for $t+1$ at the prediction timestep $t$. 
@@ -75,33 +96,75 @@ The prices of trades close to the delivery time can be used as a proxy for the B
 
 %A second hypothesis is that a prediction, which utilizes the latest data is more accurate, than a prediction made at an earlier point in time.
 
+This thesis aims to evaluate the performance of various time series models in forecasting the German imbalance price (reBAP) one hour before energy delivery. To this end, a range of models will be trained and tested, including classical approaches such as ARIMA and Random Forest, as well as recent deep learning architectures like xLSTM and iTransformer.
+
+The central goal is to assess whether newer, high-capacity models are able to outperform previously used forecasting methods on this task. In addition to comparing model performance, the thesis also investigates which input features most strongly influence the reBAP forecast. This may provide further insight into the driving factors behind price formation in the imbalance market.
+
+To validate the forecasts, the predicted reBAP values will be compared to the intraday index ID1, which represents the volume-weighted average of trades settled during the last hour before delivery. Since BRPs typically use this index to estimate the imbalance price in practice, it serves as a meaningful benchmark.
+
+Each model is designed to produce a prediction for every 15-minute timestep throughout the day, based on the information available at the time of prediction. Forecast accuracy will be evaluated using both deterministic and probabilistic metrics.
 
 \section{Methodology}
 \label{Section::Methodology}
-This thesis will try to answer the question of how well time series forecasting models are able to predict prices in the German electricity market. The performance of the models will be measured by their accuracy in predicting the imbalance price. A benchmark for this prediction will be the $ID_1$ price. Since the $ID_1$ price is the average of the trades in the hour before delivery, it serves as a proxy for the BRPs prediction of the imbalance price \cite{narajewskiProbabilisticForecastingGerman2022}. 
+%This thesis will try to answer the question of how well time series forecasting models are able to predict prices in the German electricity market. The performance of the models will be measured by their accuracy in predicting the imbalance price. A benchmark for this prediction will be the $ID_1$ price. Since the $ID_1$ price is the average of the trades in the hour before delivery, it serves as a proxy for the BRPs prediction of the imbalance price \cite{narajewskiProbabilisticForecastingGerman2022}. 
 
 %In this thesis I will use benchmarks, such as the previous state of the art methods for imbalance price prediction. These benchmarks will be compared with other novel time series predictors such as xLSTM, iTransformers, State Space Models and Recurrent Neural Networks to see how they perform in this domain.
 
-The prediction will be made based on data from three thematic fields. 
-The dataset contains information about energy data, weather data and market data. 
-These data sources will be explained in detail in section \ref{Chapter::Data}.
+%The prediction will be made based on data from three thematic fields. 
+%The dataset contains information about energy data, weather data and market data. 
+%These data sources will be explained in detail in section \ref{Chapter::Data}.
 
 %The data used in these predictions will come from different sources: First, data from $netztransparenz.de$ will be used. This contains information about the past time intervals, consisting of the system imbalance, an estimate of the imbalance price and the GCC traffic light which shows the current system balance status \cite{NetztransparenzTrafficLight}. Secondly, weather data provided by the DWD is used. This data consists of information about global radiation, wind speeds and directions, and various other measures that have been condensed into a data set called $dwd-mosmix$. A more detailed overview of the data can be found here: \cite{DWDMosmix}. The data from DWD is obtained from a range of weather stations across Germany. The third type of data used in this thesis is financial data provided by the european power exchange (EPEX). This data consists of prices of different energy-auctions, as well as information on recent trades.
 %The European Network of Transmission System Operators for Electricity (ENTSO-E) publishes a wide range of data for the european power network. From this datasource data about forecasted load, forecasted generation will be used in this thesis. 
 
-All of these models will be implemented using the Google Cloud environment. The data will be stored in Google's BigQuery and the models will be implemented in Vertex AI, using a virtual machine.
+%All of these models will be implemented using the Google Cloud environment. The data will be stored in Google's BigQuery and the models will be implemented in Vertex AI, using a virtual machine.
+To investigate the forecasting performance of different time series models on the German imbalance price (reBAP), this thesis follows a comparative empirical approach. A set of models—ranging from classical statistical methods to recent deep learning architectures—will be trained on historical energy, weather, and market data, and evaluated based on their predictive accuracy.
+
+The prediction target is the reBAP value for each 15-minute interval (quarter-hour) of a day, forecasted one hour before the actual delivery time. Each model generates 96 predictions per day, simulating realistic operational conditions in which only information available at the prediction time is used.
+
+As a benchmark for model performance, the intraday price index ID1 is used. Since the ID1 represents the average of trades executed in the final hour before gate closure, it reflects the implicit expectations of BRPs and serves as a practical reference point for evaluating the quality of the model-based forecasts.
+
+The models are assessed using both deterministic and probabilistic evaluation metrics, including mean absolute error (MAE), root mean squared error (RMSE), continuous ranked probability score (CRPS), and prediction interval coverage.
+
+Three thematic data domains are used to construct the feature set:
+
+Energy data (e.g., system load, generation by source),
+
+Market data (e.g., spot prices, intraday indices), and
+
+Weather data (e.g., temperature, solar radiation, wind speed).
+
+These data sources are described in detail in Section \ref{Chapter::Data}.
+
+The full data processing pipeline is implemented in the Google Cloud environment. Raw data is stored and queried via BigQuery, and all model training and evaluation is conducted using Vertex AI with custom virtual machines.
 
 \section{Structure}
 \label{Section::Structure}
-The following chapter \ref{Chapter::Theoretical_Background} contains information about how the german electricity market works and how the imbalance price is calculated
-In chapter \ref{Chapter::State_of_the_Art} some relevant research done on this problem domain will be shown, including other models that have already been tested on the prediction of the german imbalance price. 
-That chapter will also contain information about the state of the art time series predictors used in this thesis.
+The remainder of this thesis is organized as follows:
 
-Information about the methodology used can be found in chapter \ref{Chapter::Implementation},  also providing information about how the data for the training was received and processed.
+Chapter \ref{Chapter::Theoretical_Background} provides an overview of the German electricity market and explains how the imbalance price (reBAP) is calculated. This background is essential for understanding the price dynamics targeted by the forecasting models.
 
-After that, chapter \ref{Chapter::Experiments} contains the setup for the experiments, followed by the Chapter \ref{Chapter:Results} which contains the results to those experiments.
+Chapter \ref{Chapter::State_of_the_Art} reviews related work on imbalance price forecasting in various electricity markets and introduces the time series prediction models that are evaluated in this thesis, including both classical and deep learning approaches.
 
-This thesis concludes with the chapter \ref{Chapter::Results and Discussion} where the results are put into perspective and \ref{Chapter::Conclusion} where all findings are summarized and a brief outlook.
+Chapter  \ref{Chapter::Data} presents the dataset used for training and evaluation. It describes the structure, content, and sources of the energy, weather, and market data, and explains how they relate to the modeling task.
+
+Chapter  \ref{Chapter::Implementation} outlines the feature engineering process and implementation details of the models, including data preprocessing, temporal structure, and model configurations.
+
+Chapter \ref{Chapter::Experiments}  describes the experimental setup, including the baseline comparisons, model variations, and forecast horizon configurations.
+
+Chapter \ref{Chapter::Results and Discussion} presents and discusses the results of the experiments, highlighting key insights regarding model performance and feature relevance.
+
+Chapter  \ref{Chapter::Conclusion} summarizes the findings, reflects on their implications, and provides an outlook for future research and applications.
+
+%The following chapter \ref{Chapter::Theoretical_Background} contains information about how the german electricity market works and how the imbalance price is calculated
+%n chapter \ref{Chapter::State_of_the_Art} some relevant research done on this problem domain will be shown, including other models that have already been tested on the prediction of the german imbalance price. 
+%That chapter will also contain information about the state of the art time series predictors used in this thesis.
+
+%Information about the methodology used can be found in chapter \ref{Chapter::Implementation},  also providing %information about how the data for the training was received and processed.
+
+%After that, chapter \ref{Chapter::Experiments} contains the setup for the experiments, followed by the Chapter \ref{Chapter:Results} which contains the results to those experiments.
+
+%This thesis concludes with the chapter \ref{Chapter::Results and Discussion} where the results are put into perspective and \ref{Chapter::Conclusion} where all findings are summarized and a brief outlook.
 
 \ifstandalone
     \printglossary

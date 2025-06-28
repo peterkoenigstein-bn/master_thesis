@@ -19,31 +19,36 @@
 % Use flowcharts to give an overview
 \section{Feature engineering}
 \label{Section::Feature_engineering}
+To improve predictive performance, the raw data introduced in Section \ref{Chapter:Data} is transformed into a set of engineered features. These features are designed to capture domain-specific relationships between the input variables and the imbalance price. Key transformations include the calculation of residual load and forecast errors.
 
-The data introduced in section \ref{Chapter::Data} can be further refined to gain additional information. 
-The following sections contain information about how the data was used to create more features.
-Feature engineering was done for energy data, weather data and holiday data.
+Feature selection is guided by exploratory data analysis, domain knowledge, and statistical correlation with the target variable (reBAP).
 
-In the following sections the correlation between features and the imbalance price will be explored.
-Using the anderson darling test \ref{andersonAsymptoticTheoryCertain1952} it was confirmed, that the data is normal distributed.
-A probability plot for the imbalance price can be seen in figure \ref{fig::rebap_distribution}. 
-The red line resembles a normal distribution. 
-The imbalance price has a skewness of $27.08$ and a kurtosis of $1194.02$, so the pearson correlation can not be used for analysing correlations.
-Instead for the following correlation analyses the spearman rank correlation will be used.
-
-\begin{figure}[ht]
-            \centering
-            \includegraphics[width=.5\textwidth]{implementation/probability_plot.png}
-            \caption[Probability plot for the imbalance price]{Probability plot for the imbalance price}
-            \label{fig::rebap_distribution}
- \end{figure}
+A normality check using the Anderson-Darling\ref{andersonAsymptoticTheoryCertain1952} test does not reject the assumption of normality, but due to the high skewness of $27.08$ and kurtosis of $1194.02$ normality can be rejected. Therefore, Spearman rank correlation is used to assess monotonic relationships between input features and target variables.
 
 
-The imbalance volume and the imbalance price are highly correlated. 
+%The data introduced in section \ref{Chapter::Data} can be further refined to gain additional information. 
+%The following sections contain information about how the data was used to create more features.
+%Feature engineering was done for energy data, weather data and holiday data.
+
+%In the following sections the correlation between features and the imbalance price will be explored.
+%Using the anderson darling test \ref{andersonAsymptoticTheoryCertain1952} it was confirmed, that the data is normal distributed.
+%A probability plot for the imbalance price can be seen in figure \ref{fig::rebap_distribution}. 
+%The red line resembles a normal distribution. 
+%The imbalance price has a skewness of $27.08$ and a kurtosis of $1194.02$, so the pearson correlation can not be used for analysing correlations.
+%Instead for the following correlation analyses the spearman rank correlation will be used.
+
+%\begin{figure}[ht]
+%            \centering
+ %           \includegraphics[width=.5\textwidth]{implementation/probability_plot.png}
+%            \caption[Probability plot for the imbalance price]{Probability plot for the imbalance price}
+%            \label{fig::rebap_distribution}
+% \end{figure}
+
+
+The imbalance volume and the imbalance price are highly correlated, having a correlation coefficient of $0.774$. 
 Figure \ref{Figure::volume_price_scatter} shows scatter plots for the imbalance volume and imbalance price.
-The correlation coefficient between the imbalance price and the imbalance volume is $0.774$.
-In the following subsections the correlation between newly engineered variables and the imbalance price will be inspected.
-Due to the high correlation with the imbalance volume, correlations with the imbalance volumes will also be regarded.
+Due to the high correlation with the imbalance volume, correlations with the imbalance volumes will also be regarded for selecting new features.
+The following sections describe the feature generation process for energy and weather data.
 
 \begin{figure}[ht]
             \centering
@@ -55,19 +60,35 @@ Due to the high correlation with the imbalance volume, correlations with the imb
 
     \subsection{Energy data}
     \label{Section::FE_Energy_Data}
-    The energy data provided by ENTSO-E can be further refined to gain additional information.
-    One additional feature is the residual load. 
-    Residual load is defined as the load that is not covered by VRE. 
-    This is calulated by subtracting the generation provided by solar, wind onshore and win offshore from the load.
+
+Several informative features are derived from the ENTSO-E dataset to capture dynamics relevant for the imbalance price. A central feature is the residual load, defined as the difference between total system load and the combined generation from wind (onshore and offshore) and solar:
+
+Residual Load = Load−(Generation Wind\textsubscript{onshore} + Generation Wind\textsubscript{offshore} + Generation Solar)
+
+This value reflects the part of the load that must be covered by dispatchable sources and is a key proxy for system stress.
+
+Additionally, forecast errors are computed for load, generation, and residual load. These are calculated as the difference between forecasted and actual values for each variable. Since actual values are not available at prediction time, this feature is only available at the time the actual values are available. These features can also be used for analysis. 
+
+If other features that are available at prediction time correlate highly with the forecast errors, those features can be used to gain additional information.
+
+Spearman rank correlation coefficients between the engineered features and the imbalance price are shown in Table \ref{Table::Rebap_Correlations_ENTSOE}. The strongest relationships are observed for residual load (actual and forecasted) as well as the forecast error of residual load.
+Table \ref{Table::Imbalance_volume_Correlations_ENTSOE} presents the corresponding correlations with the imbalance volume. Here, the forecast errors also play a significant role, albeit with generally weaker correlations compared to the imbalance price.
+
+
+
+   % The energy data provided by ENTSO-E can be further refined to gain additional information.
+ %   One additional feature is the residual load. 
+  %  Residual load is defined as the load that is not covered by VRE. 
+%    This is calulated by subtracting the generation provided by solar, wind onshore and win offshore from the load.
     
-    Another way of generating more informative features is to calculate the forecasting error. 
-    For this the forecast for solar generation, wind generation and load is substracted from the actual measured values.
-    This can also be done for the residual load.
-    For each of these variables the correlation with the imbalance price is calclulated to estimate how much influence the variables have in determining the imbalance price.
-    Table \ref{Table::Rebap_Correlations_ENTSOE} contains the results for these calculations. 
+   % Another way of generating more informative features is to calculate the forecasting error. 
+%    For this the forecast for solar generation, wind generation and load is substracted from the actual measured values.
+%    This can also be done for the residual load.
+%   For each of these variables the correlation with the imbalance price is calclulated to estimate how much influence the variables have in determining the imbalance price.
+ %   Table \ref{Table::Rebap_Correlations_ENTSOE} contains the results for these calculations. 
     
-    Out of these features the forecasted and actual value for residual load and the residual load forecasting error correlate the most with the imbalance price.
-    It should be noted that the actual values apart from the forecasts are not available at prediction time.    
+  %  Out of these features the forecasted and actual value for residual load and the residual load forecasting error correlate the most with the imbalance price.
+ %   It should be noted that the actual values apart from the forecasts are not available at prediction time.    
 
     \begin{table}
     \centering
@@ -81,12 +102,12 @@ Due to the high correlation with the imbalance volume, correlations with the imb
     \end{tabular}
 
     
-    \caption{Correlations between variables and \textbf{imbalance price} (rounded to next $10^{-3}$). Green cells are new features}
+    \caption{Correlations between variables and \textbf{imbalance price} (rounded to next $10^{-3}$). Green cells are new features, the 3 most correlating features are written in bold}
     \label{Table::Rebap_Correlations_ENTSOE}
     \end{table}
 
-The correlation between the ENTSO-E data and the imbalance volume was calculated as well.
-The results for these calculations are displayd in table \ref{Table::Imbalance_volume_Correlations_ENTSOE}. The forecasted and actual value for the residual have a much lower correlation with the imbalance volume than with the imbalance price. The correlation between the residual load forecasting error and imbalance volume is about the same as with the imbalance price. Apart from the load the forecasting error correlates the most with the imbalance volume. 
+%The correlation between the ENTSO-E data and the imbalance volume was calculated as well.
+%The results for these calculations are displayd in table \ref{Table::Imbalance_volume_Correlations_ENTSOE}. The forecasted and actual value for the residual have a much lower correlation with the imbalance volume than with the imbalance price. The correlation between the residual load forecasting error and imbalance volume is about the same as with the imbalance price. Apart from the load the forecasting error correlates the most with the imbalance volume. 
 
 
 
@@ -102,32 +123,57 @@ The results for these calculations are displayd in table \ref{Table::Imbalance_v
     \end{tabular}
 
     
-    \caption{Correlations between variables and \textbf{imbalance volume} (rounded to next $10^{-3}$). Green cells are new features}
+    \caption{Correlations between variables and \textbf{imbalance volume} (rounded to next $10^{-3}$). Green cells are new features, the 3 most correlating features are written in bold}
     \label{Table::Imbalance_volume_Correlations_ENTSOE}
     \end{table}
     
-    The newly introduced features in this section will also be used for inspecting possible features introduced at a later point.
     
     \subsection{Weather data}
     \label{Section::Weather_data}
-    The weather data contains a lot of datapoints, especially the MOSMIX forecast. 
-    For each of the originally 40 features a forecast is done 240 times for each timestep. 
-    This data needs to be condensed, as not all of theses timestamps are useful.
-    There are certain timestamps which will be inspected closer for the feature engineering.
+
+The MOSMIX dataset from the German Weather Service (DWD) provides high-resolution weather forecasts for up to 40 variables at hourly intervals. For each variable, forecasts are updated every hour and extend up to 10 days into the future.
+
+To construct meaningful input features, two forecast timestamps are selected for each variable:
+\begin{itemize}
+\item the day-ahead forecast from 18:00 on the previous day 
+\item the latest available forecast, typically issued two hours before gate closure
+\end{itemize}
+
+The day-ahead forecast reflects what market participants may have relied on when submitting schedules, while the latest forecast provides the most accurate information available at prediction time.
+
+In addition to using both forecast values directly, a third feature is calculated as the difference between the two forecasts, capturing the forecast revision and serving as a proxy for uncertainty.
+
+Feature names are prefixed accordingly:
+\begin{itemize}
+\item DayAhead for the earlier forecast,
+\item LastFC for the latest forecast,
+\item Diff  for the difference between the two.
+\end{itemize}
+Spearman correlations between these features and the imbalance price, imbalance volume, and residual load forecasting error are reported in Tables \ref{Table::imbalance_price_MOSMIX_correlations},  \ref{Table::imbalance_volume_MOSMIX_correlations} and  \ref{Table::residual_load_fce_MOSMIX_correlations}.
+
+Among the most relevant features are wind-related variables (FF, FX1), solar radiation (Rad1h, SunD1), and cloud cover (N05). These findings align with expectations, as VRE production and residual load strongly depend on weather dynamics.
+
+
+
+
+    %The weather data contains a lot of datapoints, especially the MOSMIX forecast. 
+  %  For each of the originally 40 features a forecast is done 240 times for each timestep. 
+   % This data needs to be condensed, as not all of theses timestamps are useful.
+   % There are certain timestamps which will be inspected closer for the feature engineering.
     
-    The forecasts done by ENTSO-E are published the day before at 18:00. 
-    In the MOSMIX data this timestamp will be more closely looked at, because this is the latest forecast available for the forecast made by ENTSO-E.
-    Another important timestamp is the latest timestamp. This forecast has access to the most information, thus is most likely the most accurate forecast.
-    With a forecast being done each hour, the latest available timestamp at prediction time is the one 2 hours before gate closure time, due to the prediction happening at 1 hour before gate closure time.
-    For each of the MOSMIX variables the correlation for both of the previously discussed timestamps is checked.
+  %  The forecasts done by ENTSO-E are published the day before at 18:00. 
+    %In the MOSMIX data this timestamp will be more closely looked at, because this is the latest forecast available for the forecast made by ENTSO-E.
+    %Another important timestamp is the latest timestamp. This forecast has access to the most information, thus is most likely the most accurate forecast.
+   % With a forecast being done each hour, the latest available timestamp at prediction time is the one 2 hours before gate closure time, due to the prediction happening at 1 hour before gate closure time.
+   % For each of the MOSMIX variables the correlation for both of the previously discussed timestamps is checked.
     
-    With both of these configurations for each of the variables a new feature can be created. 
-    To get an estimate for the forecasting error in the ENTSO-E data, the change in forecast can be calculated in the DWD data.
-    Under the assumption, that a more recent forecast is more accurate, the difference between the latest forecast and the forecast of the day before at $18:00$ is calculated.
-    The names for these new features are created by combining a prefix with the abbreviation for the MOSMIX feature.
-    For the forecast from the previous day the prefix \textit{DayAhead} is used, the prefix \textit{LastFC} is used for the most recent forecast and \textit{Diff} denotes that the features is the difference between the day ahead forecast and the most recent forecast.
-    The results for the correlation analysis between the features and the imbalance can be found in table \ref{Table::imbalance_price_MOSMIX_correlations}. The results for the correlation analysis with the imbalance volume are displayed in table \ref{Table::imbalance_volume_MOSMIX_correlations}.
-    The features containing information about wind, namely \textit{FX1} and \textit{FF}, show the highest correlation with the imbalance price. The parameter containing information about cloud coverage (\textit{N05}) is among the highest correlated with both the imbalance price and the imbalance volume. The same is true for the features containing information about solar radiation, \textit{Rad1h} and \textit{SunD1}. In general the correlation between the MOSMIX features and the imbalance volume are a lot lower than the correlations with the imbalance price.
+  %  With both of these configurations for each of the variables a new feature can be created. 
+   % To get an estimate for the forecasting error in the ENTSO-E data, the change in forecast can be calculated in the DWD data.
+   % Under the assumption, that a more recent forecast is more accurate, the difference between the latest forecast and the forecast of the day before at $18:00$ is calculated.
+   % The names for these new features are created by combining a prefix with the abbreviation for the MOSMIX feature.
+  %  For the forecast from the previous day the prefix \textit{DayAhead} is used, the prefix \textit{LastFC} is used for the most recent forecast and \textit{Diff} denotes that the features is the difference between the day ahead forecast and the most recent forecast.
+   % The results for the correlation analysis between the features and the imbalance can be found in table \ref{Table::imbalance_price_MOSMIX_correlations}. The results for the correlation analysis with the imbalance volume are displayed in table \ref{Table::imbalance_volume_MOSMIX_correlations}.
+  %  The features containing information about wind, namely \textit{FX1} and \textit{FF}, show the highest correlation with the imbalance price. The parameter containing information about cloud coverage (\textit{N05}) is among the highest correlated with both the imbalance price and the imbalance volume. The same is true for the features containing information about solar radiation, \textit{Rad1h} and \textit{SunD1}. In general the correlation between the MOSMIX features and the imbalance volume are a lot lower than the correlations with the imbalance price.
     
     \begin{table}
     \centering
@@ -191,59 +237,90 @@ The results for these calculations are displayd in table \ref{Table::Imbalance_v
 
 \section{Data Split}
 \label{Section::Data_Split}
+To ensure a realistic evaluation of model performance, the dataset is chronologically split into three subsets:
+\begin{itemize}
+\item 70\% for training
+\item 10\% for validation
+\item 20\% for testing
+\end{itemize}
 
-To make sure the models trained during the experiments are comparable the models have to be trained and evaulated on the same dataset.
-The data was split into a set of training, validation and test data with a share of 70\%, 10\% and 20\% respectively.
+The split is performed along the time axis to reflect real-world forecasting conditions and prevent data leakage between training and evaluation sets.
 
-For random forest and arima this data split could be done using $train\_test\_split$ from the sklearn package. 
-With the more complex Time Series predictors xLSTM and iTransformer needing a different input shape this is a bit more complex.
+For Random Forest and ARIMA, the split can done by indexing the data. To ensure that these models have access to the same information as xLSTM and iTransformer, lagged featueres are introduced. For xLSTM and iTransformer, the data must be reshaped into time series sequences, and the split is performed explicitly on the full time-indexed dataset.
 
-Instead the training, validation and test split was done along the temporal axis. 
-The oldest 70\% were defined as training data, the newest 20\% as test data, with the remaining 10\% being the validation data.
+All models are evaluated on the same test period to ensure fair comparison. 
+
+The forecast target is the reBAP one hour before energy delivery; hence, each model input only includes data available up to that point.
+
+
+%To make sure the models trained during the experiments are comparable the models have to be trained and evaulated on the same dataset.
+%The data was split into a set of training, validation and test data with a share of 70\%, 10\% and 20\% respectively.
+
+%For random forest and arima this data split could be done using $train\_test\_split$ from the sklearn package. 
+%With the more complex Time Series predictors xLSTM and iTransformer needing a different input shape this is a bit more complex.
+
+%Instead the training, validation and test split was done along the temporal axis. 
+%The oldest 70\% were defined as training data, the newest 20\% as test data, with the remaining 10\% being the validation data.
 
 
 \section{Models}
 \label{Section::Models}
 
-In this section implementation details for each of the used models will be discussed. 
-The hyperparameter configurations might change during the experiments. 
-Any changes done specifically for an experiment will be discussed in the experiment's section.
+Four forecasting models are used in this thesis, representing different modeling paradigms:
+\begin{itemize}
+\item Random Forest (ensemble learning)
+\item ARIMA (statistical time series modeling)
+\item xLSTM (deep recurrent neural network)
+\item iTransformer (inverted attention-based model)
+\end{itemize}
 
-All the models were implemented in python. 
+The models differ in their ability to capture temporal dependencies and process structured input. Random Forest and ARIMA require handcrafted lag features to encode time series behavior, while xLSTM and iTransformer directly process sequential data through specialized architectures.
 
-\subsection{Random Forest}
-\label{Section::Random_Forest}
+For Random Forest, the RandomForestRegressor from scikit-learn is used, along with 4 lagged input versions for each feature (15min to 1h back). Hyperparameters are tuned using randomized search with 5-fold cross-validation, optimizing for RMSE.
 
-As a random forest regressor the RandomForestRegressor provided by sklearn was used.
-Random forest can not use time series data out of the box.
-To give some more information about past timesteps shifted features are used.
+For ARIMA, the auto\_arima function from the pmdarima package is used. Only a subset of features is used as exogenous inputs due to computational constraints. Feature selection is based on the top 10 ranked variables from the Random Forest importance scores.
 
-For the training in the experiments the timesteps of the previous 4 quarter hours were used.
+Both xLSTM and iTransformer require fixed-length input sequences. These are constructed using a sliding window approach with lookback lengths defined in the experiment setup (see Chapter \ref{Section::Experimental_Setup}). The deep learning models are implemented using PyTorch and trained on GPUs in the Google Cloud Vertex AI environment.
 
-To find the best random forest regressor RandomizedSearchCV by sklearn was used.
-In total 20 different parameter combination were tested with a cross validation of 5.
-The performance of the models was measured using the negative mean squared error.
+%In this section implementation details for each of the used models will be discussed. 
+%The hyperparameter configurations might change during the experiments. 
+%Any changes done specifically for an experiment will be discussed in the experiment's section.
 
-\subsection{Arima}
-\label{Section::Arima}
+%All the models were implemented in python. 
+%
+%\subsection{Random Forest}
+%\label{Section::Random_Forest}
 
-For the training of the arima model the module pmdarima was used.
-This module provides the function \textit{auto\_arima} to find the best arima model.
-The model was trained using the target variable as well as exogenous variables.
-The training time increases with the amount of exogenous variables.
-For that reason only a subset of features was used for this training.
+%As a random forest regressor the RandomForestRegressor provided by sklearn was used.
+%Random forest can not use time series data out of the box.
+%To give some more information about past timesteps shifted features are used.
 
-After the training of a random forest the importance of its features can be extracted using \textit{feature\_importances}. 
-The $10$ most important features were used for the training of the arima model.
-Using \textit{auto\_arima} the best parameter configuration can be found.
+%For the training in the experiments the timesteps of the previous 4 quarter hours were used.
 
-\subsection{xLSTM}
-\label{Section::xLSTM}
-The configuration for the xLSTM models changes throughout the experiments and will be described in section \ref{Section::Experimental_Setup}
+%To find the best random forest regressor RandomizedSearchCV by sklearn was used.
+%In total 20 different parameter combination were tested with a cross validation of 5.
+%The performance of the models was measured using the negative mean squared error.
 
-\subsection{iTransformer}
-\label{Section::iTransformer}
-The configuration for the iTransformer models changes throughout the experiments and will be described in section \ref{Section::Experimental_Setup}
+%\subsection{Arima}
+%\label{Section::Arima}
+
+%For the training of the arima model the module pmdarima was used.
+%This module provides the function \textit{auto\_arima} to find the best arima model.
+%The model was trained using the target variable as well as exogenous variables.
+%The training time increases with the amount of exogenous variables.
+%For that reason only a subset of features was used for this training.
+
+%After the training of a random forest the importance of its features can be extracted using \textit{feature\_importances}. 
+%The $10$ most important features were used for the training of the arima model.
+%Using \textit{auto\_arima} the best parameter configuration can be found.
+
+%\subsection{xLSTM}
+%\label{Section::xLSTM}
+%The configuration for the xLSTM models changes throughout the experiments and will be described in section \ref{Section::Experimental_Setup}
+
+%\subsection{iTransformer}
+%\label{Section::iTransformer}
+%The configuration for the iTransformer models changes throughout the experiments and will be described in section \ref{Section::Experimental_Setup}
 
 
 
