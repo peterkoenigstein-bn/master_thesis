@@ -131,7 +131,7 @@ Models are trained and evaluated on the same data splits and using the same metr
  %  The following experiments will all use a sequence length of 96.
  %  For this the sequence lengths 96, 192 and 384 were used. Other than that the hyperparameters were the same as shown in table \ref{Table::Raw_hyperparameters}. 
 
-\section{6.4 iTransformer: multi-target learning}
+\section{iTransformer: multi-target learning}
 This experiment explores whether training the iTransformer on multiple target variables—rather than only the imbalance price—can improve its forecasting accuracy for reBAP. The idea is to encourage the model to learn a more general representation of the underlying system behavior.
 
 During training, the model simultaneously predicts several energy and market-related variables, including:
