@@ -41,11 +41,11 @@ For each data field it will be explained why this data is used for the predicito
 % Where is the data from
 % How is the data presented
 % When is the data available ?
-Energy-related data used in this thesis is obtained from two sources: Netztransparenz and the ENTSO-E Transparency Platform. 
+Energy-related data used in this thesis is obtained from two sources: Netztransparenz and the \gls{ENTSO-E} Transparency Platform. 
 These sources provide quarter-hourly data on the German electricity market, including generation volumes, reserve activations, and system imbalances.
 \subsubsection{Netztransparenz}
 
-Netztransparenz provides publicly accessible data on the German balancing energy market. The key variables retrieved from this source include the uniform imbalance price (reBAP), the Netzregelverbund saldo (system imbalance volume), and the activated volumes of primary and secondary balancing reserves. All variables are available at a quarter-hour resolution.
+Netztransparenz provides publicly accessible data on the German balancing energy market. The key variables retrieved from this source include the \gls{reBAP}, the \gls{GCC} \gls{SB}, and the activated volumes of primary and secondary balancing reserves. All variables are available at a quarter-hour resolution.
 
 The imbalance price serves as the primary prediction target in this thesis. The imbalance volume is considered a key explanatory variable, as it reflects the total deviation between scheduled and delivered power in each control area.
 Both operational and quality-assured versions of the data are provided. While operational data is published 15–30 minutes after delivery, the quality-assured version becomes available with a delay of approximately 18 days. The models are trained on quality-assured data, and operational data is used for real-time simulation. Data gaps are filled using the fallback source.
@@ -86,23 +86,23 @@ A full list of variables is shown in Table \ref{Table::Energy_Data_Netztranspare
 
 \subsubsection{ENTSO-E}
 
-The European Network of Transmission System Operators for Electricity (ENTSO-E) platform provides comprehensive quarter-hourly data on the German electricity system, including load forecasts, actual load, and generation data disaggregated by energy source. Forecasts for variable renewable energy (VRE)—such as wind and solar—are published at 18:00 on the previous day, while load forecasts are available by 12:00. Actual values for all variables are typically available with a delay of no more than one hour after delivery.
+The \gls{ENTSO-E} platform provides comprehensive quarter-hourly data on the German electricity system, including load forecasts, actual load, and generation data disaggregated by energy source. Forecasts for \gls{VRE}—such as wind and solar—are published at 18:00 on the previous day, while load forecasts are available by 12:00. Actual values for all variables are typically available with a delay of no more than one hour after delivery.
 
-ENTSO-E also provides actual generation figures for conventional sources such as lignite, hard coal, natural gas, and hydro. These values are particularly useful for interpreting system flexibility and inertia.
+\gls{ENTSO-E} also provides actual generation figures for conventional sources such as lignite, hard coal, natural gas, and hydro. These values are particularly useful for interpreting system flexibility and inertia.
 
 A full list of variables and their respective availability is presented in Table \ref{Table::Energy_Data_Entsoe}.
 
 
 
 
-The European Network of Transmission System Operators for Electricity (ENTSO-E) provides data about energy volumes.
-For this thesis data about load and generation for the German electricity market is used. 
-An overview about the features used can be found in \ref{Table::Energy_Data_Entsoe}.
+%The \gls{ENTSO-E} provides data about energy volumes.
+%For this thesis data about load and generation for the German electricity market is used. 
+%An overview about the features used can be found in \ref{Table::Energy_Data_Entsoe}.
 
-The data contains information about actual and forecasted load. Also included in the data is generation and forecast for VRE sources and actual generation for fossil energy sources. 
-The load forecast is released at 12:00 on the previous day, the forecasts for VRE are released at 18:00 on the previous day. All actual measurements are available with a delay of at most 1 hour.
+%The data contains information about actual and forecasted load. Also included in the data is generation and forecast for VRE sources and actual generation for fossil energy sources. 
+%The load forecast is released at 12:00 on the previous day, the forecasts for VRE are released at 18:00 on the previous day. All actual measurements are available with a delay of at most 1 hour.
 
-The time resolution for all ENTSO-E data is quarter-hourly.
+%The time resolution for all ENTSO-E data is quarter-hourly.
 
 All datasets are accessed and downloaded via publicly available APIs, enabling automated and reproducible data collection.
 
@@ -143,16 +143,16 @@ A more detailed description of the preprocessing steps, feature engineering, and
 Market price data is retrieved from Energy-Charts and includes both day-ahead and intraday price signals. Specifically, the following variables are used:
 \begin{itemize}
 \item Hourly spot price (day-ahead auction at 12:00)
-\item Intraday auction price (IDA1) at 15:00,
+\item \gls{IDA1} price at 15:00,
 \item Intraday indices ID1 and ID3
-\item Intraday continuous average (ID FULL)
+\item Intraday continuous average ID FULL
 \end{itemize}
 
 Each intraday index represents the volume-weighted average of trades executed during a specific time window before gate closure. For example, ID1 includes trades up to one hour before delivery, while ID3 covers a 3-hour window. These indices capture short-term market expectations and allow the model to align its predictions with real trading behavior.
 
 As discussed in Section \ref{Section::Methodology}, the intraday index ID1 also serves as a benchmark for model evaluation. It reflects the implicit price forecast made by BRPs prior to gate closure and is used as the reference baseline in this thesis.
 
-Market prices are released on a fixed schedule: the spot price and IDA1 are published the day before delivery, while the intraday indices are available at midnight after delivery. The model is trained on historical values and evaluated against the ID1 benchmark. A complete list of variables is provided in Table \ref{Table::Market_Data}.
+Market prices are released on a fixed schedule: the spot price and \gls{IDA1} are published the day before delivery, while the intraday indices are available at midnight after delivery. The model is trained on historical values and evaluated against the ID1 benchmark. A complete list of variables is provided in Table \ref{Table::Market_Data}.
 
 
 %The market data used in this thesis is provided by Energy-Charts \cite{EnergyCharts}.
@@ -184,11 +184,11 @@ Market prices are released on a fixed schedule: the spot price and IDA1 are publ
 \subsection{Weather data}
 \label{Section::Weather_Data}
 
-Weather data is obtained from the German Weather Service (DWD) using the MOSMIX dataset. This dataset contains both hourly weather forecasts and measured observations for up to 40 meteorological variables, including temperature, cloud cover, wind speed, solar radiation, and precipitation.
+Weather data is obtained from the \gls{DWD} using the \gls{MOSMIX} dataset. This dataset contains both hourly weather forecasts and measured observations for up to 40 meteorological variables, including temperature, cloud cover, wind speed, solar radiation, and precipitation.
 
 Data is collected from 16 weather stations distributed across Germany (see Figure \ref{fig::weather_stations}). Forecasts are available up to 10 days in advance and updated hourly. Measurements are typically available with a delay of approximately one hour after observation.
 
-Weather data is a critical input for imbalance price forecasting, as it directly influences the generation of variable renewable energy (VRE) sources such as wind and solar.
+Weather data is a critical input for imbalance price forecasting, as it directly influences the generation of \gls{VRE} sources such as wind and solar.
 
 A selected subset of variables used in this work is listed in Table \ref{Table::DWD_MOSMIX_Parameters_Small}. Details on how the forecasts are transformed into model-ready features are discussed in Chapter \ref{Section::Feature_engineering}.
 

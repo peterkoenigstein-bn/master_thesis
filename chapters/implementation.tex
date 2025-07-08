@@ -12,7 +12,6 @@
 
 \chapter{Implementation} % Outline text
 \label{Chapter::Implementation}
-    This chapter contains a description of how the implemented algorithm works.
 
 % First explain concepts you used in your thesis like filters or methods
 % Then explain your approach or algorithm
@@ -21,7 +20,7 @@
 \label{Section::Feature_engineering}
 To improve predictive performance, the raw data introduced in Section \ref{Chapter:Data} is transformed into a set of engineered features. These features are designed to capture domain-specific relationships between the input variables and the imbalance price. Key transformations include the calculation of residual load and forecast errors.
 
-Feature selection is guided by exploratory data analysis, domain knowledge, and statistical correlation with the target variable (reBAP).
+Feature selection is guided by exploratory data analysis, domain knowledge, and statistical correlation with the target variable (\gls{reBAP}).
 
 A normality check using the Anderson-Darling\ref{andersonAsymptoticTheoryCertain1952} test does not reject the assumption of normality, but due to the high skewness of $27.08$ and kurtosis of $1194.02$ normality can be rejected. Therefore, Spearman rank correlation is used to assess monotonic relationships between input features and target variables.
 
@@ -131,7 +130,7 @@ Table \ref{Table::Imbalance_volume_Correlations_ENTSOE} presents the correspondi
     \subsection{Weather data}
     \label{Section::Weather_data}
 
-The MOSMIX dataset from the German Weather Service (DWD) provides high-resolution weather forecasts for up to 40 variables at hourly intervals. For each variable, forecasts are updated every hour and extend up to 10 days into the future.
+The MOSMIX dataset from the \gls{DWD} provides high-resolution weather forecasts for up to 40 variables at hourly intervals. For each variable, forecasts are updated every hour and extend up to 10 days into the future.
 
 To construct meaningful input features, two forecast timestamps are selected for each variable:
 \begin{itemize}
@@ -145,9 +144,9 @@ In addition to using both forecast values directly, a third feature is calculate
 
 Feature names are prefixed accordingly:
 \begin{itemize}
-\item DayAhead for the earlier forecast,
-\item LastFC for the latest forecast,
-\item Diff  for the difference between the two.
+\item DayAhead for the forecast of the day before
+\item LastFC for the latest forecast
+\item Diff  for the difference between the two
 \end{itemize}
 Spearman correlations between these features and the imbalance price, imbalance volume, and residual load forecasting error are reported in Tables \ref{Table::imbalance_price_MOSMIX_correlations},  \ref{Table::imbalance_volume_MOSMIX_correlations} and  \ref{Table::residual_load_fce_MOSMIX_correlations}.
 
@@ -246,7 +245,7 @@ To ensure a realistic evaluation of model performance, the dataset is chronologi
 
 The split is performed along the time axis to reflect real-world forecasting conditions and prevent data leakage between training and evaluation sets.
 
-For Random Forest and ARIMA, the split can done by indexing the data. To ensure that these models have access to the same information as xLSTM and iTransformer, lagged featueres are introduced. For xLSTM and iTransformer, the data must be reshaped into time series sequences, and the split is performed explicitly on the full time-indexed dataset.
+For Random Forest and \gls{ARIMAX}, the split can done by indexing the data. To ensure that these models have access to the same information as xLSTM and iTransformer, lagged featueres are introduced. For xLSTM and iTransformer, the data must be reshaped into time series sequences, and the split is performed explicitly on the full time-indexed dataset.
 
 All models are evaluated on the same test period to ensure fair comparison. 
 
@@ -269,16 +268,16 @@ The forecast target is the reBAP one hour before energy delivery; hence, each mo
 Four forecasting models are used in this thesis, representing different modeling paradigms:
 \begin{itemize}
 \item Random Forest (ensemble learning)
-\item ARIMA (statistical time series modeling)
+\item ARIMAX (statistical time series modeling)
 \item xLSTM (deep recurrent neural network)
 \item iTransformer (inverted attention-based model)
 \end{itemize}
 
-The models differ in their ability to capture temporal dependencies and process structured input. Random Forest and ARIMA require handcrafted lag features to encode time series behavior, while xLSTM and iTransformer directly process sequential data through specialized architectures.
+The models differ in their ability to capture temporal dependencies and process structured input. Random Forest and ARIMAX require handcrafted lag features to encode time series behavior, while xLSTM and iTransformer directly process sequential data through specialized architectures.
 
 For Random Forest, the RandomForestRegressor from scikit-learn is used, along with 4 lagged input versions for each feature (15min to 1h back). Hyperparameters are tuned using randomized search with 5-fold cross-validation, optimizing for RMSE.
 
-For ARIMA, the auto\_arima function from the pmdarima package is used. Only a subset of features is used as exogenous inputs due to computational constraints. Feature selection is based on the top 10 ranked variables from the Random Forest importance scores.
+For ARIMAX, the auto\_arima function from the pmdarima package is used. Only a subset of features is used as exogenous inputs due to computational constraints. Feature selection is based on the top 10 ranked variables from the Random Forest importance scores.
 
 Both xLSTM and iTransformer require fixed-length input sequences. These are constructed using a sliding window approach with lookback lengths defined in the experiment setup (see Chapter \ref{Section::Experimental_Setup}). The deep learning models are implemented using PyTorch and trained on GPUs in the Google Cloud Vertex AI environment.
 

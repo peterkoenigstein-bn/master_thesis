@@ -12,32 +12,44 @@
 \chapter{Conclusion} % Overview text
 \label{Chapter::Conclusion}
 
-    In this chapter, there is a short summary? results of the thesis are presented and evaluated as well as, the approach of this thesis.
-
 % Summaries your thesis including your results.
 % Reference the sections they discuss topics in more detail
 \section{Summary}
 \label{Section::Summary}
+This thesis explored the use of machine learning and deep learning models for short-term probabilistic forecasting of the German imbalance price (reBAP). A variety of models — including Random Forest, ARIMA, iTransformer, and xLSTM — were evaluated in a structured set of experiments using deterministic and probabilistic error metrics.
 
-In the experiments random forest performed remarkably well. 
-When looking at MAE it outperformed all the other models. 
-This might be due to the additional information passed to random forest. 
-Only random forest and ARIMA received information about past days and past weeks for the same timestamp. 
-With Load and Generation behaving periodically with a period of one day and one week, this information might have a large impact.
+The results demonstrate that xLSTM delivers the most accurate and well-calibrated forecasts overall, achieving the lowest MAE and CRPS, along with strong quantile coverage across most levels. This makes xLSTM the most effective model for general-purpose reBAP forecasting, especially when balanced accuracy and uncertainty quantification are required.
 
-The ARIMA model has access to the same information but the model does not seem to be able to capture the complexity of the time series.
-Another reason why random forest outperformed the other models is because the hyperparameters were tuned a little. 
-For this method the best model was determined by using random search, testing 20 different configurations in the process.
-The hyperparameter tuning used tried to reduce mean squared error.
+In contrast, the iTransformer model excels at predicting extreme events. It achieves the lowest RMSE and highest coverage at the 90\% and 98\% levels, indicating its strength in modeling tail risks. However, this comes at the cost of higher average error and weaker sharpness.
 
-This makes it more impressing that xLSTM has a lower RMSE than random forest, even without hyper parameter tuning.
+Random Forest and ARIMA provide solid average-case predictions with relatively low MAE and CRPS, but struggle to capture the full distribution of price spikes — as reflected in their poor RMSE and low tail coverage. 
 
-Most of the models were not able to beat the naive intraday index ID1 when looking at MAE. 
-This might be due to the fact that information about current prices are lacking. 
-The ID1 is composed of market decisions done by BRPs, which have access to market prices.
-Additionally no information about balancing reserves was included in the training process for the machine learning models.
+Additional experiments investigated the influence of architectural and input-related factors. Notably, multi-target learning did not improve performance, and increasing the forecast horizon yielded no meaningful gain in one-hour-ahead prediction. Shorter input sequences improved iTransformer’s sharpness and coverage, while variations in xLSTM block structure had only minor effects.
 
-The performance of the more complex time series predictors can also be explained by the lack of hyperparameter tuning. 
+A feature importance analysis confirmed that reBAP is primarily driven by market-based indicators such as intraday indices and the day-ahead spot price, followed by fossil generation and residual load forecasts. Forecast errors in wind production also contributed useful information, particularly for modeling uncertainty.
 
+In conclusion, this work shows that deep learning models — especially xLSTM for average accuracy and iTransformer for tail sensitivity — outperform classical approaches in short-term probabilistic reBAP forecasting. These findings highlight the value of aligning model architecture and training configuration with the underlying characteristics of the target variable and application context.
+
+
+%In the experiments random forest performed remarkably well. 
+%When looking at MAE it outperformed all the other models. 
+%This might be due to the additional information passed to random forest. 
+%Only random forest and ARIMA received information about past days and past weeks for the same timestamp. 
+%With Load and Generation behaving periodically with a period of one day and one week, this information might have a large impact.
+%
+%The ARIMA model has access to the same information but the model does not seem to be able to capture the complexity of the time series.
+%Another reason why random forest outperformed the other models is because the hyperparameters were tuned a little. 
+%For this method the best model was determined by using random search, testing 20 different configurations in the process.
+%The hyperparameter tuning used tried to reduce mean squared error.
+%
+%This makes it more impressing that xLSTM has a lower RMSE than random forest, even without hyper parameter tuning.
+%
+%Most of the models were not able to beat the naive intraday index ID1 when looking at MAE. 
+%This might be due to the fact that information about current prices are lacking. 
+%The ID1 is composed of market decisions done by BRPs, which have access to market prices.
+%Additionally no information about balancing reserves was included in the training process for the machine learning models.
+%
+%The performance of the more complex time series predictors can also be explained by the lack of hyperparameter tuning. 
+%
 
 \end{document}

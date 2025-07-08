@@ -24,22 +24,22 @@ By distinguishing between market-specific forecasting objectives (e.g., price vs
 \label{Section::Related_Work}
 Several studies have addressed forecasting tasks on European imbalance markets. Most of this research has focused on the British energy market, where the settlement period differs from Germany, typically spanning 30 minutes instead of 15 \cite{narajewskiProbabilisticForecastingGerman2022} \cite{limaBayesianPredictiveDistributions2023}. Table \ref{Table::Related_Work} shows an overview about related works on this topic. The contents of the table are explained further in the following paragraphs.
 
-A subset of these studies targets imbalance volume forecasting. For instance, García and Kirschen \cite{garciaForecastingSystemImbalance2006} applied ARIMA, exponential smoothing, and caterpillar forecasting to predict total imbalance volume in the UK. Similarly, works on the Belgian \cite{bottieauVeryShortTermProbabilisticForecasting2020} \cite{dumasProbabilisticForecastingImbalance2019} and Hungarian  \cite{balazsShorttermSystemImbalance2024} markets primarily focus on volume prediction, employing statistical and machine learning methods.
+A subset of these studies targets imbalance volume forecasting. For instance, García and Kirschen \cite{garciaForecastingSystemImbalance2006} applied \gls{ARIMAX}, exponential smoothing, and caterpillar forecasting to predict total imbalance volume in the UK. Similarly, works on the Belgian \cite{bottieauVeryShortTermProbabilisticForecasting2020} \cite{dumasProbabilisticForecastingImbalance2019} and Hungarian  \cite{balazsShorttermSystemImbalance2024} markets primarily focus on volume prediction, employing statistical and machine learning methods.
 
-In contrast, other studies focus on imbalance price prediction. Lima et al. \cite{limaBayesianPredictiveDistributions2023} proposed a Dynamic Linear Model (DLM) and demonstrated its superiority over GARCH and AR-GARCH models. They identified net imbalance volume and scarcity metrics as key predictive features. Ganesh and Bunn  \cite{ganeshForecastingImbalancePrice2024} compared various deep learning models, including RNNs, LSTMs, GRUs, FCNNs, TFT, and N-BEATS. Their findings indicated that even simple FCNNs outperformed classical models such as DLM.
+In contrast, other studies focus on imbalance price prediction. Lima et al. \cite{limaBayesianPredictiveDistributions2023} proposed a \gls{DLM} and demonstrated its superiority over GARCH and AR-GARCH models. They identified net imbalance volume and scarcity metrics as key predictive features. Ganesh and Bunn  \cite{ganeshForecastingImbalancePrice2024} compared various deep learning models, including RNNs, LSTMs, GRUs, FCNNs, \gls{TFT}, and N-BEATS. Their findings indicated that even simple FCNNs outperformed classical models such as \gls{DLM}.
 
 Several works emphasize the effect of forecast lead time. For instance, Browell and Gilbert \cite{browellPredictingElectricityImbalance2022} found that prediction accuracy improves substantially as the forecast horizon shortens. Their approach combined kernel density estimation and linear regression to model UK imbalance prices.
 
-More recently, advanced deep learning methods have been explored. Deng et al. \cite{dengSeasonalityDeepLearning2024} introduced BiLSTM and SA-BiLSTM architectures, showing performance gains for multi-step forecasting tasks. Lucas et al. \cite{lucasPriceForecastingBalancing2020} applied gradient boosting (GB), random forests (RF), and XGBoost to UK imbalance prices, finding RF to perform best. These studies consistently identified net imbalance volume as the most important input feature.
+More recently, advanced deep learning methods have been explored. Deng et al. \cite{dengSeasonalityDeepLearning2024} introduced BiLSTM and SA-BiLSTM architectures, showing performance gains for multi-step forecasting tasks. Lucas et al. \cite{lucasPriceForecastingBalancing2020} applied \gls{GB}, \gls{RF}, and XGBoost to UK imbalance prices, finding \gls{RF} to perform best. These studies consistently identified net imbalance volume as the most important input feature.
 
-In the German market, research remains sparse. Narajewski \cite{narajewskiProbabilisticForecastingGerman2022} used probabilistic models, including LASSO regression, GAMLSS, and probabilistic neural networks (PNN), to predict the reBAP. Their approach involved dataset stratification and model specialization for different data segments.
+In the German market, research remains sparse. Narajewski \cite{narajewskiProbabilisticForecastingGerman2022} used probabilistic models, including LASSO regression, GAMLSS, and probabilistic neural networks, to predict the reBAP. Their approach involved dataset stratification and model specialization for different data segments.
 
 Notably, many UK-based models were trained on pre-COVID data, potentially limiting their relevance for today’s market dynamics  \cite{abadieEnergyMarketPrices2021}. Moreover, few studies consider high-frequency imbalance settlement (15-minute granularity) or the specific German reBAP calculation with its modular pricing mechanism.
 
 This thesis contributes to the field by:
 \begin{itemize}
-\item focusing on the German imbalance price (reBAP) with quarter-hourly resolution
-\item comparing established methods (RF, ARIMA) with novel time series architectures (xLSTM, iTransformer)
+\item focusing on the \gls{reBAP}with quarter-hourly resolution
+\item comparing established methods (\gls{RF}, \gls{ARIMAX}) with novel time series architectures (xLSTM, iTransformer)
 \item incorporating a broader set of operational and meteorological input features from ENTSO-E, Netztransparenz, and DWD
 \end{itemize}
 
@@ -50,14 +50,14 @@ This thesis contributes to the field by:
 Paper & Market & Target & Models used & Time resolution  \\\hline
 Lima et al.  \cite{limaBayesianPredictiveDistributions2023}	&UK	&Price	&DLM, GARCH, AR-GARCH	&30 min	 \\
 Ganesh \& Bunn  \cite{ganeshForecastingImbalancePrice2024}	 &UK&Price	&FCNN, LSTM, GRU, TFT, N-BEATS&	30 min	 \\
-Garcia \& Kirschen  \cite{garciaForecastingSystemImbalance2006}	&UK	&Volume&	ARIMA, exponential smoothing&	30 min	 \\
+Garcia \& Kirschen  \cite{garciaForecastingSystemImbalance2006}	&UK	&Volume&	\gls{ARIMAX}, exponential smoothing&	30 min	 \\
 Browell \& Gilbert \cite{browellPredictingElectricityImbalance2022}&	UK&	Price	&KDE, linear regression	&30 min	 \\
 Lucas et al.  \cite{lucasPriceForecastingBalancing2020}&UK&	Price	&RF, XGBoost, GB	&30 min	 \\
 Deng et al.  \cite{dengSeasonalityDeepLearning2024}	&UK	& Price	&BiLSTM, SA-BiLSTM&	30 min \\
 Narajewski \cite{narajewskiProbabilisticForecastingGerman2022}&Germany&	Price	&LASSO, GAMLSS, PNN	&15 min	 \\
 Bottieau et al.  \cite{bottieauVeryShortTermProbabilisticForecasting2020}&	Belgium	&Volume&Prob. Forecasting (2-Step)	&15 min	\\
 Balázs et al. \cite{balazsShorttermSystemImbalance2024}	&Hungary&	Volume	&Linear/Non-linear models&	15 min \\
-This work	&Germany&	 Price&	xLSTM, iTransformer, RF, ARIMA	&15 min\\
+This work	&Germany&	 Price&	xLSTM, iTransformer, RF, ARIMAX	&15 min\\
 \end{tabular}
 \caption{Overview about related work}
 \label{Table::Related_Work}
@@ -113,7 +113,7 @@ The following subsections outline the underlying concepts and innovations of the
 
 \subsection{xLSTM}
 \label{Section::xLSTM}
-xLSTM (Extended Long Short-Term Memory) is an architecture that builds upon the classical LSTM framework to match the performance of Transformer models while preserving the low computational complexity of recurrent networks [20]. The architecture introduces two novel types of memory cells: sLSTM and mLSTM, each designed to increase expressiveness and flexibility in sequence modeling.
+\gls{xLSTM} is an architecture that builds upon the classical LSTM framework to match the performance of Transformer models while preserving the low computational complexity of recurrent networks [20]. The architecture introduces two novel types of memory cells: sLSTM and mLSTM, each designed to increase expressiveness and flexibility in sequence modeling.
 \begin{itemize}
 \item \textit{sLSTM} modifies the standard gating mechanism by replacing the input gate's sigmoid activation with an exponential function. This allows for stronger input modulation. The forget gate may use either sigmoid or exponential activation. sLSTM also enables memory mixing via multiple memory channels with recurrent connections.
 \item \textit{mLSTM} extends the traditional LSTM by using a matrix-valued memory instead of a single vector. This allows the model to capture richer temporal patterns. While mLSTM does not support memory mixing, it can also use exponential gating and benefit from deeper memory representations.

@@ -12,24 +12,35 @@
 % What could be improved?
 \section{Outlook}
 \label{Section::Outlook}
+The results of this thesis demonstrate that deep sequence models such as xLSTM and iTransformer can improve the probabilistic forecasting of imbalance prices. Nevertheless, there remain several promising directions for further development — both in terms of data inputs and methodological design.
 
-Access to more current price data would likely improve prediction quality.
-The intraday indices are already one of the most influential features for random forest even tough the data is delayed by one day.
-Having information about current prices or bids would provide additional information. 
-With prices and bids the development of the price for a certain quarter hour could be tracked.
-Capturing possible trends in price development might boost prediction quality, especially in quarter hours where the imbalance price is extreme.
+First, access to more current market data could significantly enhance forecast accuracy. In this study, intraday indices already emerged as top features, despite being delayed by one day. If live prices or bidding information were available, the model could capture real-time market trends more effectively, especially during quarter-hours with extreme price deviations. Tracking the trajectory of order book dynamics or near-term bid movements may allow the model to anticipate imbalances before they materialize.
 
-Another promising data source that will probably improve the prediction is information about balancing reserves.
-Due to the fact that the balancing energy market also is an auction, the balancing energy price is not always the same.
-For each quarter hour the cost for obtaining balancing energy can differ.
-One way of tackling this problem is to only predict the imbalance volume, not the imbalance price.
-Another option is a two step approach, first prediciting the imbalance volume and then prediciting or calculating the imbalance price based on the reserve capacity auction results.
-A third option would be to include the information about reserve auction bids into the models. 
+Second, balancing reserve information is a largely untapped data source. Since the cost of activating balancing energy varies with each auctioned product, incorporating reserve market bids could improve price estimation. One promising strategy would be to adopt a two-step modeling approach: first predict the imbalance volume, and then infer the resulting price based on reserve availability or auction prices. Alternatively, reserve capacity features could be integrated directly into a single-stage forecasting model.
 
-Another approach for increasing prediction quality would be to include periodic data into the dataset.
-The load and generation profiles show periodic tendencies along different axes. 
-One example is the solar generation which is 0 in the night and high in the early afternoon. 
-There is also a weekly periodic pattern. 
-The weekends show different load profiles than weekdays.
-This information can be included into the model by artificially concatenating these sequences into one sequence or by including new features which contain the shifted information.
+Third, future work could improve model performance by explicitly incorporating periodic patterns. Many key system variables — such as load, solar generation, and generation scheduling — follow strong daily and weekly cycles. Encoding this structure through engineered periodic features (e.g. time-of-day, day-of-week, lagged seasonal components) or via temporal concatenation of repeated patterns could improve the model’s ability to generalize across typical operating conditions.
+
+From a modeling perspective, combining the strengths of xLSTM (average-case accuracy) and iTransformer (tail sensitivity) through ensemble methods or hybrid architectures may lead to more robust and balanced probabilistic forecasts. Such combinations could capture both central trends and rare events more effectively than any individual model class.
+
+In summary, while this thesis demonstrates the value of advanced forecasting models for reBAP, continued progress will depend on better data access and targeted modeling strategies that align model capacity with the complexity of market behavior.
+
+%Access to more current price data would likely improve prediction quality.
+%The intraday indices are already one of the most influential features for random forest even tough the data is delayed by one day.
+%Having information about current prices or bids would provide additional information. 
+%With prices and bids the development of the price for a certain quarter hour could be tracked.
+%Capturing possible trends in price development might boost prediction quality, especially in quarter hours where the imbalance price is extreme.
+
+%Another promising data source that will probably improve the prediction is information about balancing reserves.
+%Due to the fact that the balancing energy market also is an auction, the balancing energy price is not always the same.
+%For each quarter hour the cost for obtaining balancing energy can differ.
+%One way of tackling this problem is to only predict the imbalance volume, not the imbalance price.
+%Another option is a two step approach, first prediciting the imbalance volume and then prediciting or calculating the imbalance price based on the reserve capacity auction results.
+%A third option would be to include the information about reserve auction bids into the models. 
+
+%Another approach for increasing prediction quality would be to include periodic data into the dataset.
+%The load and generation profiles show periodic tendencies along different axes. 
+%One example is the solar generation which is 0 in the night and high in the early afternoon. 
+%There is also a weekly periodic pattern. 
+%The weekends show different load profiles than weekdays.
+%This information can be included into the model by artificially concatenating these sequences into one sequence or by including new features which contain the shifted information.
 \end{document}

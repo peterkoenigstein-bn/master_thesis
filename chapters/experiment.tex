@@ -37,7 +37,7 @@ The following five models are included in the comparison:
 \begin{itemize}
 \item Naïve benchmark: A simple heuristic that predicts the imbalance price as equal to the intraday index ID1
 \item Random Forest: Implemented using RandomForestRegressor from scikit-learn. Lag features for each input variable are included at 15, 30, 45, and 60 minutes
-\item ARIMA: A statistical model trained using the pmdarima library with automatic parameter selection (auto\_arima)
+\item ARIMAX: A statistical model trained using the pmdarima library with automatic parameter selection (auto\_arima)
 \item xLSTM: A deep recurrent model that combines memory and speed-optimized LSTM variants
 \item iTransformer: A transformer-based model with inverted attention and probabilistic output
 \end{itemize}
@@ -80,12 +80,12 @@ Evaluation is performed using the deterministic and probabilistic metrics introd
 
 \section{xLSTM block structure comparison}
 
-This experiment evaluates the impact of different internal configurations within the xLSTM model architecture. Specifically, the ratio of memory-optimized LSTM (mLSTM) to speed-optimized LSTM (sLSTM) blocks is varied while keeping all other hyperparameters constant.
+This experiment evaluates the impact of different internal configurations within the xLSTM model architecture. Specifically, the ratio of \gls{mLSTM} to speed-optimized \gls{sLSTM} blocks is varied while keeping all other hyperparameters constant.
 
 The xLSTM model is structured into a series of 48 stacked LSTM blocks. Three configurations are compared:
 \begin{itemize}
 \item xlstm\_1\_0: 48 mLSTM blocks, 0 sLSTM blocks
-\item xlstm\_0\_1: 0 mLSTM blocks, 48 sLSTM blocks
+\item xlstm\_1\_1: 24 mLSTM blocks, 24 sLSTM blocks
 \item xlstm\_7\_1: 42 mLSTM blocks, 6 sLSTM blocks (default configuration used in Section \ref{Section::Experiment_out_of_the_box})
 \end{itemize}
 The hypothesis behind this experiment is that a combination of both block types may offer a better trade-off between representation capacity and computational efficiency.
@@ -100,7 +100,7 @@ Evaluation is performed using the same metrics: MAE, RMSE, CRPS, and τ\%-covera
 \begin{tabular}{l|l|l}
  Configuration name & Amount of mLSTM blocks & Amount of sLSTM blocks  \\\hline
  xlstm\_1\_0 & 48 & 0 \\
- xlstm\_0\_1 & 0 & 48 \\
+ xlstm\_1\_1 & 24 & 24 \\
  xlstm\_7\_1  & 42 & 6 
 \end{tabular}
 \caption{xLSTM Configurations}
@@ -202,7 +202,7 @@ This experiment tests the hypothesis that multi-step sequence supervision may pr
 %For this different horizons were compared. The horizon starts at the prediction timestamp, so an hour from the prediction time.
 %The horizons used during this experiments are 4, which corresponds to an hour, 48, which corresponds to half of a day and 96, which corresponds to a full day.
 \section{Summary}
-This chapter presented the experimental design used to evaluate forecasting models for the imbalance price. A baseline comparison of five models—ARIMA, Random Forest, xLSTM, iTransformer, and a naïve benchmark—was followed by targeted experiments focusing on architectural and training variations.
+This chapter presented the experimental design used to evaluate forecasting models for the imbalance price. A baseline comparison of five models—ARIMAX, Random Forest, xLSTM, iTransformer, and a naïve benchmark—was followed by targeted experiments focusing on architectural and training variations.
 
 Specifically, the xLSTM model was tested with different block configurations, and the iTransformer was evaluated under varying sequence lengths, extended forecast horizons, and a multi-target learning setting. All experiments were conducted using consistent input features, evaluation metrics, and data splits to ensure comparability.
 

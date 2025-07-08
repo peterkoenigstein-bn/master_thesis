@@ -24,20 +24,20 @@ This chapter provides background knowledge to understand the concepts in the the
 \section{German electricity market}
 \label{Section::German_Electricity_Market}
 
-In the German electricity market, each market participant is referred to as a Balancing Responsible Party (BRP). BRPs are responsible for submitting energy schedulesto the Transmission System Operators (TSOs) that reflect their expected electricity generation and consumption.
+In the German electricity market, each market participant is referred to as a \gls{BRP}. \gls{BRP}s are responsible for submitting energy schedulesto the \gls{TSO}s that reflect their expected electricity generation and consumption.
 Their goal is to keep their portfolio balanced, meaning that scheduled generation aligns with expected consumption.
 
-Both generation and consumption are subject to uncertainty and can deviate from the submitted schedules. On the generation side, this is particularly relevant for variable renewable energy (VRE) sources such as wind and solar, whose output depends heavily on weather conditions. Similarly, energy consumption varies with social patterns—for instance, workdays versus weekends, or regular days versus school holidays. 
+Both generation and consumption are subject to uncertainty and can deviate from the submitted schedules. On the generation side, this is particularly relevant for \gls{VRE} sources such as wind and solar, whose output depends heavily on weather conditions. Similarly, energy consumption varies with social patterns—for instance, workdays versus weekends, or regular days versus school holidays. 
 
-Based on historical data and forecasts, BRPs create schedules that are submitted to the TSOs ahead o ftime. However due to forecast errors or sudden changes in weather or consumption, the physically delivered volumes may deviate from the submitted schedules. In such cases, the BRP’s portfolio is considered imbalanced. 
+Based on historical data and forecasts, \gls{BRP}s create schedules that are submitted to the \gls{TSO}s ahead o ftime. However due to forecast errors or sudden changes in weather or consumption, the physically delivered volumes may deviate from the submitted schedules. In such cases, the \gls{BRP}’s portfolio is considered imbalanced. 
 
-The deviations of all BRPs within a balancing area are aggregated to calculate the System Balance (SB) of that area. Across all German balancing areas, these are combined to form the Grid Control Cooperation (GCC) balance. The GCC balance indicates whether the system, as a whole, is short or long on energy.
+The deviations of all \gls{BRP}s within a balancing area are aggregated to calculate the \gls{SB} of that area. Across all German balancing areas, these are combined to form the \gls{GCC} balance. The  \gls{GCC} balance indicates whether the system, as a whole, is short or long on energy.
 
-To maintain a stable grid frequency of 50 Hz, TSOs must deploy balancing energy in response to the current system balance. If there is a shortage of energy (positive imbalance), TSOs activate positive balancing energy—either by ramping up partially loaded generators or reducing demand via controllable loads. If the system has a surplus of  energy (negative imbalance), negative balancing energy is deployed—this may involve ramping down generators or increasing load (e.g., by activating flexible consumers). 
+To maintain a stable grid frequency of 50 Hz, \gls{TSO}s must deploy balancing energy in response to the current system balance. If there is a shortage of energy (positive imbalance), \gls{TSO}s activate positive balancing energy—either by ramping up partially loaded generators or reducing demand via controllable loads. If the system has a surplus of  energy (negative imbalance), negative balancing energy is deployed—this may involve ramping down generators or increasing load (e.g., by activating flexible consumers). 
 
-The imbalance volumes and associated prices are then calculated by the TSOs and passed on to the BRPs. BRPs whose portfolios contributed to the system imbalance—e.g., being short when the system is . also short—must pay the imbalance price for the volume in question. Conversely, BRPs who help stabilize the system—e.g., by having a surplus when the system is short—are compensated accordingly. 
+The imbalance volumes and associated prices are then calculated by the \gls{TSO}s and passed on to the  \gls{BRP}s.  \gls{BRP}s whose portfolios contributed to the system imbalance—e.g., being short when the system is . also short—must pay the imbalance price for the volume in question. Conversely, \gls{BRP}s who help stabilize the system—e.g., by having a surplus when the system is short—are compensated accordingly. 
 
-Understanding this market structure, including the balancing responsibilities and the mechanisms used by  TSOs, is essential for modeling and predicting the imbalance price (reBAP). Section \ref{Section::Imbalance_Price} provides a detailed explanation of how this price is determined in detail. 
+Understanding this market structure, including the balancing responsibilities and the mechanisms used by  \gls{TSO}s, is essential for modeling and predicting the  \gls{reBAP}. Section \ref{Section::Imbalance_Price} provides a detailed explanation of how this price is determined in detail. 
 
 %This energy can be positive, if the grid is short of energy, or negative, if the grid has a surplus of energy. 
 
@@ -61,13 +61,13 @@ h \cite{narajewskiProbabilisticForecastingGerman2022}.}
  \end{figure}
 
 Figure \ref{fig::energy_auctions} illustrates the auction and balancing sequence of the German electricity market, relative to the delivery timestamp (d, h).
-The timeline begins on the previous day with three reserve capacity auctions: FCR at 08:00, aFRR at 09:00, and mFRR at 10:00. These auctions determine the prices for positive and negative balancing reserves, but since no data was available during this thesis, they are excluded from the analysis.
+The timeline begins on the previous day with three reserve capacity auctions:  \gls{FCR} at 08:00, aFRR at 09:00, and  \gls{mFRR} at 10:00. These auctions determine the prices for positive and negative balancing reserves, but since no data was available during this thesis, they are excluded from the analysis.
 
-The Day-Ahead (DA) auction follows at 12:00, and the Intraday Auction (IA) is held at 15:00. Continuous intraday trading (IC) opens at 16:00 and continues until shortly before delivery. Unlike discrete auction events, IC allows trading on a rolling basis.
+The Day-Ahead auction follows at 12:00, and the Intraday Auction is held at 15:00.  \gls{IC} trading opens at 16:00 and continues until shortly before delivery. Unlike discrete auction events, \gls{IC} allows trading on a rolling basis.
 
-The IC market closes in stages: cross-zone trades close 30 minutes before delivery, while trades within a single control zone remain possible until 5 minutes before delivery. This timestamp — 5 minutes before physical delivery — is referred to as the gate closure time throughout this thesis.
+The \gls{IC} market closes in stages: cross-zone trades close 30 minutes before delivery, while trades within a single control zone remain possible until 5 minutes before delivery. This timestamp — 5 minutes before physical delivery — is referred to as the gate closure time throughout this thesis.
 
-Understanding this market timing is essential, as it determines which information is available at prediction time, and directly influences both BRP behavior and the imbalance price formation.
+Understanding this market timing is essential, as it determines which information is available at prediction time, and directly influences both \gls{BRP} behavior and the imbalance price formation.
 
  
  
@@ -86,8 +86,8 @@ Understanding this market timing is essential, as it determines which informatio
 
 \section{Imbalance price}
 \label{Section::Imbalance_Price}
-he German imbalance price — also referred to as the reBAP (regulierter Bilanzausgleichsenergiepreis) — reflects the cost of balancing energy that BRPs must pay or receive when their portfolio deviates from the submitted schedule.
-To ensure consistency across control zones, a uniform price is calculated for all of Germany. The calculation is based on a modular approach defined by the TSOs and regulatory framework.
+The German imbalance price — also referred to as the \gls{reBAP} — reflects the cost of balancing energy that \gls{BRP}s must pay or receive when their portfolio deviates from the submitted schedule.
+To ensure consistency across control zones, a uniform price is calculated for all of Germany. The calculation is based on a modular approach defined by the \gls{TSO}s and regulatory framework.
 
 The final imbalance price is determined from the results of three separate modules, each of which reflects a different aspect of the cost and incentive structure:
 \begin{itemize}
@@ -95,24 +95,24 @@ The final imbalance price is determined from the results of three separate modul
 \item Module 2: A market-based incentive to encourage portfolio balancing
 \item Module 3: A scarcity signal in extreme imbalance situations
 \end{itemize}
-The module with the highest financial impact (depending on the sign of the system imbalance) is selected to define the reBAP for each 15-minute settlement period. Figure \ref{fig::aep_modules} shows how often each module was price setting in 2024. Module 1 was price setting in 82,76\% and module 2 in 17,23\% of all quarter-hours.
+The module with the highest financial impact (depending on the sign of the system imbalance) is selected to define the \gls{reBAP} for each 15-minute settlement period. Figure \ref{fig::aep_modules} shows how often each module was price setting in 2024. Module 1 was price setting in 82,76\% and module 2 in 17,23\% of all quarter-hours.
 
 \subsection{Module 1: Basis component}
 The basis component reflects the actual cost of activating balancing reserves. It serves as the default pricing module and is used in most settlement periods.
 Two types of balancing reserves are considered:
 \begin{itemize}
-\item aFRR (automatic Frequency Restoration Reserve)
-\item mFRR (manual Frequency Restoration Reserve)
+\item \gls{aFRR} 
+\item \gls{mFRR} 
 \end{itemize}
 
-For each reserve, the volume-weighted average price (VWAP) is calculated using data from the European platforms PICASSO (for aFRR) and MARI (for mFRR).
+For each reserve, the \gls{VWAP} is calculated using data from the European platforms PICASSO (for \gls{aFRR}) and MARI (for \gls{mFRR}).
 This results in four prices for each 15-minute interval:
 \begin{itemize}
 \item $VWAP_{aFRR}$ (positive and negative)
 \item $VWAP_{mFRR}$ (positive and negative)
 \end{itemize}
 
-Depending on which reserve was activated, the system calculates the corresponding price ($AEP_1$). If both aFRR and mFRR were activated, a volume-weighted average of their VWAPs is used.
+Depending on which reserve was activated, the system calculates the corresponding price ($AEP_1$). If both \gls{aFRR} and \gls{mFRR} were activated, a volume-weighted average of their \gls{VWAP}s is used.
 If neither was activated, the avoided activation price is applied, typically computed as the average of the cheapest bids.
 
 The resulting AEP₁ (either positive or negative) is selected based on the sign of the system balance (GCC balance):
@@ -158,11 +158,11 @@ This module reflects the marginal cost of balancing and forms the foundation of 
 \label{Section::Module_2}
 The incentivising component aims to discourage market participants from relying on imbalance energy and instead motivate them to actively balance their portfolios via intraday trading. The underlying idea is that imbalance energy should be more expensive than purchasing electricity directly on the market — especially shortly before delivery.
 
-This module is applied only when there is sufficient liquidity in the intraday market for the quarter-hour in question. Specifically, the module is activated if the traded volume (VID) within the intraday market for that interval exceeds 500 MW. If this threshold is not reached, the module is skipped, and its value is set to zero.
+This module is applied only when there is sufficient liquidity in the intraday market for the quarter-hour in question. Specifically, the module is activated if the \gls{VID} for that interval exceeds 500 MW. If this threshold is not reached, the module is skipped, and its value is set to zero.
 
-When activated, the Intraday Average Energy Price (ID AEP) serves as the reference point for calculating the reBAP. This price is computed as the volume-weighted average of the most recent trades summing up to 500 MW (i.e., 125 MWh for a 15-minute period), executed as close as possible to the gate closure time.
+When activated, the \gls{ID AEP} serves as the reference point for calculating the \gls{reBAP}. This price is computed as the volume-weighted average of the most recent trades summing up to 500 MW (i.e., 125 MWh for a 15-minute period), executed as close as possible to the gate closure time.
 
-To increase the incentive for BRPs to remain balanced, the imbalance price is artificially adjusted by introducing a minimum price distance ($\Delta P$) between the reBAP and the ID AEP. This distance ramps up linearly with the absolute value of the GCC system imbalance, up to a maximum value of 25\% of the ID AEP — or at least €10/MWh, whichever is higher.
+To increase the incentive for \gls{BRP}s to remain balanced, the imbalance price is artificially adjusted by introducing a minimum price distance ($\Delta P$) between the \gls{reBAP} and the \gls{ID AEP}. This distance ramps up linearly with the absolute value of the \gls{GCC} system imbalance, up to a maximum value of 25\% of the \gls{ID AEP} — or at least €10/MWh, whichever is higher.
 
 The logic can be summarized as follows:
 \begin{itemize}
@@ -175,7 +175,7 @@ The logic can be summarized as follows:
 \end{itemize}
 
 $\Delta P$ is defined as a linear function of the GCC balance between 0 and ±500 MW. This relationship is visualized in Figure \ref{fig::delta_p_graph}, using a fixed ID AEP of €100/MWh as an example. Figure \ref{fig::delta_p} provides the exact mathematical definition, while Figure \ref{fig::aep2} illustrates the resulting formula for the module.
-From a forecasting perspective, Module 2 introduces a dynamic, nonlinear pricing logic. Since the final price is not directly based on ID AEP alone, but also on the size and direction of the system imbalance, accurate forecasts of both GCC balance and market prices are essential for reliable reBAP prediction during periods where this module is active.
+From a forecasting perspective, Module 2 introduces a dynamic, nonlinear pricing logic. Since the final price is not directly based on \gls{ID AEP} alone, but also on the size and direction of the system imbalance, accurate forecasts of both \gls{GCC} balance and market prices are essential for reliable reBAP prediction during periods where this module is active.
 
 In 2024, the incentivising component was the price-setting mechanism in 17.23\% of all 15-minute settlement intervals. These typically correspond to periods with moderate but directional imbalances, in which active trading signals are available near gate closure.
 
@@ -224,16 +224,16 @@ The next section discusses Module 3, which is triggered under conditions of extr
 
 The scarcity component is designed to reflect critical system conditions in which balancing reserves are nearly exhausted. It serves as an economic signal to incentivize all market participants to avoid any further deviation from their schedules under extreme imbalance situations.
 
-This module is only activated if the GCC balance (i.e., the aggregated system imbalance across all German control areas) exceeds 80\% of the available Frequency Restoration Reserve (FRR) in a given settlement period. This threshold marks a high-stress scenario in which the grid approaches its technical limits for balancing energy provision.
+This module is only activated if the \gls{GCC} balance (i.e., the aggregated system imbalance across all German control areas) exceeds 80\% of the available \gls{FRR} in a given settlement period. This threshold marks a high-stress scenario in which the grid approaches its technical limits for balancing energy provision.
 
 When triggered, the scarcity component applies a penalty mechanism that leads to significantly higher imbalance prices compared to the other modules. However, due to its strict activation criteria, the module is rarely used in practice. In the year 2024, the scarcity component was the price-setting module in only one quarter-hour 
 
-The exact formula for Module 3 is not discussed here, as its impact on overall reBAP behavior is negligible from a statistical perspective. However, Figure \ref{fig::aep_3} provides a graphical representation of how the price in this module increases with the severity of the GCC imbalance.
+The exact formula for Module 3 is not discussed here, as its impact on overall \gls{reBAP} behavior is negligible from a statistical perspective. However, Figure \ref{fig::aep_3} provides a graphical representation of how the price in this module increases with the severity of the \gls{GCC} imbalance.
 
-Depending on the sign of the imbalance, the reBAP is set to:
+Depending on the sign of the imbalance, the \gls{reBAP} is set to:
 \begin{itemize}
-\item the maximum of the three module values if the system is short (positive GCC balance), or
-\item the minimum if the system is long (negative GCC balance)
+\item the maximum of the three module values if the system is short (positive \gls{GCC} balance), or
+\item the minimum if the system is long (negative \gls{GCC} balance)
 \end{itemize}
 
 This selection logic is applied uniformly across all modules. Figure 2\ref{fig::aep_modules} summarizes the percentage of intervals in 2024 in which each module determined the reBAP.

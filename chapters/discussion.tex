@@ -23,19 +23,20 @@ In this chapter, the results of the thesis are discussed. The following sections
 
 \section{Out of the box performance}
 
+The comparison of out-of-the-box model performance (Tables \ref{Table::Out_of_the_box_performance} and \ref{Table::Out_of_the_box_performance_quantile}) highlights clear differences in how each approach handles point forecasting, probabilistic estimation, and tail risk.
 
-The out-of-the-box comparison (Tables \ref{Table::Out_of_the_box_performance} and \ref{Table::Out_of_the_box_performance_quantile}) reveals a nuanced picture of model behavior. The classical Random Forest achieves the lowest CRPS (41.37) and second-best MAE (99.00), demonstrating solid average accuracy and well-calibrated probabilistic forecasts. However, it exhibits the second highest RMSE among the models, indicating difficulties in capturing extreme price spikes.
+The xLSTM model achieves the strongest overall performance, with the lowest MAE (84.33), outperforming the naive ID1, and lowest CRPS (40.30) across all models. It also performs competitively in RMSE (302.57), suggesting that it not only captures average-case dynamics reliably, but also handles larger deviations effectively.
 
-ARIMA performs surprisingly well in terms of CRPS (42.04) and MAE (99.00), outperforming both iTransformer and xLSTM, but lags behind in RMSE. ARIMA strikes a balance between point forecast accuracy and uncertainty calibration, outperforming deep learning models in both MAE and CRPS, despite its simplicity.
+The iTransformer, by contrast, achieves the lowest RMSE (200.19), suggesting strong sensitivity to extreme price events. However, it exhibits the highest MAE (139.87) and CRPS (49.24), which points to less stable average-case performance and weaker calibration. Notably, its coverage rates are the highest across all models (e.g. 98\%-coverage of 0.959).
 
-The iTransformer exhibits a unique tradeoff: very low RMSE (200.19) but significantly worse MAE (139.87) and CRPS (49.24), suggesting poor performance on average and difficulty in estimating predictive uncertainty.
+The Random Forest model provides solid baseline performance, with a relatively low MAE (99.00) and the second-best CRPS (41.37). Its RMSE (353.81) is notably higher, indicating reduced robustness to extreme values. Nevertheless, its prediction intervals are among the most reliable in the mid quantiles, with strong 90\%- and 98\%-coverage.
 
-The xLSTM model, in contrast, reaches the lowest RMSE (156.96), highlighting its strength in modeling outlier events—likely due to its high-capacity recurrent architecture. Its MAE (109.03) and CRPS (50.63), however, are worse than Random Forest, indicating that xLSTM sacrifices average-case accuracy for improved peak prediction.
+The ARIMA model performs similarly to Random Forest in terms of MAE (100.50) and CRPS (42.04), but has the highest RMSE (358.75) among all models, suggesting that it fails to capture large price spikes — a known limitation of linear, autoregressive models.
 
-As shown in Figure \ref{Figure::pinball_scores}, both xLSTM and iTransformer achieve the lowest normalized pinball loss at the 90th percentile, highlighting their strength in forecasting extreme imbalance price events. This suggests that both models are well-suited to anticipating high-price outliers, which aligns with their superior RMSE compared to classical baselines.
-In contrast, Random Forest and ARIMA perform better in the lower and mid quantiles, aligning with their lower MAE and CRPS. These models offer more accurate average-case predictions, but struggle with extreme events, which limits their effectiveness in capturing tail risk.
+As shown in Figure \ref{Figure::pinball_scores}, the iTransformer achieves the lowest normalized pinball loss at the 90th percentile, highlighting their strength in forecasting extreme imbalance price events. This suggests that this model is well-suited to anticipating high-price outliers, which aligns with their superior RMSE compared to the other models.
+In contrast, Random Forest, ARIMA and xLSTM perform better in the lower and mid quantiles, aligning with their lower MAE and CRPS. These models offer more accurate average-case predictions, but struggle with extreme events, which limits their effectiveness in capturing tail risk.
 
-Compared to the naive ID1 benchmark, the trained models show mixed performance. While Random Forest and ARIMA outperform ID1 in CRPS, and xLSTM and iTransformer in RMSE, none of the models achieves a lower MAE than ID1.
+Compared to the naive ID1 benchmark, the trained models show mixed performance. While Random Forest, ARIMA and xLSTM outperform ID1 in CRPS, and iTransformer in RMSE, only xLSTM achieves a lower MAE than ID1.
 However, when it comes to prediction interval coverage, all models surpass the benchmark significantly, with iTransformer achieving the best 50\%, 90\%, and 98\% coverage among all models.
 
 These results support the thesis hypothesis: modern deep learning models can outperform classical methods and naive market heuristics, particularly for tail risks. However, Random Forest proves highly competitive—offering robust performance without the need for extensive tuning or sequence modeling.
@@ -46,11 +47,11 @@ These results support the thesis hypothesis: modern deep learning models can out
 \centering
 \begin{tabular}{l|l|l|l}
 Model name 		&  RMSE 			& MAE 			& CRPS 			\\\hline
-Naive intraday ID1 	&$ 308.69 			$&$ \underline{93.17} 			$&$ 42.90			$ \\
-Random forest 		&$ 353.81 \pm 0.19	$&$  99.00	\pm 0.17	$&$ \underline{41.37 \pm 0.06}	$\\
+Naive intraday ID1 	&$ 308.69 			$&$ 93.17 			$&$ 42.90			$ \\
+Random forest 		&$ 353.81 \pm 0.19	$&$  99.00	\pm 0.17	$&$ 41.37 \pm 0.06	$\\
 Arima 			&$ 358.75 			$&$ 100.50 		$&$ 42.04  			$\\	
-iTransformer 		&$ 200.19 \pm 0.07	$&$ 139.87	\pm 0.06	$&$ 49.24 \pm 0.04	$ \\
-xLSTM 			&$ \underline{156.96 \pm 3.63}	$&$ 109.03 \pm 4.42 	$&$ 50.63 \pm 1.42 	 $\\
+iTransformer 		&$ \underline{200.19 \pm 0.07}	$&$ 139.87	\pm 0.06	$&$ 49.24 \pm 0.04	$ \\
+xLSTM 			&$ 302.57\pm 6.68	$&$ \underline{84.33 \pm 1.17}	$&$ \underline{40.30	\pm0.24} $\\
 \end{tabular}
 \caption{Error metrics and CRPS for out of the box performance}
 \label{Table::Out_of_the_box_performance}
@@ -63,26 +64,26 @@ Naive intraday ID1 	&$ 0.084			$&$ 0.557 			$&$ 0.844			$ \\
 Random forest 		&$ 0.147 \pm0.003	$&$ 0.772\pm 0.007	$&$ 0.945	 \pm 0.005	$\\
 Arima 			&$ 0.211			$&$ 0.612	 		$&$0.810 			$\\	
 iTransformer 		&$ \underline{0.356	\pm 0.001}	$&$ \underline{0.841	\pm 0.000}	$&$ \underline{0.959 \pm 0.000}	$ \\
-xLSTM 			&$ 0.318 \pm 0.020	$&$ 0.741 	\pm 0.015	$&$ 0.861 \pm 0.011	 $\\
+xLSTM 			&$ 0.240 \pm 0.019	$&$ 0.759 	\pm 0.012	$&$ 0.910 \pm 0.009	 $\\
 \end{tabular}
 \caption{Quantile metrics for out of the box performance}
 \label{Table::Out_of_the_box_performance_quantile}
 \end{table}
 
 
-%\begin{figure}
-%  \centering
-%\begin{subfigure}{0.45\textwidth}
-%  \includegraphics[width=\linewidth]{../images/results/quantile_pinball_scores.pdf}
-%  \caption{Quantile pinball scores for all models}
-%\end{subfigure}
-%\begin{subfigure}{0.45\textwidth}
-%  \includegraphics[width=\linewidth]{../images/results/quantile_pinball_scores_to_id1.pdf}
-%  \caption{Quantile pinball scores normalized based on naive}
-%\end{subfigure}
-%\caption{Quantile pinball scores for each model}
-%\label{Figure::pinball_scores}
-%\end{figure}
+\begin{figure}
+  \centering
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/quantile_pinball_scores.pdf}
+  \caption{Quantile pinball scores for all models}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \includegraphics[width=\linewidth]{../images/results/quantile_pinball_scores_to_id1.pdf}
+  \caption{Quantile pinball scores normalized based on naive}
+\end{subfigure}
+\caption{Quantile pinball scores for each model}
+\label{Figure::pinball_scores}
+\end{figure}
 
 
 %Figure \ref{Figure::pinball_scores} shows the pinball scores for each quantile for each model.
@@ -130,10 +131,10 @@ xLSTM 			&$ 0.318 \pm 0.020	$&$ 0.741 	\pm 0.015	$&$ 0.861 \pm 0.011	 $\\
 \centering
 \begin{tabular}{l|l|l|l}
 Configuration name 		&  RMSE 			 & MAE 			 & CRPS			\\\hline
-xLSTM\_7\_1 4 seq	 	&$156.96\pm 3.63 	$&$ 109.03 \pm 4.42 	$&$50.63 \pm0.77	$\\
-xLSTM\_1\_0 96 seq		&$\underline{155.63 \pm2.28}	$&$ \underline{107.64\pm0.70}	$& $\underline{50.85\pm0.32}	$\\
-xLSTM\_0\_1 96 seq		&$ 157.08\pm2.39 	$&$ 108.58\pm2.01	$&$ 51.10\pm0.40	$\\
-xLSTM\_7\_1 96 seq	 	&$156.45 \pm2.08	$&$ 108.49\pm2.30	$&$ 51.00\pm0.39 	$\\ 
+xLSTM\_7\_1 4 seq		&$ 302.57\pm 6.68	$&$ \underline{84.33 \pm 1.17}	$&$ \underline{40.30	\pm0.24} $\\
+xLSTM\_1\_0 96 seq		&$\underline{316.81\pm5.37} $&$ 85.68\pm 1.81	$& $40.34	\pm 0.32$\\
+xLSTM\_1\_1 96 seq		&$ 318.48\pm12.03 	$&$87.73	\pm 3.16	$&$ 40.99	\pm 1.05$\\
+xLSTM\_7\_1 96 seq	 	&$325.70 \pm5.56	$&$85.76\pm 2.09	$&$ 40.47	\pm 0.27$\\ 
 \end{tabular}
 \caption{Error metrics and CRPS for different xLSTM block configurations}
 \label{Table::Performance_xLSTM}
@@ -143,37 +144,42 @@ xLSTM\_7\_1 96 seq	 	&$156.45 \pm2.08	$&$ 108.49\pm2.30	$&$ 51.00\pm0.39 	$\\
 \centering
 \begin{tabular}{l|l|l|l}
 Configuration name 		& 50\%-cov 		& 90\%-cov 		& 98\%-cov \\\hline
-xLSTM\_7\_1 4 seq	 	&$ \underline{0.3180 \pm0.0203}	$&$\underline{ 0.7408 \pm0.0150}	$&$ 0.8611 \pm0.0112	$\\
-xLSTM\_1\_0 96 seq		&$ 0.2925 \pm0.0385	$&$ 0.7300 \pm0.0197	$&$ 0.8601\pm0.0174	$\\
-xLSTM\_0\_1 96 seq		&$ 0.2317 \pm0.0264	$&$ 0.7372 \pm0.0089	$&$ \underline{0.8812 \pm0.0125}	$\\
-xLSTM\_7\_1 96 seq	 	&$ 0.2912\pm0.0252	$&$ 0.7214 \pm0.0217	$&$ 0.8584 \pm0.0126	$\\ 
+xLSTM\_7\_1 4 seq	&$ 0.240 \pm 0.019	$&$ \underline{0.759 	\pm 0.012}	$&$ \underline{0.910 \pm 0.009}	 $\\
+xLSTM\_1\_0 96 seq		&$\underline{ 0.277 \pm0.023}	$&$  0.743 \pm0.025	$&$ 0.886\pm0.028	$\\
+xLSTM\_1\_1 96 seq		&$ 0.263 \pm0.046	$&$ 0.732 \pm0.044	$&$ 0.877\pm 0.032	$\\
+xLSTM\_7\_1 96 seq	 	&$ 0.263 \pm0.021	$&$ 0.724 \pm0.014	$&$ 0.867 \pm0.010	$\\ 
 \end{tabular}
 \caption{Quantile metrics for different xLSTM block configurations}
 \label{Table::Performance_xLSTM_quantile}
 \end{table}
+This experiment investigates how internal architectural choices in the xLSTM model — specifically the composition of mLSTM and sLSTM blocks — affect predictive performance. Tables \ref{Table::Performance_xLSTM} and \ref{Table::Performance_xLSTM_quantile} report the results for several variants, including the default 7\_1 configuration, as well as pure mLSTM (1\_0) and mixed (1\_1) structures. All models were trained with 96-step input sequences, except for the 7\_1 configuration with a short 4-step input, which serves as a reference for sequence length effects.
 
-Table \ref{Table::Performance_xLSTM} compares the performance of different internal xLSTM block configurations. All variants achieve similar results across RMSE, MAE, and CRPS, with only minor differences. Notably, the configuration using only mLSTM blocks (xLSTM\_1\_0) performs slightly better in terms of RMSE (155.63) and MAE (107.64), but the differences are marginal and within the standard deviation range.
+The results show that architectural variation has only a minor effect on forecasting performance. All 96-step configurations yield similar MAE (~85–88) and CRPS (~40.3–41.0), with no clear winner. The pure mLSTM model (1\_0) achieves the lowest RMSE (316.81) and best coverage (50\%-cov: 0.277), while the default mixed configuration (7\_1) performs slightly worse across all metrics.
 
-One exception is the 4-sequence configuration (xLSTM\_7\_1 4 seq), which shows the highest variation across both RMSE and MAE. This suggests that very short input sequences result in less stable performance, likely due to limited temporal context and reduced learning signal. In contrast, all 96-step models exhibit greater consistency, regardless of the block type.
+Interestingly, the 4-sequence variant (7\_1) outperforms all 96-sequence models in both MAE (84.33) and CRPS (40.30), and reaches the highest coverage at the 90\% and 98\% levels. This suggests that shorter input sequences can yield sharper, more reactive forecasts, possibly by reducing over-smoothing and forcing the model to focus on the most recent dynamics. 
 
-The quantile metrics in Table \ref{Table::Performance_xLSTM_quantile} reveal that the full mLSTM and mixed configurations perform comparably in coverage, while the pure sLSTM variant (xLSTM\_0\_1) performs worse at the 50\% level. This may reflect the lower expressiveness of sLSTM blocks in capturing central distribution structure.
-
-Overall, the results indicate that xLSTM performance is robust to architectural variation, and more sensitive to sequence length and training stability than to the internal mix of memory cell types.
+Overall, the results indicate that xLSTM performance is robust to architectural variation, and more sensitive to sequence length than to the internal mix of memory cell types.
 
 
 \section{iTransformer variable sequence length}
+This experiment investigates how the iTransformer model’s performance varies with different input sequence lengths. As shown in Tables \ref{Table::Performane_sequence_length} and \ref{Table::Performance_sequence_length2}, the model was evaluated using sequences of 4, 96, 192, and 384 time steps.
 
-The results for this experiments can be found in table \ref{Table::Performane_sequence_length}.
-The mean average error and root mean squared error does not increase or decrease with increased or decreased sequence length.
-While both of these error metrics stay about the same, the quantile predictions for a sequence length of 384 is worse than the other two sequence lenghts.
+In terms of point forecast accuracy, longer input sequences do not lead to performance improvements. On the contrary, the shortest-sequence model (4 seq) achieves the lowest RMSE (200.19) and lowest MAE (139.87), despite having access to significantly less historical context. As sequence length increases, both MAE and RMSE deteriorate slightly, while CRPS increases notably, from 49.24 (4 seq) to 58.68 (384 seq).
+
+This trend is even more pronounced in the quantile coverage metrics: the 4-sequence model attains the highest coverage across all levels (e.g. 90\%-cov = 0.841), while longer sequences exhibit steadily declining coverage, down to 0.282 at 90\% for the 384-step model. This suggests that longer sequence inputs lead the iTransformer to produce overconfident, underdispersed forecasts, which fail to reflect true uncertainty in imbalance price dynamics.
+
+A possible explanation is that with longer inputs, the model tends to overfit to smoothed trends or ignore recent volatility, which reduces its responsiveness to short-term price spikes. 
+
+Overall, these results imply that for the iTransformer architecture, shorter input sequences yield better-calibrated and more robust forecasts, particularly in capturing tail risk. This highlights a critical design consideration for sequence models: more historical context does not necessarily translate into better probabilistic performance — especially in volatile, regime-switching markets like imbalance pricing.
+
  \begin{table}[]
 \centering
 \begin{tabular}{l|l|l|l}
  Configuration name &  RMSE 		& MAE 			& CRPS \\\hline
-iTransformer 4 seq    &$ 200.19 \pm 0.07	$&$ 139.87	\pm 0.06	$&$ 49.24 \pm 0.04	$ \\
- iTransformer 96 seq & 367.50 & 111.66 & 42.40\\
- iTransformer 192 seq & 368.45 &114.67& 43.07\\
- iTransformer 384 seq & 362.46 & 107.08& 44.17\\
+iTransformer 4 seq    &$ 200.19 \pm 0.07	$&$ 139.87	\pm 0.06	$&$ \underline{49.24 \pm 0.04	}$ \\
+ iTransformer 96 seq &$  \underline{186.15 \pm  0.12} $&$ \underline{135.78 \pm 0.06} $ &$  54.93\pm 0.02$\\
+ iTransformer 192 seq &$ 188.02 \pm 0.01$ &$ 135.90 \pm 0.01$&$ 56.49 \pm0.13 $ \\
+ iTransformer 384 seq &$ 188.16 \pm 0.58 $&$ 135.85 \pm 0.31 $&$ 58.68 \pm 0.11 $ \\
 \end{tabular}
 \caption{Error metrics and CRPS for different sequence lengths}
 \label{Table::Performance_sequence_length}
@@ -183,40 +189,33 @@ iTransformer 4 seq    &$ 200.19 \pm 0.07	$&$ 139.87	\pm 0.06	$&$ 49.24 \pm 0.04	
 \centering
 \begin{tabular}{l|l|l|l}
  Configuration name 	& 50\%-cov 		& 90\%-cov 		& 98\%-cov \\\hline
-iTransformer  4 seq   	&$ 0.356	\pm 0.001	$&$ 0.841	\pm 0.000	$&$0.959 \pm 0.000	$ \\
- iTransformer 96 seq 	& 0.09 & 0.66 	& 0.84 \\
- iTransformer 192 seq 	& 0.08 & 0.60 	& 0.83 \\
- iTransformer 384 seq 	& 0.06 &0.42	& 0.84\\
+iTransformer  4 seq   	&$ \underline{0.356	\pm 0.001}$&$ \underline{0.841	\pm 0.000}	$&$\underline{0.959 \pm 0.000}	$ \\
+ iTransformer 96 seq 	&$ 0.088 \pm 0.004$&$ 0.540 \pm 0.012$ 	&$ 0.755 \pm 0.003$ \\
+ iTransformer 192 seq 	&$ 0.072 \pm 0.002$&$ 0.415\pm 0.016$ 	&$ 0.660 \pm 0.008$ \\
+ iTransformer 384 seq 	&$ 0.049 \pm 0.002 $&$ 0.282 \pm 0.011$	&$ 0.475 \pm 0.030$\\
 \end{tabular}
 \caption{Quantile metrics for for different sequence lengths}
-\label{Table::Performance_sequence_length}
+\label{Table::Performance_sequence_length2}
 \end{table}
 
-Figure \ref{Result::iTransformer_sequence_length} shows predictions of the models trained with different sequence lengths on an example day.
-The predictions of the models trained on longe sequence lengths look more like a straight line, while the model trained with the shortest sequence length has more fluctuations.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=.8\linewidth]{../images/results/itransformer_sequence_length_results.png}
-  \caption{Predictions of iTransformers with different sequence lengths}
-\label{Result::iTransformer_sequence_length}
-\end{figure}
 
 \section{iTransformer multiple target variables}
 
-The models trained on multiple target variables performed almost identically.
-The results for this experiment can be found in \ref{Table::Performance_targets}.
-Figure \ref{Figure::Targets_prediction} shows the prediction of the models on an example day.
-The chart on the left compares the predictions to the actual imbalance price while the chart on the right only compares the predictions with each other to magnify differences.
+This experiment evaluates whether the iTransformer benefits from multi-target learning, i.e., jointly forecasting imbalance price along with additional target variables such as intraday indices, ENTSO-E physical data, and Netzregelverbund indicators. Table \ref{Table::Performance_targets} compares the predictive performance of models trained on different target combinations, including a combined configuration encompassing all auxiliary series.
 
-The predictions are almost identical, the inclusion of multiple target variables had no improving effect on the prediction of the imbalance price.
+Across all setups, no substantial performance improvements are observed. All variants achieve nearly identical RMSE (~185.5–186.0), MAE (~135.4–135.8), and CRPS (~54.8–54.9). Similarly, Table \ref{Table::Performance_targets2} shows minimal variation in quantile coverage metrics, with the combined model performing only marginally better at the 50\%-level (0.098) but showing no consistent gains at higher coverage levels.
+
+These results suggest that the selected auxiliary targets — while related to the system state — do not provide additional predictive structure that improves the reBAP forecast. A likely reason is that these variables either correlate only weakly with the imbalance price or introduce noise that dilutes the learning signal for the main target.
+
+Overall, this experiment indicates that multi-target learning does not enhance performance in this setting, and that focused single-target modeling may be preferable for probabilistic imbalance price forecasting — unless better-aligned or more informative auxiliary variables can be identified.
 
  \begin{table}[]
 \centering
 \begin{tabular}{l|l|l|l}
  Configuration name			&  RMSE 			& MAE 			& CRPS 			 \\\hline
  iTransformer intraday indices 		&$ 185.95\pm 0.46	$&$ 135.67 \pm 0.30	$&$ 54.84\pm0.17	$\\
- iTransformer entsoe data		&$  367.89			$&$ 111.98 		$&$42.39			 $\\
+ iTransformer entsoe data		&$  185.95 \pm 0.38 $&$ 135.65 \pm 0.19		$&$ 54.93 \pm 0.011		 $\\
  iTransformer netzregelverbund 	& $186.05 \pm 0.35	$&$ 135.80\pm0.27	$&$ 54.90\pm 0.02	$\\
  iTransformer combined 		&$ \underline{185.52 \pm 0.93}	$&$ \underline{135.36\pm 0.61}	$&$ \underline{54.81\pm 0.18	2} $\\
 \end{tabular}
@@ -227,74 +226,80 @@ The predictions are almost identical, the inclusion of multiple target variables
 \centering
 \begin{tabular}{l|l|l|l}
  Configuration name			& 50\%-cov 		& 90\%-cov 		& 98\%-cov \\\hline
- iTransformer intraday indices 		&$0.0898\pm 0.0087	$& $0.5461\pm 0.0110	$ & $0.7546 \pm 0.0017$\\
- iTransformer entsoe data		&$0.09			$&$ 0.66	 		$&$0.83 $\\
- iTransformer netzregelverbund 	&$0.0852\pm 0.0036	$&$\underline{0.5514 \pm 0.0098}	$&$ 0.7501 \pm 0.0030$\\
- iTransformer combined 		&$ \underline{0.0982\pm 0.0151}	$&$ 0.5423 \pm 0.0177 	$&$ \underline{0.7548 \pm 0.0032}$\\
+ iTransformer intraday indices 		&$0.090\pm 0.009	$& $0.546\pm 0.011	$ & $0.755 \pm 0.002$\\
+ iTransformer entsoe data		&$0.090 \pm  0.002	$&$ 0.533 \pm 0.004	$&$0.755 \pm 0.006 $\\
+ iTransformer netzregelverbund 	&$0.085\pm 0.004	$&$\underline{0.551 \pm 0.010}	$&$ 0.750 \pm 0.003$\\
+ iTransformer combined 		&$ \underline{0.098\pm 0.015}	$&$ 0.542 \pm 0.018 	$&$ \underline{0.755 \pm 0.003}$\\
 \end{tabular}
 \caption{Quantile metrics for for  multiple target variables}
-\label{Table::Performance_targets}
+\label{Table::Performance_targets2}
 \end{table}
 
 
-\begin{figure}
-  \centering
-\begin{subfigure}{0.45\textwidth}
-  \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_aep.png}
-  \caption{Predictions of models with imbalance price}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_alone.png}
-  \caption{Predictions of models without imbalance price}
-\end{subfigure}
-\caption{Predictions of iTransformers trained on multiple target variables}
-\label{Figure::Targets_prediction}
-\end{figure}
+%\begin{figure}
+% % \centering
+%\begin{subfigure}{0.45\textwidth}
+%  \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_aep.png}
+%  \caption{Predictions of models with imbalance price}
+%\end{subfigure}
+%\begin{subfigure}{0.45\textwidth}
+%  \includegraphics[width=\linewidth]{../images/results/itransformer_target_variables_alone.png}
+%  \caption{Predictions of models without imbalance price}
+%\end{subfigure}
+%\caption{Predictions of iTransformers trained on multiple target variables}
+%\label{Figure::Targets_prediction}
+%\end{figure}
 
 
 \section{iTransformer different prediction horizons}
+This experiment explores whether training the iTransformer to forecast longer horizons improves its ability to predict the one-hour-ahead imbalance price. The model was trained with forecast horizons of 4, 12, 24, 48, and 96 steps, and evaluated solely on the one-hour-ahead target.
 
+As shown in Tables \ref{Table::Performance_targets_horizon} and \ref{Table::Performance_targets_horizon2}, all configurations perform nearly identically. Differences in RMSE, MAE, and CRPS across horizons are minimal (less than 0.3 points in each metric), and quantile coverage metrics vary only in the third decimal place. The longest-horizon model (96 steps) does not outperform shorter-horizon models — in fact, it shows slightly worse MAE (135.99) and CRPS (54.94), though the differences are insignificant.
+
+These results suggest that longer forecast horizons do not yield any benefit for short-term imbalance price prediction in this setup. A likely explanation is that the model is trained to optimize the entire sequence output, which can dilute the learning focus on the one-hour-ahead value. Additionally, longer sequences may introduce training complexity without additional relevant signal.
+
+This experiment implies that training the model specifically for the target horizon is sufficient, and that increasing the output range does not lead to generalization gains
 
  \begin{table}[]
 \centering
 \begin{tabular}{l|l|l|l}
  Configuration name			&  RMSE 			& MAE 			& CRPS 	\\\hline
- iTransformer 4 horizon			& $186.16 \pm 0.02	$&$ 135.79 \pm 0.03	$&$54.92 \pm 0.01$\\
- iTransformer 12 horizon		&$ 364.69		$&$108.93	$&$42.55	$ \\
- iTransformer 24 horizon		&$364.23		$&$ 108.26	$&$42.67	$\\
- iTransformer 48 horizon		&$ 367.78		$&$ 111.51	$&$42.39	$ \\
- iTransformer 96 horizon		&$ 368.28		$&$ 111.68	$&$42.45	$\\
+ iTransformer 4 horizon		& $\underline{186.16 \pm 0.02}	$&$ 135.79 \pm 0.03	$&$54.92 \pm 0.01$\\
+ iTransformer 12 horizon		&$ 186.24\pm 0.11	$&$135.89 \pm 0.14	$&$54.89 \pm 0.02$ \\
+ iTransformer 24 horizon		&$ 186.17	\pm 0.01	$&$ \underline{135.76 \pm 0.03}	$&$54.89	\pm 0.01$\\
+ iTransformer 48 horizon		&$ 186.22  \pm 0.03	$&$\underline{ 135.76 \pm 0.04	}$&$\underline{54.88	\pm 0.00}$ \\
+ iTransformer 96 horizon		&$ 186.47	\pm 0.01	$&$ 135.99 \pm 0.02	$&$54.94	\pm 0.00$\\
 \end{tabular}
 \caption{iTransformer performance for multiple target variables}
-\label{Table::Performance_targets}
+\label{Table::Performance_targets_horizon}
 \end{table}
 \begin{table}
 \centering
 \begin{tabular}{l|l|l|l}
  Configuration name			&   50\%-cov 		& 90\%-cov 		& 98\%-cov \\\hline
- iTransformer 4 horizon			&$0.0861 \pm 0.0014	$&$ 0.5407\pm 0.0029 	$&$0.7555 \pm 0.0010 $\\
- iTransformer 12 horizon		&$0.12		$&$ 0.63	$ &$ 0.85$ \\
- iTransformer 24 horizon		&$0.13		$&$0.60	 $&$0.85 $\\
- iTransformer 48 horizon		&$0.09		$&$ 0.66	 $&$ 0.84$ \\
- iTransformer 96 horizon		&$0.09		$&$ 0.66	 $&$ 0.84 $\\
+ iTransformer 4 horizon		&$\underline{0.086 \pm 0.001}	$&$ 0.541\pm 0.003 	$&$\underline{0.756 \pm 0.001}$\\
+ iTransformer 12 horizon		&$0.084\pm 0.002	$&$ \underline{0.549\pm 0.009}	$ &$ 0.753 \pm 0.003$ \\
+ iTransformer 24 horizon		&$0.084\pm 0.001	$&$0.543\pm 0.002	 $&$0.755 \pm 0.001$\\
+ iTransformer 48 horizon		&$0.085\pm 0.001	$&$ 0.543\pm 0.002	 $&$\underline{ 0.756\pm 0.001}$ \\
+ iTransformer 96 horizon		&$0.083\pm 0.000	$&$ 0.544\pm 0.001	 $&$ \underline{0.756 \pm 0.000}$\\
 \end{tabular}
 \caption{iTransformer performance for multiple target variables}
-\label{Table::Performance_targets}
+\label{Table::Performance_targets_horizon2}
 \end{table}
 
-\begin{figure}
-  \centering
-\begin{subfigure}{0.45\textwidth}
-  \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths.png}
-  \caption{Predictions of models with imbalance price}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths_alone.png}
-  \caption{Predictions of models without imbalance price}
-\end{subfigure}
-\caption{Predictions of iTransformers trained on different forecasting horizons}
-\label{fig:fig}
-\end{figure}
+%\begin{figure}
+%  \centering
+%\begin{subfigure}{0.45\textwidth}
+%  \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths.png}
+%  \caption{Predictions of models with imbalance price}
+%\end{subfigure}
+%\begin{subfigure}{0.45\textwidth}
+%  \includegraphics[width=\linewidth]{../images/results/itransformer_horizon_lengths_alone.png}
+%  \caption{Predictions of models without imbalance price}
+%\end{subfigure}
+%\caption{Predictions of iTransformers trained on different forecasting horizons}
+%\label{fig:fig}
+%\end{figure}
 
 
 \section{Feature Importance: Insights from Random Forest}
