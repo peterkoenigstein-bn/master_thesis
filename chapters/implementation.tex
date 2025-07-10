@@ -18,12 +18,20 @@
 % Use flowcharts to give an overview
 \section{Feature engineering}
 \label{Section::Feature_engineering}
-To improve predictive performance, the raw data introduced in Section \ref{Chapter:Data} is transformed into a set of engineered features. These features are designed to capture domain-specific relationships between the input variables and the imbalance price. Key transformations include the calculation of residual load and forecast errors.
+To improve predictive performance, the raw data introduced in Section \ref{Chapter::Data} is transformed into a set of engineered features. These features are designed to capture domain-specific relationships between the input variables and the imbalance price. Key transformations include the calculation of residual load and forecast errors.
 
 Feature selection is guided by exploratory data analysis, domain knowledge, and statistical correlation with the target variable (\gls{reBAP}).
 
-A normality check using the Anderson-Darling\ref{andersonAsymptoticTheoryCertain1952} test does not reject the assumption of normality, but due to the high skewness of $27.08$ and kurtosis of $1194.02$ normality can be rejected. Therefore, Spearman rank correlation is used to assess monotonic relationships between input features and target variables.
 
+A normality check using the Anderson-Darling \cite{andersonAsymptoticTheoryCertain1952} test does not reject the assumption of normality, but due to the high skewness of $27.08$ and kurtosis of $1194.02$ normality can be rejected. Therefore, Spearman rank correlation is used to assess monotonic relationships between input features and the \gls{reBAP}.
+
+\begin{figure}[H]
+            \centering
+            \includegraphics[width=.45\textwidth]{implementation/imbalance_scatter.pdf}
+            \includegraphics[width=.45\textwidth]{implementation/imbalance_scatter_clipped.pdf}
+            \caption[Scatter plots for imbalance price and imbalance volume. For the plot on the right the imbalane price has been clipped to (-1000,1000) to give information about non-outliers]{Scatter plots for imbalance price and imbalance volume. For the plot on the right the imbalane price has been clipped to (-1000,1000) to give information about non-outliers}
+            \label{Figure::volume_price_scatter}
+\end{figure}
 
 %The data introduced in section \ref{Chapter::Data} can be further refined to gain additional information. 
 %The following sections contain information about how the data was used to create more features.
@@ -49,13 +57,6 @@ Figure \ref{Figure::volume_price_scatter} shows scatter plots for the imbalance 
 Due to the high correlation with the imbalance volume, correlations with the imbalance volumes will also be regarded for selecting new features.
 The following sections describe the feature generation process for energy and weather data.
 
-\begin{figure}[ht]
-            \centering
-            \includegraphics[width=.45\textwidth]{implementation/nrv_rebap_scatter.png}
-            \includegraphics[width=.45\textwidth]{implementation/nrv_rebap_scatter_clipped.png}
-            \caption[Scatter plots for imbalance price and imbalance volume. For the plot on the right the imbalane price has been clipped to give information about non-outliers]{Scatter plots for imbalance price and imbalance volume. For the plot on the right the imbalane price has been clipped to give information about non-outliers}
-            \label{Figure::volume_price_scatter}
-\end{figure}
 
     \subsection{Energy data}
     \label{Section::FE_Energy_Data}
@@ -67,6 +68,38 @@ Residual Load = Load−(Generation Wind\textsubscript{onshore} + Generation Wind
 This value reflects the part of the load that must be covered by dispatchable sources and is a key proxy for system stress.
 
 Additionally, forecast errors are computed for load, generation, and residual load. These are calculated as the difference between forecasted and actual values for each variable. Since actual values are not available at prediction time, this feature is only available at the time the actual values are available. These features can also be used for analysis. 
+
+    \begin{table}[h]
+    \centering
+    \begin{tabular}{l|l|l|l}
+    Variable Name	&Forecasted Value& Actual Value	& Forecasting Error \\\hline
+    Solar 		& -0.083		& -0.105		& \cellcolor{green} -0.155 \\
+    Wind offshore 	& -0.164		& -0.152		& \cellcolor{green} 0.008 \\
+    Wind onshore 	& -0.176		& \underline{-0.189}	& \cellcolor{green} -0.104 \\
+    Load 		&0.101		& 0.121		& \cellcolor{green}  0.132 \\
+    Residual Load 	& \cellcolor{green} \underline{0.343}& \cellcolor{green} \underline{0.391}& \cellcolor{green}0.192\\
+    \end{tabular}
+
+    
+    \caption{Correlations between variables and \textbf{imbalance price} (rounded to next $10^{-3}$). Green cells are newly engineered features, the 3 most correlating features are underlined}
+    \label{Table::Rebap_Correlations_ENTSOE}
+    \end{table}
+
+    \begin{table}[h]
+    \centering
+    \begin{tabular}{l|l|l|l}
+    Variable Name	&Forecasted Value& Actual Value	& Forecasting Error \\\hline
+    Solar 		&  -0.011		& -0.024		& \cellcolor{green} \underline{-0.149} \\
+    Wind offshore 	& -0.013		&  -0.022		& \cellcolor{green}\underline{0.114}\\
+    Wind onshore 	& 0.010		& 0.008		& \cellcolor{green} -0.093\\
+    Load 		& 0.041		& 0.066		& \cellcolor{green}  -0.040 \\
+    Residual Load 	& \cellcolor{green} 0.046& \cellcolor{green} 0.080& \cellcolor{green} \underline{0.193}\\
+    \end{tabular}
+
+    
+    \caption{Correlations between variables and \textbf{imbalance volume} (rounded to next $10^{-3}$). Green cells are newly engineered features, the 3 most correlating features are underlined}
+    \label{Table::Imbalance_volume_Correlations_ENTSOE}
+    \end{table}
 
 If other features that are available at prediction time correlate highly with the forecast errors, those features can be used to gain additional information.
 
@@ -89,42 +122,11 @@ Table \ref{Table::Imbalance_volume_Correlations_ENTSOE} presents the correspondi
   %  Out of these features the forecasted and actual value for residual load and the residual load forecasting error correlate the most with the imbalance price.
  %   It should be noted that the actual values apart from the forecasts are not available at prediction time.    
 
-    \begin{table}
-    \centering
-    \begin{tabular}{l|l|l|l}
-    Variable Name	&Forecasted Value& Actual Value	& Forecasting Error \\\hline
-    Solar 		& -0.083		& -0.105		& \cellcolor{green} -0.155 \\
-    Wind offshore 	& -0.164		& -0.152		& \cellcolor{green} 0.008 \\
-    Wind onshore 	& -0.176		& \textbf{-0.189}	& \cellcolor{green} -0.104 \\
-    Load 		&0.101		& 0.121		& \cellcolor{green}  0.132 \\
-    Residual Load 	& \cellcolor{green} \textbf{0.343}& \cellcolor{green} \textbf{0.391}& \cellcolor{green}0.192\\
-    \end{tabular}
-
-    
-    \caption{Correlations between variables and \textbf{imbalance price} (rounded to next $10^{-3}$). Green cells are new features, the 3 most correlating features are written in bold}
-    \label{Table::Rebap_Correlations_ENTSOE}
-    \end{table}
 
 %The correlation between the ENTSO-E data and the imbalance volume was calculated as well.
 %The results for these calculations are displayd in table \ref{Table::Imbalance_volume_Correlations_ENTSOE}. The forecasted and actual value for the residual have a much lower correlation with the imbalance volume than with the imbalance price. The correlation between the residual load forecasting error and imbalance volume is about the same as with the imbalance price. Apart from the load the forecasting error correlates the most with the imbalance volume. 
 
 
-
-    \begin{table}
-    \centering
-    \begin{tabular}{l|l|l|l}
-    Variable Name	&Forecasted Value& Actual Value	& Forecasting Error \\\hline
-    Solar 		&  -0.011		& -0.024		& \cellcolor{green} \textbf{-0.149} \\
-    Wind offshore 	& -0.013		&  -0.022		& \cellcolor{green}\textbf{0.114}\\
-    Wind onshore 	& 0.010		& 0.008		& \cellcolor{green} -0.093\\
-    Load 		& 0.041		& 0.066		& \cellcolor{green}  -0.040 \\
-    Residual Load 	& \cellcolor{green} 0.046& \cellcolor{green} 0.080& \cellcolor{green} \textbf{0.193}\\
-    \end{tabular}
-
-    
-    \caption{Correlations between variables and \textbf{imbalance volume} (rounded to next $10^{-3}$). Green cells are new features, the 3 most correlating features are written in bold}
-    \label{Table::Imbalance_volume_Correlations_ENTSOE}
-    \end{table}
     
     
     \subsection{Weather data}
@@ -137,6 +139,65 @@ To construct meaningful input features, two forecast timestamps are selected for
 \item the day-ahead forecast from 18:00 on the previous day 
 \item the latest available forecast, typically issued two hours before gate closure
 \end{itemize}
+    
+    \begin{table}[h]
+    \centering
+    \begin{tabular}{l|l}
+    Variable Name	& Correlation coefficient \\\hline
+   	LastFC\_FX1	&-0.254\\
+	DayAhead\_FX1	&-0.25\\
+	LastFC\_FF		&-0.247\\
+	DayAhead\_FF 	&-0.243\\
+	DayAhead\_N05	&0.185\\
+	LastFC\_N05	&0.176\\
+	DayAhead\_wwM	&0.167\\
+	LastFC\_wwM	&0.162\\
+	LastFC\_Rad1h 	&-0.128\\
+	Diff\_Rad1h          	&-0.115\\
+	LastFC\_SunD1     	&-0.102\\
+    \end{tabular}
+    
+    \caption{Correlations between feature engineered MOSMIX variables and imbalance price with an absolute correlation coefficient larger than $0.1$ (rounded to next $10^{-3}$)}
+    \label{Table::imbalance_price_MOSMIX_correlations}
+    \end{table}
+    
+    \begin{table}[h]
+    \centering
+    \begin{tabular}{l|l}
+    Variable Name	& Correlation coefficient \\\hline
+	Diff\_Rad1h                          &-0.08\\
+	LastFC\_N05                          &0.074\\
+	DayAhead\_N05                        &0.073\\
+	Diff\_TTT                           &-0.068\\
+	Diff\_SunD1                         &-0.061\\
+	Diff\_T5cm                          &-0.055\\
+	Diff\_Nl                             &0.052\\
+    \end{tabular}
+    
+    \caption{Correlations between feature engineered MOSMIX variables and imbalance volume (rounded to next $10^{-3}$)}
+    \label{Table::imbalance_volume_MOSMIX_correlations}
+    \end{table}
+    
+    
+    \begin{table}[h]
+    \centering
+    \begin{tabular}{l|l}
+    Variable Name	& Correlation coefficient \\\hline
+	LastFC\_T5cm                        &-0.258\\
+	DayAhead\_T5cm                      &-0.253\\
+	LastFC\_TTT                         &-0.249\\
+	DayAhead\_FF                         &0.246\\
+	DayAhead\_TTT                       &-0.243\\
+	LastFC\_FF                           &0.233\\
+	LastFC\_Nl                           &0.221\\
+	DayAhead\_FX1                        &0.216\\
+	DayAhead\_Nl                         &0.205\\
+	LastFC\_FX1                          &0.204\\
+    \end{tabular}
+    
+    \caption{Correlations between feature engineered MOSMIX variables and residual load forecasting error with an absolute correlation coefficient larger than $0.2$ (rounded to next $10^{-3}$)}
+    \label{Table::residual_load_fce_MOSMIX_correlations}
+    \end{table}
 
 The day-ahead forecast reflects what market participants may have relied on when submitting schedules, while the latest forecast provides the most accurate information available at prediction time.
 
@@ -149,6 +210,8 @@ Feature names are prefixed accordingly:
 \item Diff  for the difference between the two
 \end{itemize}
 Spearman correlations between these features and the imbalance price, imbalance volume, and residual load forecasting error are reported in Tables \ref{Table::imbalance_price_MOSMIX_correlations},  \ref{Table::imbalance_volume_MOSMIX_correlations} and  \ref{Table::residual_load_fce_MOSMIX_correlations}.
+
+The correlation with the residual load forecasting error was examined due to its observed correlation with both the reBAP and the imbalance volume. Since the MOSMIX features are available earlier than the actual residual load forecasting error, a strong correlation would allow earlier inference about future imbalance conditions.
 
 Among the most relevant features are wind-related variables (FF, FX1), solar radiation (Rad1h, SunD1), and cloud cover (N05). These findings align with expectations, as VRE production and residual load strongly depend on weather dynamics.
 
@@ -173,65 +236,6 @@ Among the most relevant features are wind-related variables (FF, FX1), solar rad
   %  For the forecast from the previous day the prefix \textit{DayAhead} is used, the prefix \textit{LastFC} is used for the most recent forecast and \textit{Diff} denotes that the features is the difference between the day ahead forecast and the most recent forecast.
    % The results for the correlation analysis between the features and the imbalance can be found in table \ref{Table::imbalance_price_MOSMIX_correlations}. The results for the correlation analysis with the imbalance volume are displayed in table \ref{Table::imbalance_volume_MOSMIX_correlations}.
   %  The features containing information about wind, namely \textit{FX1} and \textit{FF}, show the highest correlation with the imbalance price. The parameter containing information about cloud coverage (\textit{N05}) is among the highest correlated with both the imbalance price and the imbalance volume. The same is true for the features containing information about solar radiation, \textit{Rad1h} and \textit{SunD1}. In general the correlation between the MOSMIX features and the imbalance volume are a lot lower than the correlations with the imbalance price.
-    
-    \begin{table}
-    \centering
-    \begin{tabular}{l|l}
-    Variable Name	& Correlation coefficient \\\hline
-   	LastFC\_FX1	&-0.254\\
-	DayAhead\_FX1	&-0.25\\
-	LastFC\_FF		&-0.247\\
-	DayAhead\_FF 	&-0.243\\
-	DayAhead\_N05	&0.185\\
-	LastFC\_N05	&0.176\\
-	DayAhead\_wwM	&0.167\\
-	LastFC\_wwM	&0.162\\
-	LastFC\_Rad1h 	&-0.128\\
-	Diff\_Rad1h          	&-0.115\\
-	LastFC\_SunD1     	&-0.102\\
-    \end{tabular}
-    
-    \caption{Correlations between feature engineered MOSMIX variables and imbalance price with an absolute correlation coefficient larger than $0.1$ (rounded to next $10^{-3}$)}
-    \label{Table::imbalance_price_MOSMIX_correlations}
-    \end{table}
-    
-    \begin{table}
-    \centering
-    \begin{tabular}{l|l}
-    Variable Name	& Correlation coefficient \\\hline
-	Diff\_Rad1h                          &-0.08\\
-	LastFC\_N05                          &0.074\\
-	DayAhead\_N05                        &0.073\\
-	Diff\_TTT                           &-0.068\\
-	Diff\_SunD1                         &-0.061\\
-	Diff\_T5cm                          &-0.055\\
-	Diff\_Nl                             &0.052\\
-    \end{tabular}
-    
-    \caption{Correlations between feature engineered MOSMIX variables and imbalance volume (rounded to next $10^{-3}$)}
-    \label{Table::imbalance_volume_MOSMIX_correlations}
-    \end{table}
-    
-    
-    \begin{table}
-    \centering
-    \begin{tabular}{l|l}
-    Variable Name	& Correlation coefficient \\\hline
-	LastFC\_T5cm                        &-0.258\\
-	DayAhead\_T5cm                      &-0.253\\
-	LastFC\_TTT                         &-0.249\\
-	DayAhead\_FF                         &0.246\\
-	DayAhead\_TTT                       &-0.243\\
-	LastFC\_FF                           &0.233\\
-	LastFC\_Nl                           &0.221\\
-	DayAhead\_FX1                        &0.216\\
-	DayAhead\_Nl                         &0.205\\
-	LastFC\_FX1                          &0.204\\
-    \end{tabular}
-    
-    \caption{Correlations between feature engineered MOSMIX variables and residual load forecasting error with an absolute correlation coefficient larger than $0.2$ (rounded to next $10^{-3}$)}
-    \label{Table::residual_load_fce_MOSMIX_correlations}
-    \end{table}
 
 
 \section{Data Split}
@@ -279,7 +283,7 @@ For Random Forest, the RandomForestRegressor from scikit-learn is used, along wi
 
 For ARIMAX, the auto\_arima function from the pmdarima package is used. Only a subset of features is used as exogenous inputs due to computational constraints. Feature selection is based on the top 10 ranked variables from the Random Forest importance scores.
 
-Both xLSTM and iTransformer require fixed-length input sequences. These are constructed using a sliding window approach with lookback lengths defined in the experiment setup (see Chapter \ref{Section::Experimental_Setup}). The deep learning models are implemented using PyTorch and trained on GPUs in the Google Cloud Vertex AI environment.
+Both xLSTM and iTransformer require fixed-length input sequences. These are constructed using a sliding window approach with lookback lengths defined in the experiment setup (see Chapter \ref{Chapter::Experimental_Setup}). The deep learning models are implemented using PyTorch and trained on GPUs in the Google Cloud Vertex AI environment.
 
 %In this section implementation details for each of the used models will be discussed. 
 %The hyperparameter configurations might change during the experiments. 

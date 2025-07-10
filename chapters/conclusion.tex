@@ -22,7 +22,7 @@ The results demonstrate that xLSTM delivers the most accurate and well-calibrate
 
 In contrast, the iTransformer model excels at predicting extreme events. It achieves the lowest RMSE and highest coverage at the 90\% and 98\% levels, indicating its strength in modeling tail risks. However, this comes at the cost of higher average error and weaker sharpness.
 
-Random Forest and ARIMA provide solid average-case predictions with relatively low MAE and CRPS, but struggle to capture the full distribution of price spikes — as reflected in their poor RMSE and low tail coverage. 
+Random Forest and ARIMA provide solid average-case predictions, but struggle to capture the full distribution of price spikes — as reflected in their poor RMSE and low tail coverage. 
 
 Additional experiments investigated the influence of architectural and input-related factors. Notably, multi-target learning did not improve performance, and increasing the forecast horizon yielded no meaningful gain in one-hour-ahead prediction. Shorter input sequences improved iTransformer’s sharpness and coverage, while variations in xLSTM block structure had only minor effects.
 

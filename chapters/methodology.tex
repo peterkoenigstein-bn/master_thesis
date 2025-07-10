@@ -48,7 +48,7 @@ These sources provide quarter-hourly data on the German electricity market, incl
 Netztransparenz provides publicly accessible data on the German balancing energy market. The key variables retrieved from this source include the \gls{reBAP}, the \gls{GCC} \gls{SB}, and the activated volumes of primary and secondary balancing reserves. All variables are available at a quarter-hour resolution.
 
 The imbalance price serves as the primary prediction target in this thesis. The imbalance volume is considered a key explanatory variable, as it reflects the total deviation between scheduled and delivered power in each control area.
-Both operational and quality-assured versions of the data are provided. While operational data is published 15–30 minutes after delivery, the quality-assured version becomes available with a delay of approximately 18 days. The models are trained on quality-assured data, and operational data is used for real-time simulation. Data gaps are filled using the fallback source.
+Both operational and quality-assured versions of the data are provided. While operational data is published 15–30 minutes after delivery, the quality-assured version becomes available with a delay of up to 20 days \cite{NetztransparenzNRVSaldo}. The models are trained on quality-assured data, and operational data is used for real-time simulation. Data gaps are filled using the fallback source.
 
  This dataset also provides information on the amount of balancing energy activated per quarter-hour, which serves as a proxy for system stress and may contain explanatory value for extreme reBAP values.
  
@@ -69,7 +69,7 @@ A full list of variables is shown in Table \ref{Table::Energy_Data_Netztranspare
 
 %The data is available publically and was downloaded using their provided API.
 
-\begin{table}[]
+\begin{table}[h]
 \centering
 \begin{tabular}{l|l|l|l}
  Data Source & Variable &  Time Resolution & Availability  \\\hline
@@ -106,14 +106,14 @@ A full list of variables and their respective availability is presented in Table
 
 All datasets are accessed and downloaded via publicly available APIs, enabling automated and reproducible data collection.
 
-A more detailed description of the preprocessing steps, feature engineering, and exploratory data analysis will be provided in later sections.
+A more detailed description of the preprocessing steps, feature engineering, and exploratory data analysis will be provided later.
 
 
-\begin{table}[]
+\begin{table}[h]
 \centering
 \begin{tabular}{l|l|l|l}
- Data Source & Variable &  Time  & Availability  \\
- &&Resolution&\\\hline
+ Data  & Variable &  Time  & Availability  \\
+ Source&&Resolution&\\\hline
  Entso-E & Load forecast & 15 min  & 12:00 d-1 \\
  Entso-E & Load actual & 15 min  &Live, 1 h delay \\
  Entso-E & Wind onshore forecast & 15 min  & 18:00 d-1\\
@@ -143,14 +143,15 @@ A more detailed description of the preprocessing steps, feature engineering, and
 Market price data is retrieved from Energy-Charts and includes both day-ahead and intraday price signals. Specifically, the following variables are used:
 \begin{itemize}
 \item Hourly spot price (day-ahead auction at 12:00)
-\item \gls{IDA1} price at 15:00,
+\item \gls{IDA1} price at 15:00
 \item Intraday indices ID1 and ID3
 \item Intraday continuous average ID FULL
 \end{itemize}
 
-Each intraday index represents the volume-weighted average of trades executed during a specific time window before gate closure. For example, ID1 includes trades up to one hour before delivery, while ID3 covers a 3-hour window. These indices capture short-term market expectations and allow the model to align its predictions with real trading behavior.
+Each intraday index represents the volume-weighted average of trades executed during a specific time window before gate closure. For example, ID1 includes trades up to one hour before delivery, while ID3 covers a 3-hour window. These indices capture the market niveau and trends. 
+%The data is delayed by a day, making it hard to caputre short-term market expectations and allow the model to align its predictions with real trading behavior.
 
-As discussed in Section \ref{Section::Methodology}, the intraday index ID1 also serves as a benchmark for model evaluation. It reflects the implicit price forecast made by BRPs prior to gate closure and is used as the reference baseline in this thesis.
+As discussed in Section \ref{Section::Methodology}, the intraday index ID1 also serves as a benchmark for model evaluation.
 
 Market prices are released on a fixed schedule: the spot price and \gls{IDA1} are published the day before delivery, while the intraday indices are available at midnight after delivery. The model is trained on historical values and evaluated against the ID1 benchmark. A complete list of variables is provided in Table \ref{Table::Market_Data}.
 
@@ -188,8 +189,38 @@ Weather data is obtained from the \gls{DWD} using the \gls{MOSMIX} dataset. This
 
 Data is collected from 16 weather stations distributed across Germany (see Figure \ref{fig::weather_stations}). Forecasts are available up to 10 days in advance and updated hourly. Measurements are typically available with a delay of approximately one hour after observation.
 
+\begin{table}[h]
+\centering
+\begin{tabular}{l|l}
+Parameter & Description \\\hline
+DD & Wind direction\\
+FF & Wind speed\\
+FX1 & Maximum wind gust within the last hour\\
+N & Total cloud cover\\
+N05 & Cloud cover below 500 ft.\\
+Neff & Effective cloud cover\\
+Nh & High cloud cover (>7 km)\\
+Nl & Low cloud cover (lower than 2 km)\\
+Nm & Midlevel cloud cover (2-7 km)\\
+RR1c & Total precipitation during the last hour\\
+Rad1h & Global Irradiance\\
+SunD1 & Sunshine duration during the last Hour\\
+T5cm & Temperature 5cm above surface\\
+TTT & Temperature 2m above surface\\
+wwM & Probability for fog within the last hour\\
+\end{tabular}
+\caption{Subset of Variables used from DWD MOSMIX data}
+\label{Table::DWD_MOSMIX_Parameters_Small}
+\end{table}
+
 Weather data is a critical input for imbalance price forecasting, as it directly influences the generation of \gls{VRE} sources such as wind and solar.
 
+\begin{figure}[h]
+            \centering
+            \includegraphics[width=.5\textwidth]{data/stations_map_customizer.png}
+            \caption[Weather stations used]{Weather stations used}
+            \label{fig::weather_stations}
+ \end{figure}
 A selected subset of variables used in this work is listed in Table \ref{Table::DWD_MOSMIX_Parameters_Small}. Details on how the forecasts are transformed into model-ready features are discussed in Chapter \ref{Section::Feature_engineering}.
 
 %The weather data used for the prediction of the imbalance price is obtained from the German Weather Service (DWD).%
@@ -206,43 +237,15 @@ A selected subset of variables used in this work is listed in Table \ref{Table::
 %More information about how the data is handled will be discussed in section \ref{Section::Feature_Engineering}
 
 
-\begin{table}[]
-\centering
-\begin{tabular}{l|l}
-Parameter & Description \\\hline
-DD & Wind direction\\
-FF & Wind speed\\
-FX1 & Maximum wind gust within the last hour\\
-N & Total cloud cover\\
-N05 & Cloud cover below 500 ft.\\
-Neff & Effective cloud cover\\
-Nh & High cloud cover (>7 km)\\
-Nl & Low cloud cover (lower than 2 km)\\
-Nm & Midlevel cloud cover (2-7 km)\\
-RR1c & Total precipitation during the last hour consistent with significant weather\\
-Rad1h & Global Irradiance\\
-SunD1 & Sunshine duration during the last Hour\\
-T5cm & Temperature 5cm above surface\\
-TTT & Temperature 2m above surface\\
-wwM & Probability for fog within the last hour\\
-\end{tabular}
-\caption{Subset of Variables used from DWD MOSMIX data}
-\label{Table::DWD_MOSMIX_Parameters_Small}
-\end{table}
 
 
-\begin{figure}[ht]
-            \centering
-            \includegraphics[width=.5\textwidth]{data/stations_map_customizer.png}
-            \caption[Weather stations used]{Weather stations used}
-            \label{fig::weather_stations}
- \end{figure}
+
  
 \iffalse
-\begin{table}[]
+\begin{table}[htb]
 \centering
 \begin{tabular}{l|l|l}
-Station name & Measurements? & MOSMIX ?\\\hline
+Station name & Measurements ? & MOSMIX ?\\\hline
    Freiburg&Yes&Yes\\
    Hamburg&Yes&Yes\\
     Leipzig-Halle&Yes&Yes\\
@@ -331,13 +334,12 @@ where $Y_i$ is the true value for datapoint $i$ and  $\hat{Q}_{\tau}$ is the $\t
 \section{Benchmark}
 \label{Section:Benchmark}
 
-In addition to comparing models against each other, this thesis uses the Intraday Index ID1 as a baseline benchmark. The ID1 reflects the volume-weighted average price of trades conducted on the intraday market up to one hour before delivery.
-
-This index is used by market participants as a reference point for their final trading decisions and can be interpreted as a proxy for their implicit forecast of the imbalance price.
+In addition to comparing models against each other, this thesis uses the intraday index ID1 as a baseline benchmark. The intraday index ID1 reflects the volume-weighted average price of trades conducted on the intraday market up to one hour before delivery.
+As mentioned in Section \ref{Section::Objectives} the intraday index ID1 can be used as a proxy for \gls{BRP}s predictions of the \gls{reBAP}.
 
 As explained in Section \ref{Section::Module_2} , the trades happening close to delivery time also play a formal role in Module 2 of the imbalance price calculation. In about 17\% of all settlement periods (2024), the imbalance price was directly influenced by the ID AEP value via the incentivizing component.
 
-While the ID1 represents a strong and practical heuristic, it does not incorporate physical grid variables, weather uncertainty, or reserve activation data. Therefore, one objective of this thesis is to evaluate whether modern time series models can outperform this heuristic baseline under realistic forecasting conditions.
+While the ID1 represents a strong and practical heuristic\cite{narajewskiProbabilisticForecastingGerman2022}, it does not incorporate physical grid variables, weather uncertainty, or reserve activation data. Therefore, one objective of this thesis is to evaluate whether modern time series models can outperform this heuristic baseline under realistic forecasting conditions.
 
 
 %During the experiments part of this thesis the models will be compared against each other.

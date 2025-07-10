@@ -11,8 +11,8 @@
 
 \chapter{Results and Discussion} % Overview text
 \label{Chapter::Results and Discussion}
-In this chapter, the results of the thesis are discussed. The following sections contain th results of the experiments specified in \ref{Chapter::Experiments}.                   
-    In this chapter, the results of the thesis are presented and evaluated as well as, the approach of this thesis.
+In this chapter, the results of the thesis are discussed. The following sections contain the results of the experiments specified in \ref{Chapter::Experimental_Setup}.                   
+    In this chapter, the results of the thesis are presented and evaluated.% as well as the approach of this thesis.
 
 % Show your results and analyze them
 % Explain why the results are the way they are and not different
@@ -23,7 +23,7 @@ In this chapter, the results of the thesis are discussed. The following sections
 
 \section{Out of the box performance}
 
-The comparison of out-of-the-box model performance (Tables \ref{Table::Out_of_the_box_performance} and \ref{Table::Out_of_the_box_performance_quantile}) highlights clear differences in how each approach handles point forecasting, probabilistic estimation, and tail risk.
+The comparison of out-of-the-box model performance (Tables \ref{Table::Out_of_the_box_performance} and \ref{Table::Out_of_the_box_performance_quantile}) highlights differences in how each approach handles point forecasting, probabilistic estimation, and tail risk.
 
 The xLSTM model achieves the strongest overall performance, with the lowest MAE (84.33), outperforming the naive ID1, and lowest CRPS (40.30) across all models. It also performs competitively in RMSE (302.57), suggesting that it not only captures average-case dynamics reliably, but also handles larger deviations effectively.
 
@@ -162,7 +162,7 @@ Overall, the results indicate that xLSTM performance is robust to architectural 
 
 
 \section{iTransformer variable sequence length}
-This experiment investigates how the iTransformer model’s performance varies with different input sequence lengths. As shown in Tables \ref{Table::Performane_sequence_length} and \ref{Table::Performance_sequence_length2}, the model was evaluated using sequences of 4, 96, 192, and 384 time steps.
+This experiment investigates how the iTransformer model’s performance varies with different input sequence lengths. As shown in Tables \ref{Table::Performance_sequence_length} and \ref{Table::Performance_sequence_length2}, the model was evaluated using sequences of 4, 96, 192, and 384 time steps.
 
 In terms of point forecast accuracy, longer input sequences do not lead to performance improvements. On the contrary, the shortest-sequence model (4 seq) achieves the lowest RMSE (200.19) and lowest MAE (139.87), despite having access to significantly less historical context. As sequence length increases, both MAE and RMSE deteriorate slightly, while CRPS increases notably, from 49.24 (4 seq) to 58.68 (384 seq).
 

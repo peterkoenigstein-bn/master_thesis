@@ -44,7 +44,7 @@ The following five models are included in the comparison:
 
 All models are trained and evaluated on the same preprocessed dataset, as described in Chapters \ref{Chapter::Data} and \ref{Chapter::Methodology}. The forecasting target is the reBAP value for each quarter-hour, predicted one hour before delivery.
 
-Input features include the shifted energy and market data, the shifted weather measurements, as well as the engineered variables from energy, market, and weather domains (see Section \ref{Section::Feature_Engineering}). The sequence length for deep learning models is fixed at 4 timesteps, with prediction offset of 4 steps (i.e., 1 hour).
+Input features include the shifted energy and market data, the shifted weather measurements, as well as the engineered variables from energy, market, and weather domains (see Section \ref{Section::Feature_engineering}). The sequence length for deep learning models is fixed at 4 timesteps, with prediction offset of 4 steps (i.e., 1 hour).
 
 The hyperparameter settings for xLSTM and iTransformer are listed in Table \ref{Table::Raw_hyperparameters}. These settings are used consistently across all experiments apart from the sequence length. For the other experiments a sequence length of 96 will be used to make use of the architectural advantages of xLSTM and iTransformers. The xLSTM model used here corresponds to configuration xlstm\_7\_1, consisting of 42 mLSTM and 6 sLSTM blocks (see Table \ref{Table::xLSTM_configuratiosn}). 
 
@@ -140,7 +140,7 @@ During training, the model simultaneously predicts several energy and market-rel
 \item Imbalance volume (Netzregelverbund)
 \item Activated primary and secondary balancing energy
 \item Intraday indices 
-\item Actual fossil generation (coal, lignite, gas)
+%\item Actual fossil generation (coal, lignite, gas)
 \end{itemize}
 
 The loss function is calculated across all target variables, treating them equally. However, during evaluation, only the reBAP forecast is used to compute the performance metrics. The goal is to assess whether auxiliary targets help the model to generalize better to the main task.
@@ -184,6 +184,8 @@ This experiment investigates whether training the iTransformer to forecast longe
 Three forecast horizons are tested:
 \begin{itemize}
 \item 4 steps (1 hour)
+\item 12 steps (3 hours)
+\item 24 steps (6 hours)
 \item 48 steps (12 hours)
 \item 96 steps (24 hours)
 \end{itemize}

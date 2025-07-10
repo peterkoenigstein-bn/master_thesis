@@ -67,9 +67,9 @@ This leads to the central research question: To what extent can recent time seri
 %Generation of these can only be assumed using whether forecasts. If the actual wheathe deviates from the forecasts so does the energy production. In systems with a larger VRE share this can result in a larger system imbalance. 
 
 %To help stabilize the system a good forecast about the reBAP could be useful. A good estimate of the reBAP would give BRPs an idea whether action is required to help stabilize the energy net.
-The increasing share of variable \gls{VRE} sources, such as wind and solar power, has led to a significant reduction in system inertia \cite{weitemeyerIntegrationRenewableEnergy2015}. Since the output of these sources strongly depends on weather conditions, their actual generation often deviates from forecasts. In energy systems with high \gls{VRE} penetration, this leads to more frequent and larger imbalances between scheduled and physically delivered volumes.
+The increasing share of variable \gls{VRE} sources, such as wind and solar power, has led to a significant reduction in system inertia \cite{weitemeyerIntegrationRenewableEnergy2015}. Since the output of these sources strongly depends on weather conditions, their actual generation often deviates from forecasts. In energy systems with high \gls{VRE} penetration, this leads to more frequent and larger imbalances between scheduled and physically delivered volumes\cite{pavlikRenewableEnergyPrice2025}.
 
-As a result, balancing becomes more critical—and more difficult—for \gls{TSO}s and market participants. The \gls{reBAP} is a key economic signal in this context. It financially incentivizes market actors, especially \gls{BRP}s, to stabilize the grid by aligning their schedules with expected system conditions.
+As a result, balancing becomes more critical—and more difficult—for \gls{TSO}s and market participants. The \gls{reBAP} is a key economic signal in this context. It financially incentivizes market actors, especially \gls{BRP}s, to stabilize the grid by aligning their schedules with expected system conditions \cite{kochPASSIVEBALANCINGINTRADAY2020a}.
 
 A reliable short-term forecast of the \gls{reBAP} could support \gls{BRP}s in making better intraday decisions. If an accurate prediction indicates that the system will be short, a \gls{BRP} might choose to proactively trade additional volumes instead of incurring high imbalance costs. Thus, improving \gls{reBAP} forecasting has the potential to support system stability, reduce costs, and increase market efficiency.
 
@@ -96,11 +96,13 @@ In the broader context of the energy transition, reliable short-term forecasting
 
 %A second hypothesis is that a prediction, which utilizes the latest data is more accurate, than a prediction made at an earlier point in time.
 
-This thesis aims to evaluate the performance of various time series models in forecasting the \gls{reBAP} one hour before energy delivery. To this end, a range of models will be trained and tested, including classical approaches such as ARIMA and Random Forest, as well as recent deep learning architectures like xLSTM and iTransformer.
+This thesis aims to evaluate the performance of various time series models in forecasting the \gls{reBAP} one hour before energy delivery. To this end, a range of models will be trained and tested, including classical approaches such as ARIMAX and Random Forest, as well as recent deep learning architectures like xLSTM and iTransformer.
 
 The central goal is to assess whether newer, high-capacity models are able to outperform previously used forecasting methods on this task. In addition to comparing model performance, the thesis also investigates which input features most strongly influence the \gls{reBAP} forecast. This may provide further insight into the driving factors behind price formation in the imbalance market.
 
-To validate the forecasts, the predicted \gls{reBAP} values will be compared to the intraday index ID1, which represents the volume-weighted average of trades settled during the last hour before delivery. Since \gls{BRP}s typically use this index to estimate the imbalance price in practice, it serves as a meaningful benchmark.
+To validate the forecasts, the predicted \gls{reBAP} values will be compared to the intraday index ID1, which represents the volume-weighted average of trades settled during the last hour before delivery.
+The intraday index ID1 can serve as a robust proxy for \gls{BRP}s expectations of the imbalance price: as the ID1 captures market equilibrium within the last trading hour before delivery \cite{EPEXIndices} – reflecting system balance and flexibility needs – it embeds comparable predictive power to more advanced imbalance price forecasting models
+
 
 Each model is designed to produce a prediction for every 15-minute timestep throughout the day, based on the information available at the time of prediction. Forecast accuracy will be evaluated using both deterministic and probabilistic metrics.
 
@@ -122,18 +124,15 @@ To investigate the forecasting performance of different time series models on th
 
 The prediction target is the \gls{reBAP} value for each 15-minute interval (quarter-hour) of a day, forecasted one hour before the actual delivery time. Each model generates 96 predictions per day, simulating realistic operational conditions in which only information available at the prediction time is used.
 
-As a benchmark for model performance, the intraday price index ID1 is used. Since the ID1 represents the average of trades executed in the final hour before gate closure, it reflects the implicit expectations of \gls{BRP}s and serves as a practical reference point for evaluating the quality of the model-based forecasts.
-
+As a benchmark for model performance, the intraday price index ID1 is used. 
 The models are assessed using both deterministic and probabilistic evaluation metrics, including \gls{MAE}, \gls{RMSE}, \gls{CRPS}, and prediction interval coverage.
 
 Three thematic data domains are used to construct the feature set:
-
-Energy data (e.g., system load, generation by source),
-
-Market data (e.g., spot prices, intraday indices), and
-
-Weather data (e.g., temperature, solar radiation, wind speed).
-
+\begin{itemize}
+\item Energy data (e.g., system load, generation by source)
+\item Market data (e.g., spot prices, intraday indices)
+\item Weather data (e.g., temperature, solar radiation, wind speed)
+\end{itemize}
 These data sources are described in detail in Section \ref{Chapter::Data}.
 
 The full data processing pipeline is implemented in the Google Cloud environment. Raw data is stored and queried via BigQuery, and all model training and evaluation is conducted using Vertex AI with custom virtual machines.
@@ -150,7 +149,7 @@ Chapter  \ref{Chapter::Data} presents the dataset used for training and evaluati
 
 Chapter  \ref{Chapter::Implementation} outlines the feature engineering process and implementation details of the models, including data preprocessing, temporal structure, and model configurations.
 
-Chapter \ref{Chapter::Experiments}  describes the experimental setup, including the baseline comparisons, model variations, and forecast horizon configurations.
+Chapter \ref{Chapter::Experimental_Setup}  describes the experimental setup, including the baseline comparisons, model variations, and forecast horizon configurations.
 
 Chapter \ref{Chapter::Results and Discussion} presents and discusses the results of the experiments, highlighting key insights regarding model performance and feature relevance.
 
